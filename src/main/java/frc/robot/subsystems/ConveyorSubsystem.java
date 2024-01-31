@@ -64,12 +64,12 @@ public class ConveyorSubsystem extends SubsystemBase {
     topConveyorPidParameters = new PIDParameters(
         getName(),
         "TopMotor",
-        0, 0, 0, 0, 0, -1, 1);
+        0.0001, 0, 0, 0, 0, -1, 1);
 
     bottomConveyorPidParameters = new PIDParameters(
         getName(),
         "BottomMotor",
-        0, 0, 0, 0, 0, -1, 1);
+        0.0001, 0, 0, 0, 0, -1, 1);
 
     // set PID coefficients
     topConveyorPidParameters.applyParameters(topConveyorPID);

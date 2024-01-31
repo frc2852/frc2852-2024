@@ -31,10 +31,10 @@ public final class SwerveConstants {
         public static final double ROTATIONAL_SLEW_RATE = 2.0;
 
         // Chassis configuration
-        public static final double TRACK_WIDTH = Units.inchesToMeters(17.5);
+        public static final double TRACK_WIDTH = Units.inchesToMeters(26);
 
         // Distance between centers of right and left wheels on robot
-        public static final double WHEEL_BASE = Units.inchesToMeters(17.5);
+        public static final double WHEEL_BASE = Units.inchesToMeters(26);
 
         // Distance between front and back wheels on robot
         public static final SwerveDriveKinematics DRIVE_KINEMATICS = new SwerveDriveKinematics(

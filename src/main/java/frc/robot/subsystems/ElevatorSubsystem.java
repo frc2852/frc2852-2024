@@ -45,7 +45,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     motorPidParameters = new PIDParameters(
         getName(),
         "",
-        0, 0, 0, 0, 0, -1, 1);
+        0.0001, 0, 0, 0, 0, -1, 1);
 
     // set PID coefficients
     motorPidParameters.applyParameters(motorPID);

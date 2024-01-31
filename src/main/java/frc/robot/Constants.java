@@ -62,21 +62,21 @@ public final class Constants {
 
   // JOHN LOOK HERE
   public static class MotorSetpoint {
-    public static final int INTAKE_VELOCITY = 500;
+    public static final int INTAKE_VELOCITY = 100;
     public static final int CONVEYOR_VELOCITY = 100;
     public static final int CLIMB_WHEEL_VELOCITY = 100;
 
     public static final int SHOOTER_MARGIN_OF_ERROR = 5;
-    public static final int SHOOTER_DIVERT_VELOCITY = 500;
-    public static final int SHOOTER_VELOCITY = 500;
+    public static final int SHOOTER_DIVERT_VELOCITY = 100;
+    public static final int SHOOTER_VELOCITY = 100;
 
     public static final int ELEVATOR_MARGIN_OF_ERROR = 5;
     public static final int ELEVATOR_DRIVE_POSITION = 0;
-    public static final int ELEVATOR_AMP_POSITION = 0;
-    public static final int ELEVATOR_TRAP_POSITION = 0;
+    public static final int ELEVATOR_AMP_POSITION = 10;
+    public static final int ELEVATOR_TRAP_POSITION = 20;
 
     public static final int WINCH_ARMS_MARGIN_OF_ERROR = 0;
-    public static final int WINCH_ARMS_UP_POSITION = 0;
+    public static final int WINCH_ARMS_UP_POSITION = 10;
     public static final int WINCH_ARMS_DOWN_POSITION = 0;
   }
 }

@@ -43,7 +43,7 @@ public class ClimbWheelSubsystem extends SubsystemBase {
     climbWheelPidParameters = new PIDParameters(
         getName(),
         "",
-        0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 1.0);
+        0.0001, 0.0, 0.0, 0.0, 0.0, -1.0, 1.0);
 
     // Apply PID parameters
     climbWheelPidParameters.applyParameters(climbWheelPID);

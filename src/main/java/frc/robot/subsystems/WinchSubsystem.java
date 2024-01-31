@@ -57,12 +57,12 @@ public class WinchSubsystem extends SubsystemBase {
     leftWinchMotorPidParameters = new PIDParameters(
         getName(),
         "LeftMotor",
-        0, 0, 0, 0, 0, -1, 1);
+        0.0001, 0, 0, 0, 0, -1, 1);
 
     rightWinchMotorPidParameters = new PIDParameters(
         getName(),
         "RightMotor",
-        0, 0, 0, 0, 0, -1, 1);
+        0.0001, 0, 0, 0, 0, -1, 1);
 
     // Set PID coefficients
     leftWinchMotorPidParameters.applyParameters(leftWinchMotorPID);

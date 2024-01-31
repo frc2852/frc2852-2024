@@ -9,9 +9,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -55,6 +53,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final double INTAKE_STOPPED_VELOCITY = 0.0;
 
   public IntakeSubsystem() {
+
     // Set motor controller configurations
     topRollers.setIdleMode(IdleMode.kBrake);
     topRollers.setInverted(false);
@@ -73,7 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
     topRollersPidParameters = new PIDParameters(
         getName(),
         "TopRollers",
-        0.0001, 0.0001, 0, 0, 0, -1, 1);
+        0.0001, 0, 0, 0, 0, -1, 1);
 
     bottomRollersPidParameters = new PIDParameters(
         getName(),
