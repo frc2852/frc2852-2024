@@ -78,8 +78,8 @@ public final class Constants {
     // Value is between 0 and 1. 0.1 = 10% output
     public static final double ELEVAOTOR_MAX_OUPUT = 0.1;
 
-    public static final int WINCH_ARMS_MARGIN_OF_ERROR = 0;
-    public static final int WINCH_ARMS_UP_POSITION = 10;
+    public static final int WINCH_ARMS_MARGIN_OF_ERROR = 2;
+    public static final int WINCH_ARMS_UP_POSITION = 150;
     public static final int WINCH_ARMS_DOWN_POSITION = 0;
 
     // Value is between 0 and 1. 0.1 = 10% output

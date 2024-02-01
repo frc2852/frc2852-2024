@@ -117,7 +117,7 @@ public class WinchSubsystem extends SubsystemBase {
   }
 
   public void armsUp() {
-    setWinchPosition(MotorSetpoint.WINCH_ARMS_MARGIN_OF_ERROR);
+    setWinchPosition(MotorSetpoint.WINCH_ARMS_UP_POSITION);
   }
 
   public void armsDown() {

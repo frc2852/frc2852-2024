@@ -138,6 +138,10 @@ public class RobotContainer {
    */
   private void configureOperatorBindings() {
 
+    // Set elevator to drive position, really shouldn't be used unless the operator messed up and pressed the climb button
+    operatorController.povDown().onTrue(new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
+        .until(() -> elevatorSubsystem.isElevatorAtPosition()));
+
     // Intake note
     operatorController.a().onTrue(new InstantCommand(intakeSubsystem::toggleIntake, intakeSubsystem));
 
@@ -205,33 +209,31 @@ public class RobotContainer {
     operatorController.leftBumper().onTrue(
         new ParallelCommandGroup(
             // Run winch arms up until they are at position
-            new RunCommand(winchSubsystem::armsUp, winchSubsystem)
-                .until(winchSubsystem::areArmsAtPosition),
+            new RunCommand(() -> winchSubsystem.armsUp(), winchSubsystem)
+                .until(() -> winchSubsystem.areArmsAtPosition()),
 
             new SequentialCommandGroup(
                 new ParallelCommandGroup(
                     new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem),
                     new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
                     new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
-                    .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
+                    .until(() -> conveyorSubsystem.isGamePieceAmpReady()),
                 new ParallelCommandGroup(
-                    new RunCommand(() -> shooterSubsystem.stopShooter(), conveyorSubsystem),
-                    new RunCommand(() -> conveyorSubsystem.stopConveyor(), intakeSubsystem),
-                    new RunCommand(() -> intakeSubsystem.stopIntake(), shooterSubsystem)))));
+                    new InstantCommand(() -> shooterSubsystem.stopShooter(), conveyorSubsystem),
+                    new InstantCommand(() -> conveyorSubsystem.stopConveyor(), intakeSubsystem),
+                    new InstantCommand(() -> intakeSubsystem.stopIntake(), shooterSubsystem)))));
 
     // Quick Climb
-    operatorController.rightTrigger().onTrue(new RunCommand(winchSubsystem::armsDown, winchSubsystem));
+    operatorController.rightTrigger().onTrue(new RunCommand(() -> winchSubsystem.armsDown(), winchSubsystem).until(() -> winchSubsystem.areArmsAtPosition()));
 
     // Climb and trap score
     operatorController.rightBumper().onTrue(
         new SequentialCommandGroup(
             new ParallelCommandGroup(
-                new RunCommand(climbWheelSubsystem::runClimbWheels, climbWheelSubsystem),
-                new RunCommand(winchSubsystem::armsDown, winchSubsystem),
-                new RunCommand(elevatorSubsystem::trapPosition, elevatorSubsystem)),
-
-            // Wait until the elevator and arms reach their position
-            new WaitUntilCommand(() -> elevatorSubsystem.isElevatorAtPosition() && winchSubsystem.areArmsAtPosition()),
+                new RunCommand(() -> climbWheelSubsystem.runClimbWheels(), climbWheelSubsystem),
+                new RunCommand(() -> winchSubsystem.armsDown(), winchSubsystem),
+                new RunCommand(() -> elevatorSubsystem.trapPosition(), elevatorSubsystem))
+                .until(() -> elevatorSubsystem.isElevatorAtPosition() && winchSubsystem.areArmsAtPosition()),
 
             // Run the conveyor and shooter again to discharge the game piece
             new ParallelCommandGroup(
@@ -242,8 +244,8 @@ public class RobotContainer {
 
             // Finally, stop the conveyor and shooter
             new ParallelCommandGroup(
-                new RunCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-                new RunCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
+                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
+                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
   }
 
   private void configureSysIdBindings() {
