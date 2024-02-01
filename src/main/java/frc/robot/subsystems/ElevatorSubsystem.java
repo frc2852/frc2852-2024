@@ -41,11 +41,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     motorPID = motor.getPIDController();
     motorEncoder = motor.getEncoder();
 
+    // Zero encoder position
+    motorEncoder.setPosition(0);
+
     // PID coefficients
     motorPidParameters = new PIDParameters(
         getName(),
         "",
-        0.0001, 0.000001, 0, 0, 0, -1, 1);
+        0.1, 0, 0, 0, 0, -MotorSetpoint.ELEVAOTOR_MAX_OUPUT, MotorSetpoint.ELEVAOTOR_MAX_OUPUT);
 
     // set PID coefficients
     motorPidParameters.applyParameters(motorPID);

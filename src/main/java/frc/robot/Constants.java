@@ -25,7 +25,7 @@ public final class Constants {
     public static final int DRIVER_CONTROLLER_PORT = 0;
     public static final int OPERATOR_CONTROLLER_PORT = 1;
     public static final int SYSID_CONTROLLER_PORT = 2;
-    
+
     public static final double DEAD_BAND = 0.05;
   }
 
@@ -63,20 +63,26 @@ public final class Constants {
   // JOHN LOOK HERE
   public static class MotorSetpoint {
     public static final int INTAKE_VELOCITY = 500;
-    public static final int CONVEYOR_VELOCITY = 100;
-    public static final int CLIMB_WHEEL_VELOCITY = 100;
+    public static final int CONVEYOR_VELOCITY = 500;
+    public static final int CLIMB_WHEEL_VELOCITY = 500;
 
     public static final int SHOOTER_MARGIN_OF_ERROR = 5;
-    public static final int SHOOTER_DIVERT_VELOCITY = 100;
-    public static final int SHOOTER_VELOCITY = 100;
+    public static final int SHOOTER_DIVERT_VELOCITY = 500;
+    public static final int SHOOTER_VELOCITY = 500;
 
-    public static final int ELEVATOR_MARGIN_OF_ERROR = 5;
+    public static final int ELEVATOR_MARGIN_OF_ERROR = 2;
     public static final int ELEVATOR_DRIVE_POSITION = 0;
-    public static final int ELEVATOR_AMP_POSITION = 10;
-    public static final int ELEVATOR_TRAP_POSITION = 20;
+    public static final int ELEVATOR_AMP_POSITION = 50;
+    public static final int ELEVATOR_TRAP_POSITION = 100;
+
+    // Value is between 0 and 1. 0.1 = 10% output
+    public static final double ELEVAOTOR_MAX_OUPUT = 0.1;
 
     public static final int WINCH_ARMS_MARGIN_OF_ERROR = 0;
     public static final int WINCH_ARMS_UP_POSITION = 10;
     public static final int WINCH_ARMS_DOWN_POSITION = 0;
+
+    // Value is between 0 and 1. 0.1 = 10% output
+    public static final double WINCH_MAX_OUPUT = 0.1;
   }
 }

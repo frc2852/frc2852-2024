@@ -53,16 +53,20 @@ public class WinchSubsystem extends SubsystemBase {
     rightWinchMotorPID = rightWinchMotor.getPIDController();
     rightWinchMotorEncoder = rightWinchMotor.getEncoder();
 
+    // Zero encoders
+    leftWinchMotorEncoder.setPosition(0);
+    rightWinchMotorEncoder.setPosition(0);
+    
     // PID coefficients
     leftWinchMotorPidParameters = new PIDParameters(
         getName(),
         "LeftMotor",
-        0.0001, 0.000001, 0, 0, 0, -1, 1);
+        0.1, 0, 0, 0, 0, -MotorSetpoint.ELEVAOTOR_MAX_OUPUT, MotorSetpoint.ELEVAOTOR_MAX_OUPUT);
 
     rightWinchMotorPidParameters = new PIDParameters(
         getName(),
         "RightMotor",
-        0.0001, 0.000001, 0, 0, 0, -1, 1);
+        0.1, 0, 0, 0, 0, -MotorSetpoint.ELEVAOTOR_MAX_OUPUT, MotorSetpoint.ELEVAOTOR_MAX_OUPUT);
 
     // Set PID coefficients
     leftWinchMotorPidParameters.applyParameters(leftWinchMotorPID);

@@ -153,15 +153,13 @@ public class RobotContainer {
 
             // Stop intake, conveyor and shooter
             new ParallelCommandGroup(
-                new RunCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
-                new RunCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-                new RunCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
+                new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
+                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
+                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
 
             // Then, move the elevator to amp position
-            new InstantCommand(() -> elevatorSubsystem.ampPosition(), elevatorSubsystem),
-
-            // Wait until the elevator reaches its position
-            new WaitUntilCommand(() -> elevatorSubsystem.isElevatorAtPosition()),
+            new RunCommand(() -> elevatorSubsystem.ampPosition(), elevatorSubsystem)
+                .until(() -> elevatorSubsystem.isElevatorAtPosition()),
 
             // Run the conveyor and shooter again to discharge the game piece
             new ParallelCommandGroup(
@@ -171,11 +169,12 @@ public class RobotContainer {
 
             // Finally, stop the conveyor and shooter
             new ParallelCommandGroup(
-                new RunCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-                new RunCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
+                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
+                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
 
             // Then, move the elevator to drive position
-            new InstantCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)));
+            new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
+            .until(() -> elevatorSubsystem.isElevatorAtPosition())));
 
     // Speaker note shooting
     operatorController.y().onTrue(
