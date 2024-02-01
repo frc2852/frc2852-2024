@@ -40,6 +40,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final DigitalInput shooterProximitySensor;
 
+  private boolean hasGamePieceBeenShot = false;
+
   public ShooterSubsystem() {
 
     // Initialize motor controllers
@@ -87,6 +89,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (isGamePieceDetected()) {
+      hasGamePieceBeenShot = true;
+    }
+
     // Get current positions and calculate errors
     double topRollerVelocity = topRollerEncoder.getVelocity();
     double topRollerVelocityError = velocitySetpoint == 0 ? 0 : topRollerVelocity - velocitySetpoint;
@@ -95,6 +101,8 @@ public class ShooterSubsystem extends SubsystemBase {
     double bottomRollerVelocityError = velocitySetpoint == 0 ? 0 : topRollerVelocity - velocitySetpoint;
 
     // Dashboard data tracking
+    DataTracker.putBoolean(getName(), "HasGamePieceBeenShot", hasGamePieceBeenShot, true);
+
     DataTracker.putNumber(getName(), "VelocitySetPoint", velocitySetpoint, true);
 
     DataTracker.putNumber(getName(), "TopRollerVelocity", topRollerVelocity, true);
@@ -125,12 +133,13 @@ public class ShooterSubsystem extends SubsystemBase {
     setShooterSpeed(-MotorSetpoint.SHOOTER_DIVERT_VELOCITY);
   }
 
-  public void shootGamePiece() {
+  public void flyWheelFullSpeed() {
     setShooterSpeed(MotorSetpoint.SHOOTER_VELOCITY);
   }
 
   public void stopShooter() {
     velocitySetpoint = 0;
+    hasGamePieceBeenShot = false;
     topRoller.stopMotor();
     bottomRoller.stopMotor();
   }
@@ -142,13 +151,17 @@ public class ShooterSubsystem extends SubsystemBase {
 
   }
 
-  public boolean isGamePieceShot() {
-    return !shooterProximitySensor.get();
+  public boolean hasGamePieceBeenShot() {
+    return hasGamePieceBeenShot;
   }
 
   private void setShooterSpeed(double velocity) {
     velocitySetpoint = velocity;
     topRollerPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
     bottomRollerPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
+  }
+
+  private boolean isGamePieceDetected() {
+    return !shooterProximitySensor.get();
   }
 }

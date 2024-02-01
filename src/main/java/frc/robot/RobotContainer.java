@@ -174,32 +174,32 @@ public class RobotContainer {
 
             // Then, move the elevator to drive position
             new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
-            .until(() -> elevatorSubsystem.isElevatorAtPosition())));
+                .until(() -> elevatorSubsystem.isElevatorAtPosition())));
 
     // Speaker note shooting
     operatorController.y().onTrue(
         new SequentialCommandGroup(
             // Get shooter rollers up to speed
-            new InstantCommand(() -> shooterSubsystem.shootGamePiece(), shooterSubsystem),
-
-            // Wait until shooter rollers are up to speed
-            new WaitUntilCommand(() -> shooterSubsystem.isShooterAtSpeed()),
+            new RunCommand(() -> shooterSubsystem.flyWheelFullSpeed(), shooterSubsystem)
+                .until(() -> shooterSubsystem.isShooterAtSpeed()),
 
             // Run intake, conveyor, shooter in parallel until the game piece is ready
             new ParallelCommandGroup(
+                new RunCommand(() -> shooterSubsystem.flyWheelFullSpeed(), shooterSubsystem),
                 new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
                 new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem))
+                .withTimeout(5),
 
-                // TODO: This needs to be tested, the proximity sensor will see the game piece when its near the end of the shooter.
-                // The WaitCommand delay may need to be adjusted.
-                .until(() -> shooterSubsystem.isGamePieceShot()),
-            new WaitCommand(1),
+            // TODO: I'm worried that the game piece is going to pass by this sensor either too fast or too slow. If its too fast it will never be detected and the motors will never stop
+            // If its detected too soon the motors will cut power well shooting affecting the shot.
+            // So I've commented this out and added a timeout to the parallel command group above, this isn't the best fix but without having the robot to test its the best I can do for now.
+            // .until(() -> shooterSubsystem.hasGamePieceBeenShot()),
 
             // Stop intake, conveyor and shooter
             new ParallelCommandGroup(
-                new RunCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
-                new RunCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-                new RunCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
+                new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
+                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
+                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
 
     // Lift arms up and run conveyor until game piece is ready
     operatorController.leftBumper().onTrue(
