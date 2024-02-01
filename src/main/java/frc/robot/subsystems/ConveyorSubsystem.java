@@ -64,12 +64,12 @@ public class ConveyorSubsystem extends SubsystemBase {
     topConveyorPidParameters = new PIDParameters(
         getName(),
         "TopMotor",
-        0.0001, 0, 0, 0, 0, -1, 1);
+        0.0001, 0.000001, 0, 0, 0, -1, 1);
 
     bottomConveyorPidParameters = new PIDParameters(
         getName(),
         "BottomMotor",
-        0.0001, 0, 0, 0, 0, -1, 1);
+        0.0001, 0.000001, 0, 0, 0, -1, 1);
 
     // set PID coefficients
     topConveyorPidParameters.applyParameters(topConveyorPID);
@@ -100,6 +100,7 @@ public class ConveyorSubsystem extends SubsystemBase {
     DataTracker.putNumber(getName(), "TopVelocityError", topConveyorVelocityError, true);
     DataTracker.putNumber(getName(), "BottomVelocity", bottomConveyorVelocity, true);
     DataTracker.putNumber(getName(), "BottomVelocityError", bottomConveyorVelocityError, true);
+    DataTracker.putBoolean(getName(), "IsGamePieceAmpReady", isGamePieceAmpReady(), true);
 
     if (!DriverStation.isFMSAttached() && Constants.PID_TUNE_MODE) {
 

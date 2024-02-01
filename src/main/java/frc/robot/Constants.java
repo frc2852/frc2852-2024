@@ -62,7 +62,7 @@ public final class Constants {
 
   // JOHN LOOK HERE
   public static class MotorSetpoint {
-    public static final int INTAKE_VELOCITY = 100;
+    public static final int INTAKE_VELOCITY = 500;
     public static final int CONVEYOR_VELOCITY = 100;
     public static final int CLIMB_WHEEL_VELOCITY = 100;
 

@@ -65,12 +65,12 @@ public class ShooterSubsystem extends SubsystemBase {
     topRollerPidParameters = new PIDParameters(
         getName(),
         "TopRoller",
-        0.0001, 0, 0, 0, 0, -1, 1);
+        0.0001, 0.000001, 0, 0, 0, -1, 1);
 
     bottomRollerPidParameters = new PIDParameters(
         getName(),
         "BottomRoller",
-        0.0001, 0, 0, 0, 0, -1, 1);
+        0.0001, 0.000001, 0, 0, 0, -1, 1);
 
     // set PID coefficients
     topRollerPidParameters.applyParameters(topRollerPID);

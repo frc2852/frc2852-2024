@@ -72,12 +72,12 @@ public class IntakeSubsystem extends SubsystemBase {
     topRollersPidParameters = new PIDParameters(
         getName(),
         "TopRollers",
-        0.0001, 0, 0, 0, 0, -1, 1);
+        0.0001, 0.000001, 0, 0, 0, -1, 1);
 
     bottomRollersPidParameters = new PIDParameters(
         getName(),
         "BottomRollers",
-        0.0001, 0, 0, 0, 0, -1, 1);
+        0.0001, 0.000001, 0, 0, 0, -1, 1);
 
     // Set PID coefficients
     topRollersPidParameters.applyParameters(topRollersPID);
