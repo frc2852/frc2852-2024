@@ -137,51 +137,9 @@ public class RobotContainer {
    * devices to commands.
    */
   private void configureOperatorBindings() {
+
+    // Intake note
     operatorController.a().onTrue(new InstantCommand(intakeSubsystem::toggleIntake, intakeSubsystem));
-
-    // Lift arms up and run conveyor until game piece is ready
-    operatorController.leftBumper().onTrue(
-        new ParallelCommandGroup(
-            // Run winch arms up until they are at position
-            new RunCommand(winchSubsystem::armsUp, winchSubsystem)
-                .until(winchSubsystem::areArmsAtPosition),
-
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                    new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem),
-                    new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
-                    new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
-                    .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
-                new ParallelCommandGroup(
-                    new RunCommand(() -> shooterSubsystem.stopShooter(), conveyorSubsystem),
-                    new RunCommand(() -> conveyorSubsystem.stopConveyor(), intakeSubsystem),
-                    new RunCommand(() -> intakeSubsystem.stopIntake(), shooterSubsystem)))));
-
-    // Climb and trap score
-    operatorController.rightBumper().onTrue(
-        new SequentialCommandGroup(
-            new ParallelCommandGroup(
-                new RunCommand(climbWheelSubsystem::runClimbWheels, climbWheelSubsystem),
-                new RunCommand(winchSubsystem::armsDown, winchSubsystem),
-                new RunCommand(elevatorSubsystem::trapPosition, elevatorSubsystem)),
-
-            // Wait until the elevator and arms reach their position
-            new WaitUntilCommand(() -> elevatorSubsystem.isElevatorAtPosition() && winchSubsystem.areArmsAtPosition()),
-
-            // Run the conveyor and shooter again to discharge the game piece
-            new ParallelCommandGroup(
-                new RunCommand(() -> climbWheelSubsystem.stopClimbWheels(), climbWheelSubsystem),
-                new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem),
-                new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem))
-                .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
-
-            // Finally, stop the conveyor and shooter
-            new ParallelCommandGroup(
-                new RunCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-                new RunCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
-
-    // Quick Climb
-    operatorController.rightTrigger().onTrue(new RunCommand(winchSubsystem::armsDown, winchSubsystem));
 
     // AMP note discharge
     operatorController.b().onTrue(
@@ -241,6 +199,50 @@ public class RobotContainer {
             // Stop intake, conveyor and shooter
             new ParallelCommandGroup(
                 new RunCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
+                new RunCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
+                new RunCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
+
+    // Lift arms up and run conveyor until game piece is ready
+    operatorController.leftBumper().onTrue(
+        new ParallelCommandGroup(
+            // Run winch arms up until they are at position
+            new RunCommand(winchSubsystem::armsUp, winchSubsystem)
+                .until(winchSubsystem::areArmsAtPosition),
+
+            new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                    new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem),
+                    new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
+                    new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
+                    .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
+                new ParallelCommandGroup(
+                    new RunCommand(() -> shooterSubsystem.stopShooter(), conveyorSubsystem),
+                    new RunCommand(() -> conveyorSubsystem.stopConveyor(), intakeSubsystem),
+                    new RunCommand(() -> intakeSubsystem.stopIntake(), shooterSubsystem)))));
+
+    // Quick Climb
+    operatorController.rightTrigger().onTrue(new RunCommand(winchSubsystem::armsDown, winchSubsystem));
+
+    // Climb and trap score
+    operatorController.rightBumper().onTrue(
+        new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                new RunCommand(climbWheelSubsystem::runClimbWheels, climbWheelSubsystem),
+                new RunCommand(winchSubsystem::armsDown, winchSubsystem),
+                new RunCommand(elevatorSubsystem::trapPosition, elevatorSubsystem)),
+
+            // Wait until the elevator and arms reach their position
+            new WaitUntilCommand(() -> elevatorSubsystem.isElevatorAtPosition() && winchSubsystem.areArmsAtPosition()),
+
+            // Run the conveyor and shooter again to discharge the game piece
+            new ParallelCommandGroup(
+                new RunCommand(() -> climbWheelSubsystem.stopClimbWheels(), climbWheelSubsystem),
+                new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem),
+                new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem))
+                .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
+
+            // Finally, stop the conveyor and shooter
+            new ParallelCommandGroup(
                 new RunCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
                 new RunCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
   }
