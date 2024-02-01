@@ -56,7 +56,7 @@ public class WinchSubsystem extends SubsystemBase {
     // Zero encoders
     leftWinchMotorEncoder.setPosition(0);
     rightWinchMotorEncoder.setPosition(0);
-    
+
     // PID coefficients
     leftWinchMotorPidParameters = new PIDParameters(
         getName(),
