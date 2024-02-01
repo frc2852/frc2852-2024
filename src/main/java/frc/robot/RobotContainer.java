@@ -58,7 +58,7 @@ public class RobotContainer {
 
   private final PowerHubSubsystem powerHubSubsystem;
 
-  // private final DriveSubsystem driveSubsystem;
+  private final DriveSubsystem driveSubsystem;
   private final ConveyorSubsystem conveyorSubsystem;
   private final ElevatorSubsystem elevatorSubsystem;
   private final IntakeSubsystem intakeSubsystem;
@@ -96,7 +96,7 @@ public class RobotContainer {
     // gamePieceDetectionSubsystem = new GamePieceDetectionSubsystem(CameraTracking.GAME_PIECE_CAMERA_CONFIG, powerHubSubsystem);
 
     // Initialize subsystems
-    // driveSubsystem = new DriveSubsystem(null);
+    driveSubsystem = new DriveSubsystem(null);
     // driveSubsystem = new DriveSubsystem(aprilTagDetectionSubsystem);
 
     conveyorSubsystem = new ConveyorSubsystem();
@@ -117,19 +117,19 @@ public class RobotContainer {
    * devices to commands.
    */
   private void configureDriverBindings() {
-    // driverController.leftBumper().onTrue(
-    // new RunCommand(() -> driveSubsystem.lockDrive(), driveSubsystem));
+    driverController.leftBumper().onTrue(
+    new RunCommand(() -> driveSubsystem.lockDrive(), driveSubsystem));
 
-    // driveSubsystem.setDefaultCommand(
-    // // The left stick controls translation of the robot.
-    // // Turning is controlled by the X axis of the right stick.
-    // new RunCommand(
-    // () -> driveSubsystem.drive(
-    // -MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND),
-    // -MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND),
-    // -MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND),
-    // true, true),
-    // driveSubsystem));
+    driveSubsystem.setDefaultCommand(
+    // The left stick controls translation of the robot.
+    // Turning is controlled by the X axis of the right stick.
+    new RunCommand(
+    () -> driveSubsystem.drive(
+    -MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND),
+    -MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND),
+    -MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND),
+    true, true),
+    driveSubsystem));
   }
 
   /**
