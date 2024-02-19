@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ShooterSubSystem extends SubsystemBase {
 
   private CANSparkFlex topShooter;
-  private CANSparkFlex bottomShooter;
+  private CANSparkFlex bottomShooter;// it keeps saying that Cans sparkflex cannot be relove 
   private DigitalInput intakeLimitSwitch;
   private double wheelShooterMaxSpeed= 2;
   private double rolllShooterMaxSpeed= 2;
@@ -39,7 +39,7 @@ public class ShooterSubSystem extends SubsystemBase {
   //setting speed for the shooter 
   private void shooterSpeed( double motorSpeedPercentage){
     double motorSpeed= motorSpeedPercentage/100;
-    //copied this code in the last program
+    //copied this code in the last program 
     topShooter.set(motorSpeed);
     bottomShooter.set(motorSpeed);
   }
