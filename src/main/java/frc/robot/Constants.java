@@ -26,7 +26,7 @@ public final class Constants {
     public static final int OPERATOR_CONTROLLER_PORT = 1;
     public static final int SYSID_CONTROLLER_PORT = 2;
 
-    public static final double DEAD_BAND = 0.05;
+    public static final double DEAD_BAND = 0.15;
   }
 
   public static class CanbusId {
@@ -53,30 +53,31 @@ public final class Constants {
   }
 
   public static class DIOId {
-    public static final int HIGH_BEAM_LEFT_DIO_PORT = 0;
-    public static final int HIGH_BEAM_RIGHT_DIO_PORT = 1;
-    public static final int INTAKE_PROXIMITY_SENSOR = 2;
-    public static final int CONVEYOR_PROXIMITY_SENSOR = 3;
-    public static final int SHOOTER_PROXIMITY_SENSOR = 4;
+    public static final int HIGH_BEAM_LEFT_DIO_PORT = 4;
+    public static final int HIGH_BEAM_RIGHT_DIO_PORT = 5;
+    public static final int INTAKE_PROXIMITY_SENSOR = 0;
+    public static final int CONVEYOR_PROXIMITY_SENSOR = 2;
+    public static final int SHOOTER_PROXIMITY_SENSOR = 1;
   }
 
-  // JOHN LOOK HERE
+  // JOHN LOOK HERE //Hi Krystian!!!
   public static class MotorSetpoint {
-    public static final int INTAKE_VELOCITY = 500;
-    public static final int CONVEYOR_VELOCITY = 500;
+    //make 5000
+    public static final int INTAKE_VELOCITY = 5000;
+    public static final int CONVEYOR_VELOCITY = 2000;
     public static final int CLIMB_WHEEL_VELOCITY = 500;
 
     public static final int SHOOTER_MARGIN_OF_ERROR = 5;
-    public static final int SHOOTER_DIVERT_VELOCITY = 500;
-    public static final int SHOOTER_VELOCITY = 500;
+    public static final int SHOOTER_DIVERT_VELOCITY = 1500;
+    public static final int SHOOTER_VELOCITY = 3000;
 
     public static final int ELEVATOR_MARGIN_OF_ERROR = 2;
     public static final int ELEVATOR_DRIVE_POSITION = 0;
-    public static final int ELEVATOR_AMP_POSITION = 50;
+    public static final int ELEVATOR_AMP_POSITION = 70; //220 60:1
     public static final int ELEVATOR_TRAP_POSITION = 100;
 
     // Value is between 0 and 1. 0.1 = 10% output
-    public static final double ELEVAOTOR_MAX_OUPUT = 0.1;
+    public static final double ELEVAOTOR_MAX_OUPUT = 1.0;
 
     public static final int WINCH_ARMS_MARGIN_OF_ERROR = 2;
     public static final int WINCH_ARMS_UP_POSITION = 150;

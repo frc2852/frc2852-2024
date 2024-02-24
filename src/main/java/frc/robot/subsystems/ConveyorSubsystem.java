@@ -44,6 +44,7 @@ public class ConveyorSubsystem extends SubsystemBase {
     // Initialize motor controllers
     topConveyor = new SparkFlex(CanbusId.CONVEYOR_TOP);
     topConveyor.setIdleMode(IdleMode.kCoast);
+    //changed from false to true
     topConveyor.setInverted(false);
 
     bottomConveyor = new SparkFlex(CanbusId.CONVEYOR_BOTTOM);
@@ -132,6 +133,10 @@ public class ConveyorSubsystem extends SubsystemBase {
     velocitySetpoint = 0;
     topConveyor.stopMotor();
     bottomConveyor.stopMotor();
+  }
+
+  public void runConveyorForwardAmp(){
+    setConveyorVelocity(1000);
   }
 
   public boolean isGamePieceAmpReady() {

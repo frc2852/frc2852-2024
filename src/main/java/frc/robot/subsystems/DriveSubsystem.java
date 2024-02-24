@@ -238,7 +238,6 @@ public class DriveSubsystem extends SubsystemBase {
       ySpeedCommanded = ySpeed;
       currentRotation = rot;
     }
-
     // Convert the commanded speeds into the correct units for the drivetrain
     double xSpeedDelivered = xSpeedCommanded * SwerveDrive.MAX_SPEED_METERS_PER_SECOND;
     double ySpeedDelivered = ySpeedCommanded * SwerveDrive.MAX_SPEED_METERS_PER_SECOND;
@@ -248,7 +247,6 @@ public class DriveSubsystem extends SubsystemBase {
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, getRotation())
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
-
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveDrive.MAX_SPEED_METERS_PER_SECOND);
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);

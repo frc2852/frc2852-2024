@@ -130,11 +130,11 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void divertGamePiece() {
-    setShooterSpeed(-MotorSetpoint.SHOOTER_DIVERT_VELOCITY);
+    setShooterSpeed(MotorSetpoint.SHOOTER_DIVERT_VELOCITY,true);
   }
 
   public void flyWheelFullSpeed() {
-    setShooterSpeed(MotorSetpoint.SHOOTER_VELOCITY);
+    setShooterSpeed(MotorSetpoint.SHOOTER_VELOCITY,false);
   }
 
   public void stopShooter() {
@@ -155,10 +155,11 @@ public class ShooterSubsystem extends SubsystemBase {
     return hasGamePieceBeenShot;
   }
 
-  private void setShooterSpeed(double velocity) {
+  private void setShooterSpeed(double velocity, boolean inverseBottomRoller) {
     velocitySetpoint = velocity;
     topRollerPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
-    bottomRollerPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
+    double bottomVelocity = inverseBottomRoller ? -velocity : velocity;
+    bottomRollerPID.setReference(bottomVelocity, CANSparkMax.ControlType.kVelocity);
   }
 
   private boolean isGamePieceDetected() {

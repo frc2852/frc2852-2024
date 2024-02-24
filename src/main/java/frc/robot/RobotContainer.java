@@ -151,7 +151,7 @@ public class RobotContainer {
             // Run intake, conveyor, shooter in parallel until the game piece is ready
             new ParallelCommandGroup(
                 new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
-                new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem),
+                new RunCommand(() -> conveyorSubsystem.runConveyorForwardAmp(), conveyorSubsystem),
                 new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
                 .until(() -> conveyorSubsystem.isGamePieceAmpReady()),
 
@@ -209,8 +209,8 @@ public class RobotContainer {
     operatorController.leftBumper().onTrue(
         new ParallelCommandGroup(
             // Run winch arms up until they are at position
-            new RunCommand(() -> winchSubsystem.armsUp(), winchSubsystem)
-                .until(() -> winchSubsystem.areArmsAtPosition()),
+           /*  new RunCommand(() -> winchSubsystem.armsUp(), winchSubsystem)
+                .until(() -> winchSubsystem.areArmsAtPosition()),*/
 
             new SequentialCommandGroup(
                 new ParallelCommandGroup(
