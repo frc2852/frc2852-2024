@@ -50,6 +50,7 @@ public final class SwerveConstants {
     public static final double BACK_RIGHT_CHASSIS_ANGULAR_OFFSET = Math.PI / 2;
 
     public static final boolean GYRO_REVERSED = true;
+    
   }
 
   public static final class AutoConstants {
