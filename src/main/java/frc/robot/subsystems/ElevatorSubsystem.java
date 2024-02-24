@@ -99,6 +99,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     return Math.abs(motorEncoder.getPosition() - positionSetpoint) < MotorSetpoint.ELEVATOR_MARGIN_OF_ERROR;
   }
 
+  public void increasePosition(){
+    setElevatorPosition(positionSetpoint+1);
+  }
+
+  public void decreasePosition(){
+    setElevatorPosition(positionSetpoint-1);
+  }
+
   private void setElevatorPosition(double position) {
     positionSetpoint = position;
     motorPID.setReference(position, CANSparkMax.ControlType.kPosition);

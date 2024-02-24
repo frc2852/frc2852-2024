@@ -35,6 +35,7 @@ public class WinchSubsystem extends SubsystemBase {
 
   private boolean updateLeftWinchMotorPID = false;
   private boolean updateRightWinchMotorPID = false;
+  private double _posTest =0; //LIAM added for testing the climb so we can move up and down 
 
   public WinchSubsystem() {
     // Initialize motor controllers
@@ -117,11 +118,17 @@ public class WinchSubsystem extends SubsystemBase {
   }
 
   public void armsUp() {
-    setWinchPosition(MotorSetpoint.WINCH_ARMS_UP_POSITION);
+    //liam added these _postTest to test the climb
+    _posTest = _posTest - MotorSetpoint.WINCH_ARMS_DOWN_POSITION;
+    setWinchPosition(_posTest);
   }
 
   public void armsDown() {
-    setWinchPosition(MotorSetpoint.WINCH_ARMS_DOWN_POSITION);
+    _posTest =  _posTest +MotorSetpoint.WINCH_ARMS_DOWN_POSITION;
+    setWinchPosition(_posTest);
+    // LIAM-JOHN comment the above two lines of code and uncomment the below code
+    //setWinchPosition(MotorSetpoint.WINCH_ARMS_DOWN_POSITION);
+
   }
 
   public boolean areArmsAtPosition() {
@@ -131,6 +138,6 @@ public class WinchSubsystem extends SubsystemBase {
   private void setWinchPosition(double position) {
     positionSetpoint = position;
     leftWinchMotorPID.setReference(position, CANSparkMax.ControlType.kPosition);
-    rightWinchMotorPID.setReference(position, CANSparkMax.ControlType.kPosition);
+    rightWinchMotorPID.setReference(-position, CANSparkMax.ControlType.kPosition);
   }
 }

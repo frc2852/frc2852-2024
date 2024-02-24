@@ -142,6 +142,13 @@ public class RobotContainer {
     operatorController.povDown().onTrue(new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
         .until(() -> elevatorSubsystem.isElevatorAtPosition()));
 
+    operatorController.povLeft().onTrue(new RunCommand(()->elevatorSubsystem.decreasePosition(), elevatorSubsystem)
+    .until(()->elevatorSubsystem.isElevatorAtPosition()));
+
+    operatorController.povRight().onTrue(new RunCommand(()-> elevatorSubsystem.increasePosition(),elevatorSubsystem)
+    .until(()->elevatorSubsystem.isElevatorAtPosition()));
+
+
     // Intake note
     operatorController.a().onTrue(new InstantCommand(intakeSubsystem::toggleIntake, intakeSubsystem));
 
@@ -225,7 +232,8 @@ public class RobotContainer {
 
     // Quick Climb
     operatorController.rightTrigger().onTrue(new RunCommand(() -> winchSubsystem.armsDown(), winchSubsystem).until(() -> winchSubsystem.areArmsAtPosition()));
-
+    //LIAM added this here for testing the climb to lower the winch so its easier to let the robot down.
+    operatorController.leftTrigger().onTrue(new RunCommand(() -> winchSubsystem.armsUp(), winchSubsystem).until(()->winchSubsystem.areArmsAtPosition()));
     // Climb and trap score
     operatorController.rightBumper().onTrue(
         new SequentialCommandGroup(

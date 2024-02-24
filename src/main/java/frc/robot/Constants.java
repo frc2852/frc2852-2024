@@ -60,7 +60,7 @@ public final class Constants {
     public static final int SHOOTER_PROXIMITY_SENSOR = 1;
   }
 
-  // JOHN LOOK HERE //Hi Krystian!!!
+  // JOHN LOOK HERE //Hi Krystian!!! Hi guys!! - Liam <3
   public static class MotorSetpoint {
     //make 5000
     public static final int INTAKE_VELOCITY = 5000;
@@ -81,7 +81,7 @@ public final class Constants {
 
     public static final int WINCH_ARMS_MARGIN_OF_ERROR = 2;
     public static final int WINCH_ARMS_UP_POSITION = 150;
-    public static final int WINCH_ARMS_DOWN_POSITION = 0;
+    public static final int WINCH_ARMS_DOWN_POSITION = 10;
 
     // Value is between 0 and 1. 0.1 = 10% output
     public static final double WINCH_MAX_OUPUT = 0.1;
