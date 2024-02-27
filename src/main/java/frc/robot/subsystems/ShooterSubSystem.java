@@ -14,7 +14,7 @@ public class ShooterSubSystem extends SubsystemBase {
 
   private CANSparkFlex topShooter;
   private CANSparkFlex bottomShooter;// it keeps saying that Cans sparkflex cannot be relove 
-  private DigitalInput intakeLimitSwitch;
+  private DigitalInput shooterLimitSwitch;
   private double wheelShooterMaxSpeed= 2;
   private double rolllShooterMaxSpeed= 2;
   private double stopIntake(0);// still don't know why is that a problem 
@@ -30,7 +30,7 @@ public class ShooterSubSystem extends SubsystemBase {
     bottomShooter.setIdleMode(IdleMode.kCoast);
     bottomShooter.burnFlash();
 
-    intakeLimitSwitch = new DigitalInput(3);
+    shooterLimitSwitch = new DigitalInput(3);
 
   }
   @Override
@@ -56,9 +56,9 @@ public void runShooter(){
 }
 private boolean noteComplete(){
   // != invert our value /or not equal to 
-  boolean val= intakeLimitSwitch.get();//false
+  boolean val= shooterLimitSwitch.get();//false
   boolean returnVal= !val;
-  return!intakeLimitSwitch.get();
+  return!shooterLimitSwitch.get();
 }
 }
   
