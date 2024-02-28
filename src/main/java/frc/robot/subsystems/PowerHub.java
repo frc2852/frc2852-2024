@@ -16,7 +16,7 @@ import frc.robot.util.DataTracker;
  * This subsystem includes methods for monitoring and controlling various aspects
  * of power distribution such as battery voltage, total current, and high beams control.
  */
-public class PowerHubSubsystem extends SubsystemBase {
+public class PowerHub extends SubsystemBase {
 
   private final PowerDistribution powerDistribution;
   private final int totalchannels;
@@ -29,7 +29,7 @@ public class PowerHubSubsystem extends SubsystemBase {
    * Initializes the power distribution module with specified CAN bus ID and module type,
    * and sets up the total number of channels available on the power distribution module.
    */
-  public PowerHubSubsystem() {
+  public PowerHub() {
     powerDistribution = new PowerDistribution(CanbusId.POWER_DISTRIBUTION_HUB, ModuleType.kRev);
     totalchannels = powerDistribution.getNumChannels();
   }

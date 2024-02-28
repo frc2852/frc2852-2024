@@ -27,12 +27,12 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CanbusId;
-import frc.robot.subsystems.vision.AprilTagDetectionSubsystem;
+import frc.robot.subsystems.vision.AprilTagDetection;
 import frc.robot.util.constants.SwerveConstants.SwerveDrive;
 import frc.robot.util.swerve.MAXSwerveModule;
 import frc.robot.util.swerve.SwerveUtils;
 
-public class DriveSubsystem extends SubsystemBase {
+public class Drive extends SubsystemBase {
 
   // Create MAXSwerveModules
   private final MAXSwerveModule frontLeft = new MAXSwerveModule(
@@ -91,10 +91,10 @@ public class DriveSubsystem extends SubsystemBase {
   );
 
   private final Field2d field = new Field2d();
-  private final AprilTagDetectionSubsystem aprilTagDetectionSubsystem;
+  private final AprilTagDetection aprilTagDetectionSubsystem;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(AprilTagDetectionSubsystem aprilTagDetectionSubsystem) {
+  public Drive(AprilTagDetection aprilTagDetectionSubsystem) {
     this.aprilTagDetectionSubsystem = aprilTagDetectionSubsystem;
     SmartDashboard.putData(field);
 

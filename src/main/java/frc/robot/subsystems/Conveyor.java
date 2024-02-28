@@ -21,7 +21,7 @@ import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
 import frc.robot.util.SparkFlex;
 
-public class ConveyorSubsystem extends SubsystemBase {
+public class Conveyor extends SubsystemBase {
 
   private final SparkFlex topConveyor;
   private final SparkPIDController topConveyorPID;
@@ -40,7 +40,7 @@ public class ConveyorSubsystem extends SubsystemBase {
 
   private final DigitalInput ampGamePieceReady;
 
-  public ConveyorSubsystem() {
+  public Conveyor() {
     // Initialize motor controllers
     topConveyor = new SparkFlex(CanbusId.CONVEYOR_TOP);
     topConveyor.setIdleMode(IdleMode.kCoast);

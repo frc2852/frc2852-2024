@@ -19,7 +19,7 @@ import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
 import frc.robot.util.SparkFlex;
 
-public class ClimbWheelSubsystem extends SubsystemBase {
+public class ClimbWheel extends SubsystemBase {
 
   private final SparkFlex climbWheelMotor;
   private final SparkPIDController climbWheelPID;
@@ -29,7 +29,7 @@ public class ClimbWheelSubsystem extends SubsystemBase {
   private boolean updateClimbWheelsPID = false;
   private double velocitySetpoint;
 
-  public ClimbWheelSubsystem() {
+  public ClimbWheel() {
     // Initialize climb wheel motor
     climbWheelMotor = new SparkFlex(CanbusId.CLIMB_WHEELS);
     climbWheelMotor.setIdleMode(IdleMode.kBrake);

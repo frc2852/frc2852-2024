@@ -11,12 +11,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
-/** Add your docs here. */
 public final class SwerveConstants {
-
   public static final class SwerveDrive {
     // Meters per second
-    public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
+    public static final double MAX_SPEED_METERS_PER_SECOND = 4.46;
 
     // Radians per second
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI;
@@ -50,7 +48,7 @@ public final class SwerveConstants {
     public static final double BACK_RIGHT_CHASSIS_ANGULAR_OFFSET = Math.PI / 2;
 
     public static final boolean GYRO_REVERSED = true;
-    
+
   }
 
   public static final class AutoConstants {

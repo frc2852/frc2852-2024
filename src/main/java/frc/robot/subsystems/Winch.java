@@ -19,7 +19,7 @@ import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
 import frc.robot.util.SparkFlex;
 
-public class WinchSubsystem extends SubsystemBase {
+public class Winch extends SubsystemBase {
 
   private final SparkFlex leftWinchMotor;
   private final SparkPIDController leftWinchMotorPID;
@@ -35,9 +35,8 @@ public class WinchSubsystem extends SubsystemBase {
 
   private boolean updateLeftWinchMotorPID = false;
   private boolean updateRightWinchMotorPID = false;
-  private double _posTest =0; //LIAM added for testing the climb so we can move up and down 
 
-  public WinchSubsystem() {
+  public Winch() {
     // Initialize motor controllers
     leftWinchMotor = new SparkFlex(CanbusId.WINCH_LEFT);
     leftWinchMotor.setIdleMode(IdleMode.kBrake);
@@ -117,21 +116,11 @@ public class WinchSubsystem extends SubsystemBase {
     }
   }
 
-  public void armsUp() {
-    //liam added these _postTest to test the climb
-    _posTest = _posTest - MotorSetpoint.WINCH_ARMS_DOWN_POSITION;
-    setWinchPosition(_posTest);
+  public void raiseRobot() {
+    setWinchPosition(MotorSetpoint.WINCH_ARMS_DOWN_POSITION);
   }
 
-  public void armsDown() {
-    _posTest =  _posTest +MotorSetpoint.WINCH_ARMS_DOWN_POSITION;
-    setWinchPosition(_posTest);
-    // LIAM-JOHN comment the above two lines of code and uncomment the below code
-    //setWinchPosition(MotorSetpoint.WINCH_ARMS_DOWN_POSITION);
-
-  }
-
-  public boolean areArmsAtPosition() {
+  public boolean isRobotAtPosition() {
     return Math.abs(leftWinchMotorEncoder.getPosition() - positionSetpoint) < MotorSetpoint.WINCH_ARMS_MARGIN_OF_ERROR;
   }
 

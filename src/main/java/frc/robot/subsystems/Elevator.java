@@ -19,7 +19,7 @@ import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
 import frc.robot.util.SparkFlex;
 
-public class ElevatorSubsystem extends SubsystemBase {
+public class Elevator extends SubsystemBase {
 
   private final SparkFlex motor;
   private final SparkPIDController motorPID;
@@ -30,7 +30,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private boolean updateMotorPID = false;
 
-  public ElevatorSubsystem() {
+  public Elevator() {
 
     // Initialize motor controllers
     motor = new SparkFlex(CanbusId.ELEVATOR);
@@ -91,6 +91,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     setElevatorPosition(MotorSetpoint.ELEVATOR_AMP_POSITION);
   }
 
+  public void climbPosition() {
+    setElevatorPosition(MotorSetpoint.ELEVATOR_CLIMB_POSITION);
+  }
+
   public void trapPosition() {
     setElevatorPosition(MotorSetpoint.ELEVATOR_TRAP_POSITION);
   }
@@ -99,12 +103,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     return Math.abs(motorEncoder.getPosition() - positionSetpoint) < MotorSetpoint.ELEVATOR_MARGIN_OF_ERROR;
   }
 
-  public void increasePosition(){
-    setElevatorPosition(positionSetpoint+1);
+  public void increasePosition() {
+    setElevatorPosition(positionSetpoint + 1);
   }
 
-  public void decreasePosition(){
-    setElevatorPosition(positionSetpoint-1);
+  public void decreasePosition() {
+    setElevatorPosition(positionSetpoint - 1);
   }
 
   private void setElevatorPosition(double position) {

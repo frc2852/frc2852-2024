@@ -72,6 +72,7 @@ public final class Constants {
     public static final int ELEVATOR_MARGIN_OF_ERROR = 2;
     public static final int ELEVATOR_DRIVE_POSITION = 0;
     public static final int ELEVATOR_AMP_POSITION = 70; // 220 60:1
+    public static final int ELEVATOR_CLIMB_POSITION = 100;
     public static final int ELEVATOR_TRAP_POSITION = 100;
 
     // Value is between 0 and 1. 0.1 = 10% output

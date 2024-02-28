@@ -32,7 +32,7 @@ import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
 import frc.robot.util.SparkFlex;
 
-public class IntakeSubsystem extends SubsystemBase {
+public class Intake extends SubsystemBase {
 
   private final SparkFlex topRollers = new SparkFlex(CanbusId.INTAKE_TOP_ROLLER);
   private final SparkPIDController topRollersPID = topRollers.getPIDController();
@@ -52,7 +52,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private final double INTAKE_STOPPED_VELOCITY = 0.0;
 
-  public IntakeSubsystem() {
+  public Intake() {
 
     // Set motor controller configurations
     topRollers.setIdleMode(IdleMode.kBrake);

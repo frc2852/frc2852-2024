@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.util.vision.CameraConfiguration;
 
 public final class VisionConstants {
-      public static class CameraTracking {
+  public static class CameraTracking {
 
     public static final CameraConfiguration APRIL_TAG_CAMERA_CONFIG = new CameraConfiguration("AprilTagCamera",
         new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0)));

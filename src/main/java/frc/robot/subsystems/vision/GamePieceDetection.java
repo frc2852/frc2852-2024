@@ -7,7 +7,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.PowerHubSubsystem;
+import frc.robot.subsystems.PowerHub;
 import frc.robot.util.vision.CameraConfiguration;
 
 /**
@@ -15,11 +15,11 @@ import frc.robot.util.vision.CameraConfiguration;
  * This subsystem integrates with a PhotonCamera to detect and track game
  * pieces.
  */
-public class GamePieceDetectionSubsystem extends SubsystemBase {
+public class GamePieceDetection extends SubsystemBase {
 
   private final PhotonCamera camera;
   private final CameraConfiguration cameraConfig;
-  private final PowerHubSubsystem powerHubSubsystem;
+  private final PowerHub powerHubSubsystem;
 
   private boolean trackingMode = false;
   private PhotonTrackedTarget currentTarget = null;
@@ -34,7 +34,7 @@ public class GamePieceDetectionSubsystem extends SubsystemBase {
    * @param ledSubsystem An instance of LEDSubsystem for LED control and feedback.
    * @throws IllegalArgumentException if the cameraConfig parameter is null, ensuring that valid configuration is provided.
    */
-  public GamePieceDetectionSubsystem(CameraConfiguration cameraConfig, PowerHubSubsystem ledSubsystem) {
+  public GamePieceDetection(CameraConfiguration cameraConfig, PowerHub ledSubsystem) {
     if (cameraConfig == null) {
       throw new IllegalArgumentException("Camera configuration cannot be null.");
     }
