@@ -130,11 +130,11 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void divertGamePiece() {
-    setShooterSpeed(MotorSetpoint.SHOOTER_DIVERT_VELOCITY,true);
+    setShooterSpeed(MotorSetpoint.SHOOTER_DIVERT_VELOCITY, true);
   }
 
   public void flyWheelFullSpeed() {
-    setShooterSpeed(MotorSetpoint.SHOOTER_VELOCITY,false);
+    setShooterSpeed(MotorSetpoint.SHOOTER_VELOCITY, false);
   }
 
   public void stopShooter() {

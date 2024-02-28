@@ -53,16 +53,14 @@ public final class Constants {
   }
 
   public static class DIOId {
-    public static final int HIGH_BEAM_LEFT_DIO_PORT = 4;
-    public static final int HIGH_BEAM_RIGHT_DIO_PORT = 5;
     public static final int INTAKE_PROXIMITY_SENSOR = 0;
-    public static final int CONVEYOR_PROXIMITY_SENSOR = 2;
     public static final int SHOOTER_PROXIMITY_SENSOR = 1;
+    public static final int CONVEYOR_PROXIMITY_SENSOR = 2;
   }
 
   // JOHN LOOK HERE //Hi Krystian!!! Hi guys!! - Liam <3
   public static class MotorSetpoint {
-    //make 5000
+    // make 5000
     public static final int INTAKE_VELOCITY = 5000;
     public static final int CONVEYOR_VELOCITY = 2000;
     public static final int CLIMB_WHEEL_VELOCITY = 500;
@@ -73,7 +71,7 @@ public final class Constants {
 
     public static final int ELEVATOR_MARGIN_OF_ERROR = 2;
     public static final int ELEVATOR_DRIVE_POSITION = 0;
-    public static final int ELEVATOR_AMP_POSITION = 70; //220 60:1
+    public static final int ELEVATOR_AMP_POSITION = 70; // 220 60:1
     public static final int ELEVATOR_TRAP_POSITION = 100;
 
     // Value is between 0 and 1. 0.1 = 10% output
