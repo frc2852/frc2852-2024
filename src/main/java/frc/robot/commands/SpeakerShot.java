@@ -24,7 +24,7 @@ public class SpeakerShot extends SequentialCommandGroup {
             new RunCommand(() -> shooterSubsystem.flyWheelFullSpeed(), shooterSubsystem),
             new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
             new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem))
-            .withTimeout(5),
+            .withTimeout(2),
 
         // TODO: I'm worried that the game piece is going to pass by this sensor either too fast or too slow. If its too fast it will never be detected and the motors will never stop
         // If its detected too soon the motors will cut power well shooting affecting the shot.

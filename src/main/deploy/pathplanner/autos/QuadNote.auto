@@ -1,0 +1,79 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.43,
+      "y": 5.59
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "SpeakerShot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "QuadNote_1_Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "QuadNote_1_Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpeakerShot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "QuadNote_2_Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "QuadNote_2_Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpeakerShot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "QuadNote_3_Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "QuadNote_3_Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpeakerShot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

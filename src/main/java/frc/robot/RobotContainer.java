@@ -15,10 +15,15 @@ import frc.robot.subsystems.Winch;
 import frc.robot.util.DataTracker;
 import frc.robot.util.constants.LogConstants;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -33,12 +38,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  * place that this configuration exists in the code.
  */
 public class RobotContainer {
+
   private final CommandXboxController driverController;
   private final CommandXboxController operatorController;
-  // private final CommandXboxController sysIdController;
 
-  // private final AprilTagDetectionSubsystem aprilTagDetectionSubsystem;
-  // private final GamePieceDetectionSubsystem gamePieceDetectionSubsystem;
+  private SendableChooser<Command> autoChooser;
 
   private final PowerHub powerHubSubsystem;
 
@@ -49,7 +53,7 @@ public class RobotContainer {
   private final Shooter shooterSubsystem;
   private final Winch winchSubsystem;
   private final ClimbWheel climbWheelSubsystem;
-  
+
   /**
    * Constructs the container for the robot. Subsystems and command mappings are
    * initialized here.
@@ -76,13 +80,8 @@ public class RobotContainer {
     powerHubSubsystem.highBeamsOff();
     powerHubSubsystem.reset();
 
-    // Initialize vision
-    // aprilTagDetectionSubsystem = new AprilTagDetectionSubsystem(CameraTracking.APRIL_TAG_CAMERA_CONFIG);
-    // gamePieceDetectionSubsystem = new GamePieceDetectionSubsystem(CameraTracking.GAME_PIECE_CAMERA_CONFIG, powerHubSubsystem);
-
     // Initialize subsystems
     driveSubsystem = new Drive(null);
-    // driveSubsystem = new DriveSubsystem(aprilTagDetectionSubsystem);
 
     conveyorSubsystem = new Conveyor();
     elevatorSubsystem = new Elevator();
@@ -92,9 +91,9 @@ public class RobotContainer {
     climbWheelSubsystem = new ClimbWheel();
 
     // Configuration
+    configurePathPlanner();
     configureDriverBindings();
     configureOperatorBindings();
-    configureSysIdBindings();
   }
 
   /**
@@ -190,12 +189,15 @@ public class RobotContainer {
                 new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
   }
 
-  private void configureSysIdBindings() {
-    // Intake
-    // sysIdController.a().whileTrue(intakeSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    // sysIdController.b().whileTrue(intakeSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    // sysIdController.x().whileTrue(intakeSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    // sysIdController.y().whileTrue(intakeSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+  private void configurePathPlanner() {
+    // Register commands
+    NamedCommands.registerCommand("ToggleIntake", new ToggleIntake(intakeSubsystem));
+    NamedCommands.registerCommand("AmpNoteDischarge", new AmpNoteDischarge(intakeSubsystem, conveyorSubsystem, shooterSubsystem, elevatorSubsystem));
+    NamedCommands.registerCommand("SpeakerShot", new SpeakerShot(intakeSubsystem, conveyorSubsystem, shooterSubsystem));
+
+    // Build an auto chooser
+    autoChooser = AutoBuilder.buildAutoChooser("QuadNote");
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**
@@ -204,44 +206,6 @@ public class RobotContainer {
    * @return The autonomous command to run.`
    */
   public Command getAutonomousCommand() {
-    return null;
-    // // Create config for trajectory
-    // TrajectoryConfig config = new TrajectoryConfig(
-    // AutoConstants.MAX_SPEED_METERS_PER_SECOND,
-    // AutoConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED)
-    // // Add kinematics to ensure max speed is actually obeyed
-    // .setKinematics(SwerveDrive.DRIVE_KINEMATICS);
-
-    // // An example trajectory to follow. All units in meters.
-    // Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-    // // Start at the origin facing the +X direction
-    // new Pose2d(0, 0, new Rotation2d(0)),
-    // // Pass through these two interior waypoints, making an 's' curve path
-    // List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-    // // End 3 meters straight ahead of where we started, facing forward
-    // new Pose2d(3, 0, new Rotation2d(0)),
-    // config);
-
-    // var thetaController = new ProfiledPIDController(
-    // AutoConstants.P_THETA_CONTROLLER, 0, 0, AutoConstants.THETA_CONTROLLER_CONSTRAINTS);
-    // thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    // SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-    // exampleTrajectory,
-    // driveSubsystem::getPose, // Functional interface to feed supplier
-    // SwerveDrive.DRIVE_KINEMATICS,
-
-    // // Position controllers
-    // new PIDController(AutoConstants.PX_CONTROLLER, 0, 0),
-    // new PIDController(AutoConstants.PY_CONTROLLER, 0, 0),
-    // thetaController,
-    // driveSubsystem::setModuleStates,
-    // driveSubsystem);
-
-    // // Reset odometry to the starting pose of the trajectory.
-    // driveSubsystem.resetOdometry(exampleTrajectory.getInitialPose());
-
-    // // Run path following command, then stop at the end.
-    // return swerveControllerCommand.andThen(() -> driveSubsystem.drive(0, 0, 0, false, false));
+    return autoChooser.getSelected();
   }
 }
