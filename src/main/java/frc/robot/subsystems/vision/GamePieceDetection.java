@@ -55,13 +55,6 @@ public class GamePieceDetection extends SubsystemBase {
    */
   private PhotonCamera initializePhotonVisionCamera() {
     PhotonCamera newCamera = new PhotonCamera(cameraConfig.getCameraName());
-
-    // Check if the newCamera object is not null and is connected, otherwise report error
-    if (newCamera == null || !newCamera.isConnected()) {
-      DriverStation.reportError("April Tag Camera connection failed, camera initialization aborted.", false);
-      return null;
-    }
-
     newCamera.setDriverMode(false);
     newCamera.setLED(VisionLEDMode.kOff);
     return newCamera;
@@ -77,11 +70,14 @@ public class GamePieceDetection extends SubsystemBase {
    */
   @Override
   public void periodic() {
+    if(!DriverStation.isEnabled())
+    return;
+
     // Check if the camera is not connected and report a warning
-    if (camera != null && !camera.isConnected()) {
+    if (camera == null || !camera.isConnected()) {
       DriverStation.reportWarning("Camera is not connected. Cannot update game piece visibility.", false);
-      currentTarget = null;
       SmartDashboard.putBoolean("Game Piece Visible", false);
+      currentTarget = null;
       return;
     }
 

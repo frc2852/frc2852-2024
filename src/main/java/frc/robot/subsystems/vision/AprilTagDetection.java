@@ -1,8 +1,6 @@
 package frc.robot.subsystems.vision;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
@@ -10,16 +8,12 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.common.hardware.VisionLEDMode;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.constants.VisionConstants.CameraTracking;
 import frc.robot.util.vision.CameraConfiguration;
 
 /**
@@ -31,7 +25,6 @@ public class AprilTagDetection extends SubsystemBase {
 
   private final PhotonCamera camera;
   private final CameraConfiguration cameraConfig;
-  private List<PhotonTrackedTarget> visibleTags = Collections.emptyList();
 
   private AprilTagFieldLayout aprilTagFieldLayout;
   private PhotonPoseEstimator photonPoseEstimator;
@@ -66,13 +59,6 @@ public class AprilTagDetection extends SubsystemBase {
    */
   private PhotonCamera initializePhotonVisionCamera() {
     PhotonCamera newCamera = new PhotonCamera(cameraConfig.getCameraName());
-
-    // Check if the newCamera object is not null and is connected, otherwise report error
-    if (newCamera == null || !newCamera.isConnected()) {
-      DriverStation.reportError("April Tag Camera connection failed, camera initialization aborted.", false);
-      return null;
-    }
-
     newCamera.setDriverMode(false);
     newCamera.setLED(VisionLEDMode.kOff);
     return newCamera;
@@ -107,57 +93,13 @@ public class AprilTagDetection extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    // Check if the camera is connected before attempting to process the data.
-    if (camera != null && camera.isConnected()) {
-      // Retrieve the latest photon pipeline result from the camera.
-      PhotonPipelineResult photonPipelineResult = camera.getLatestResult();
-      visibleTags = photonPipelineResult.targets;
+    if (!DriverStation.isEnabled())
+      return;
 
-      // Update the SmartDashboard with the latest information.
-      updateSmartDashboard();
-    } else {
-      // Report a warning to the DriverStation if the camera is not connected.
+    // Check if the camera is connected before attempting to process the data.
+    if (camera == null || !camera.isConnected()) {
       DriverStation.reportWarning("Camera is not connected. Cannot update AprilTags.", false);
     }
-  }
-
-  /**
-   * Updates the SmartDashboard with the visibility status of each tag.
-   * Initially, all tags are set to not visible. Then, for each visible tag detected,
-   * the corresponding SmartDashboard entry is updated to reflect its visibility.
-   */
-  private void updateSmartDashboard() {
-    // Initialize all tags as not visible on the SmartDashboard.
-    for (int i = 0; i < CameraTracking.TOTAL_TAGS; i++) {
-      SmartDashboard.putBoolean("Tag " + i + " Visible", false);
-    }
-
-    // Update the SmartDashboard for each visible tag.
-    for (PhotonTrackedTarget target : visibleTags) {
-      int tagId = target.getFiducialId();
-      // Ensure the tag ID is within the valid range before updating.
-      if (tagId >= 0 && tagId < CameraTracking.TOTAL_TAGS) {
-        SmartDashboard.putBoolean("Tag " + tagId + " Visible", true);
-      }
-    }
-  }
-
-  /**
-   * Returns a list of currently visible PhotonTrackedTargets.
-   *
-   * @return A List of PhotonTrackedTarget objects that are currently visible.
-   */
-  public List<PhotonTrackedTarget> getVisibleTags() {
-    return visibleTags;
-  }
-
-  /**
-   * Checks if any tags are currently visible.
-   *
-   * @return True if there are visible tags, false otherwise.
-   */
-  public boolean areTagsVisible() {
-    return !visibleTags.isEmpty();
   }
 
   /**
