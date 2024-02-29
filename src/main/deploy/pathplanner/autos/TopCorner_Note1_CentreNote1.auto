@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.72,
+      "y": 6.72
+    },
+    "rotation": 59.81
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "SpeakerShot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TopCorner_Note1_Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TopCorner_Note1_Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpeakerShot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TopCorner_CentreNote_Pickup"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

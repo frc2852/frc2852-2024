@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "QuadNote_1_Pickup"
+            "pathName": "CentrePosition_Note1_Pickup"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "QuadNote_1_Score"
+            "pathName": "CentrePosition_Note1_Score"
           }
         },
         {
@@ -38,13 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "QuadNote_2_Pickup"
+            "pathName": "CentrePosition_Note2_Pickup"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "QuadNote_2_Score"
+            "pathName": "CentrePosition_Note2_Score"
           }
         },
         {
@@ -56,13 +56,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "QuadNote_3_Pickup"
+            "pathName": "CentrePosition_Note3_Pickup"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "QuadNote_3_Score"
+            "pathName": "CentrePosition_Note3_Score"
           }
         },
         {
