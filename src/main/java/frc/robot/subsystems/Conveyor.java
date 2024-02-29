@@ -52,7 +52,7 @@ public class Conveyor extends SubsystemBase {
     bottomConveyor.setInverted(true);
 
     // Initialize proximity sensors
-    ampGamePieceReady = new DigitalInput(DIOId.CONVEYOR_PROXIMITY_SENSOR);
+    ampGamePieceReady = new DigitalInput(DIOId.CONVEYOR_BEAM_BREAK);
 
     // Initialize PID controllers
     topConveyorPID = topConveyor.getPIDController();

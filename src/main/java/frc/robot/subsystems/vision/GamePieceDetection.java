@@ -2,11 +2,15 @@ package frc.robot.subsystems.vision;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.common.hardware.VisionLEDMode;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.PowerHub;
 import frc.robot.util.vision.CameraConfiguration;
 
@@ -19,7 +23,8 @@ public class GamePieceDetection extends SubsystemBase {
 
   private final PhotonCamera camera;
   private final CameraConfiguration cameraConfig;
-  private final PowerHub powerHubSubsystem;
+  private final PowerHub powerHub;
+  private final Drive drive;
 
   private boolean trackingMode = false;
   private PhotonTrackedTarget currentTarget = null;
@@ -31,15 +36,16 @@ public class GamePieceDetection extends SubsystemBase {
    * an LED subsystem for visual feedback or signaling.
    *
    * @param cameraConfig The configuration settings for the camera, essential for initializing the camera.
-   * @param ledSubsystem An instance of LEDSubsystem for LED control and feedback.
+   * @param powerHub     An instance of PowerHub for LED control and feedback.
    * @throws IllegalArgumentException if the cameraConfig parameter is null, ensuring that valid configuration is provided.
    */
-  public GamePieceDetection(CameraConfiguration cameraConfig, PowerHub ledSubsystem) {
+  public GamePieceDetection(CameraConfiguration cameraConfig, PowerHub powerHub, Drive drive) {
     if (cameraConfig == null) {
       throw new IllegalArgumentException("Camera configuration cannot be null.");
     }
 
-    this.powerHubSubsystem = ledSubsystem;
+    this.powerHub = powerHub;
+    this.drive = drive;
     this.cameraConfig = cameraConfig;
     this.camera = initializePhotonVisionCamera();
   }
@@ -54,7 +60,7 @@ public class GamePieceDetection extends SubsystemBase {
    * @return The initialized PhotonCamera if successful, or null if the camera is not connected.
    */
   private PhotonCamera initializePhotonVisionCamera() {
-    PhotonCamera newCamera = new PhotonCamera(cameraConfig.getCameraName());
+    PhotonCamera newCamera = new PhotonCamera(cameraConfig.getName());
     newCamera.setDriverMode(false);
     newCamera.setLED(VisionLEDMode.kOff);
     return newCamera;
@@ -70,8 +76,8 @@ public class GamePieceDetection extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    if(!DriverStation.isEnabled())
-    return;
+    if (!DriverStation.isEnabled())
+      return;
 
     // Check if the camera is not connected and report a warning
     if (camera == null || !camera.isConnected()) {
@@ -104,7 +110,7 @@ public class GamePieceDetection extends SubsystemBase {
    */
   public void enableTrackingMode() {
     trackingMode = true;
-    powerHubSubsystem.highBeamsOn();
+    powerHub.highBeamsOn();
   }
 
   /**
@@ -116,7 +122,7 @@ public class GamePieceDetection extends SubsystemBase {
   public void disableTrackingMode() {
     currentTarget = null;
     trackingMode = false;
-    powerHubSubsystem.highBeamsOff();
+    powerHub.highBeamsOff();
     SmartDashboard.putBoolean("Game Piece Visible", false);
   }
 
@@ -147,5 +153,29 @@ public class GamePieceDetection extends SubsystemBase {
    */
   public double getTargetArea() {
     return currentTarget != null ? currentTarget.getArea() : 0.0;
+  }
+
+  public void alignAndPickUp() {
+    PhotonPipelineResult result = camera.getLatestResult();
+    if (result.hasTargets()) {
+      // Calculate the distance and angle to the target
+      double targetPitch = result.getBestTarget().getPitch();
+
+      // In metres
+      double noteHeight = 0.0254; // 1 inch
+      double distance = (noteHeight - cameraConfig.getHeight()) / Math.tan(Math.toRadians(targetPitch + cameraConfig.getPitch()));
+      double angle = Math.toRadians(result.getBestTarget().getYaw());
+
+      // Calculate the robot-relative movement needed to align with the target
+      Translation2d movement = new Translation2d(distance * Math.cos(angle), distance * Math.sin(angle));
+
+      // Drive the robot towards the target
+      drive.driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(movement.getX(), movement.getY(), 0.0, drive.getRotation()));
+
+      // You can add additional logic to stop the robot and activate the intake mechanism when close enough
+    } else {
+      // If no targets are found, stop the robot
+      drive.driveRobotRelative(new ChassisSpeeds(0.0, 0.0, 0.0));
+    }
   }
 }

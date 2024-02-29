@@ -74,7 +74,6 @@ public class RobotContainer {
     // Initialize controllers with distinct ports
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OperatorConstant.OPERATOR_CONTROLLER_PORT);
-    // sysIdController = new CommandXboxController(OperatorConstant.SYSID_CONTROLLER_PORT);
 
     // Initialize helpers
     powerHubSubsystem = new PowerHub();
@@ -197,7 +196,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("SpeakerShot", new SpeakerShot(intakeSubsystem, conveyorSubsystem, shooterSubsystem));
 
     // Build an auto chooser
-    autoChooser = AutoBuilder.buildAutoChooser("QuadNote");
+    autoChooser = AutoBuilder.buildAutoChooser("SpeakerCentre_Quad");
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 

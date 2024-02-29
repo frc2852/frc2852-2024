@@ -58,7 +58,7 @@ public class AprilTagDetection extends SubsystemBase {
    * @return The initialized PhotonCamera if successful, or null if the camera is not connected.
    */
   private PhotonCamera initializePhotonVisionCamera() {
-    PhotonCamera newCamera = new PhotonCamera(cameraConfig.getCameraName());
+    PhotonCamera newCamera = new PhotonCamera(cameraConfig.getName());
     newCamera.setDriverMode(false);
     newCamera.setLED(VisionLEDMode.kOff);
     return newCamera;
@@ -79,7 +79,7 @@ public class AprilTagDetection extends SubsystemBase {
 
       // Initialize the pose estimator with the loaded field layout, strategy, camera, and camera position.
       photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, poseStrategy, camera,
-          cameraConfig.getCameraPosition());
+          cameraConfig.getPosition());
     } catch (IOException e) {
       // Report the error to the DriverStation without halting the program.
       DriverStation.reportError("Failed to load AprilTag field layout.", false);

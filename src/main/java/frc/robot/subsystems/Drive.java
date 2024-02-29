@@ -109,7 +109,7 @@ public class Drive extends SubsystemBase {
     // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
         this::getPose, // Robot pose supplier
-        this::resetPoseEstimator, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::resetPoseEstimator, //resetOdometry??? // Method to reset odometry (will be called if your auto has a starting pose)
         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
@@ -123,7 +123,6 @@ public class Drive extends SubsystemBase {
           // Boolean supplier that controls when the path will be mirrored for the red alliance
           // This will flip the path being followed to the red side of the field.
           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
           Optional<Alliance> alliance = DriverStation.getAlliance();
           if (alliance.isPresent()) {
             return alliance.get() == DriverStation.Alliance.Red;
@@ -176,8 +175,8 @@ public class Drive extends SubsystemBase {
    */
   public Pose2d getPose() {
     // TODO: I believe this should be replaced with the pose estimator
-    return odometry.getPoseMeters();
-    // return poseEstimator.getEstimatedPosition();
+    // return odometry.getPoseMeters();
+    return poseEstimator.getEstimatedPosition();
   }
 
   /**

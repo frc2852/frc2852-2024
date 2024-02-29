@@ -54,9 +54,9 @@ public final class Constants {
   }
 
   public static class DIOId {
-    public static final int INTAKE_PROXIMITY_SENSOR = 0;
-    public static final int SHOOTER_PROXIMITY_SENSOR = 1;
-    public static final int CONVEYOR_PROXIMITY_SENSOR = 2;
+    public static final int INTAKE_BEAM_BREAK = 0;
+    public static final int SHOOTER_BEAM_BREAK = 1;
+    public static final int CONVEYOR_BEAM_BREAK = 2;
   }
 
   // JOHN LOOK HERE //Hi Krystian!!! Hi guys!! - Liam <3
@@ -85,5 +85,11 @@ public final class Constants {
 
     // Value is between 0 and 1. 0.1 = 10% output
     public static final double WINCH_MAX_OUPUT = 0.1;
+  }
+
+  public static class LEDConstants {
+    // I2C Addresses for the Arduino controllers
+    public static final int ARDUINO_LEFT_ADDRESS = 0x01;
+    public static final int ARDUINO_RIGHT_ADDRESS = 0x02;
   }
 }
