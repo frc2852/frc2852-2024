@@ -3,52 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.43,
-        "y": 5.59
+        "x": 2.44,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4701186545230231,
-        "y": 4.722232301607461
+        "x": 2.21,
+        "y": 5.55
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Note2"
     },
     {
       "anchor": {
-        "x": 2.4300591458325775,
-        "y": 4.097935338727821
+        "x": 1.43,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 1.4300591458325775,
-        "y": 4.097935338727821
+        "x": 1.7700000000000002,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SpeakerCentre"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "Intake",
-      "waypointRelativePos": 0.55,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "ToggleIntake"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.46,
     "maxAcceleration": 4.46,

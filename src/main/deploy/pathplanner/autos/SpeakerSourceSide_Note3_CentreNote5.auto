@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.72,
-      "y": 6.72
+      "x": 0.71,
+      "y": 4.38
     },
-    "rotation": 59.81
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TopCorner_Note1_Pickup"
+            "pathName": "SpeakerSourceSide_Note3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "TopCorner_Note1_Score"
+            "pathName": "Note3_SpeakerSourceSide"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TopCorner_CentreNote_Pickup"
+            "pathName": "SpeakerSourceSide_CentreNote5"
           }
         }
       ]

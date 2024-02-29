@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 1.43,
-      "y": 5.59
+      "y": 5.55
     },
     "rotation": 0.0
   },
@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CentrePosition_Note2_Pickup"
+            "pathName": "SpeakerCentre_Note3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CentrePosition_Note2_Score"
+            "pathName": "Note3_SpeakerCentre"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CentrePosition_CentreNote2_Pickup"
+            "pathName": "SpeakerCentre_Note5"
           }
         }
       ]

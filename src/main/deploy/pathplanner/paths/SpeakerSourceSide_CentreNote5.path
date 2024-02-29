@@ -3,53 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.43,
-        "y": 5.59
+        "x": 0.7115642802684418,
+        "y": 4.379875902610674
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5372092449948804,
-        "y": 6.1319426625085995
+        "x": 1.5305344896404078,
+        "y": 0.869044595232047
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SpeakerSourceSide"
     },
     {
       "anchor": {
-        "x": 2.443484886969774,
-        "y": 6.977756812656482
+        "x": 7.8,
+        "y": 0.7683515367030734
       },
       "prevControl": {
-        "x": 1.87289088863892,
-        "y": 6.977756812656482
+        "x": 6.8,
+        "y": 0.7683515367030731
       },
       "nextControl": null,
-      "isLocked": true,
-      "linkedName": null
+      "isLocked": false,
+      "linkedName": "Note5"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 0,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 0,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.25,
+      "waypointRelativePos": 0.45,
       "command": {
         "type": "parallel",
         "data": {
@@ -66,8 +50,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.46,
-    "maxAcceleration": 4.46,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -79,7 +63,7 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": -60.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

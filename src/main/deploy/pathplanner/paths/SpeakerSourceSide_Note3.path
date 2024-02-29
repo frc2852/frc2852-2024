@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.72,
-        "y": 6.72
+        "x": 0.7115642802684418,
+        "y": 4.379875902610674
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9534453354620995,
-        "y": 7.232845894263217
+        "x": 1.7115642802684468,
+        "y": 4.379875902610674
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SpeakerSourceSide"
     },
     {
       "anchor": {
-        "x": 7.800355600711201,
-        "y": 7.434232011321165
+        "x": 2.44,
+        "y": 4.1
       },
       "prevControl": {
-        "x": 6.800355600711201,
-        "y": 7.434232011321165
+        "x": 1.44,
+        "y": 4.1
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Note3"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.6,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "parallel",
         "data": {
@@ -63,7 +63,7 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 59.81,
+    "rotation": -60.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

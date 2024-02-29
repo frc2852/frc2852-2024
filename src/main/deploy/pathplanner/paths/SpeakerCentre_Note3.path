@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 1.43,
-        "y": 5.59
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.53,
-        "y": 5.59
+        "x": 1.4701186545230231,
+        "y": 4.682232301607461
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SpeakerCentre"
     },
     {
       "anchor": {
-        "x": 2.443484886969774,
-        "y": 5.59
+        "x": 2.44,
+        "y": 4.1
       },
       "prevControl": {
-        "x": 1.5134848869697737,
-        "y": 5.59
+        "x": 1.44,
+        "y": 4.1
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Note3"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0.55,
       "command": {
         "type": "parallel",
         "data": {

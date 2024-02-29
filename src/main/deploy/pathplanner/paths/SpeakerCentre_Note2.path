@@ -4,44 +4,28 @@
     {
       "anchor": {
         "x": 1.43,
-        "y": 5.59
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.9270292826299937,
-        "y": 5.917123262817954
+        "x": 1.53,
+        "y": 5.55
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SpeakerCentre"
     },
     {
       "anchor": {
-        "x": 5.867048876954897,
-        "y": 6.306469755796655
+        "x": 2.44,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 5.328862390517418,
-        "y": 6.2870172321904825
-      },
-      "nextControl": {
-        "x": 6.424217134148554,
-        "y": 6.326608367502449
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.800355600711201,
-        "y": 5.756014369171595
-      },
-      "prevControl": {
-        "x": 6.927682426793425,
-        "y": 5.769440110308792
+        "x": 1.5099999999999998,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Note2"
     }
   ],
   "rotationTargets": [],
@@ -49,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 1.05,
+      "waypointRelativePos": 0.1,
       "command": {
         "type": "parallel",
         "data": {
@@ -66,8 +50,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.46,
+    "maxAcceleration": 4.46,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
