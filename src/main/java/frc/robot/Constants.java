@@ -27,6 +27,7 @@ public final class Constants {
     public static final int SYSID_CONTROLLER_PORT = 2;
 
     public static final double DEAD_BAND = 0.15;
+    public static final double EXPONENTIAL_RESPONSE = 2;
   }
 
   public static class CanbusId {

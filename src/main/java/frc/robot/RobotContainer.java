@@ -14,6 +14,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Winch;
 import frc.robot.util.DataTracker;
 import frc.robot.util.constants.LogConstants;
+import frc.robot.util.swerve.SwerveUtils;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -109,9 +110,9 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> driveSubsystem.drive(
-                -MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND),
-                -MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND),
-                -MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND),
+                -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND)),
+                -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND)),
+                -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND)),
                 true, true),
             driveSubsystem));
   }
