@@ -21,7 +21,7 @@ public class CameraConfiguration {
     return position;
   }
 
-    public double getHeight() {
+  public double getHeight() {
     return position.getY();
   }
 

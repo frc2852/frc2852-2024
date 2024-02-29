@@ -109,7 +109,7 @@ public class Drive extends SubsystemBase {
     // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
         this::getPose, // Robot pose supplier
-        this::resetPoseEstimator, //resetOdometry??? // Method to reset odometry (will be called if your auto has a starting pose)
+        this::resetPoseEstimator, // resetOdometry??? // Method to reset odometry (will be called if your auto has a starting pose)
         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
@@ -174,7 +174,7 @@ public class Drive extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    // TODO: I believe this should be replaced with the pose estimator
+    // TODO: Should this be odometry or poseEstimator?
     // return odometry.getPoseMeters();
     return poseEstimator.getEstimatedPosition();
   }

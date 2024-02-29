@@ -39,7 +39,6 @@ public class Intake extends SubsystemBase {
   private final double INTAKE_STOPPED_VELOCITY = 0.0;
 
   public Intake() {
-
     // Set motor controller configurations
     topRollers.setIdleMode(IdleMode.kBrake);
     topRollers.setInverted(false);
