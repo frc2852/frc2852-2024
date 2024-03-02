@@ -89,7 +89,7 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (isGamePieceDetected()) {
+    if (!hasGamePieceBeenShot && isGamePieceDetected()) {
       hasGamePieceBeenShot = true;
     }
 
@@ -144,11 +144,14 @@ public class Shooter extends SubsystemBase {
     bottomRoller.stopMotor();
   }
 
+  public void resetState() {
+    hasGamePieceBeenShot = false;
+  }
+
   public boolean isShooterAtSpeed() {
     double topRollerVelocity = topRollerEncoder.getVelocity();
     double bottomRollerVelocity = bottomRollerEncoder.getVelocity();
     return (Math.abs(topRollerVelocity - velocitySetpoint) < MotorSetpoint.SHOOTER_MARGIN_OF_ERROR && Math.abs(bottomRollerVelocity - velocitySetpoint) < MotorSetpoint.SHOOTER_MARGIN_OF_ERROR);
-
   }
 
   public boolean hasGamePieceBeenShot() {

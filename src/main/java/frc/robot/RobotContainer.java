@@ -122,10 +122,6 @@ public class RobotContainer {
    */
   private void configureOperatorBindings() {
 
-    // Set elevator to drive position, really shouldn't be used unless the operator messed up and pressed the climb button
-    operatorController.povDown().onTrue(new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
-        .until(() -> elevatorSubsystem.isElevatorAtPosition()));
-
     operatorController.povLeft().onTrue(new RunCommand(() -> elevatorSubsystem.decreasePosition(), elevatorSubsystem)
         .until(() -> elevatorSubsystem.isElevatorAtPosition()));
 
@@ -141,7 +137,7 @@ public class RobotContainer {
     // Speaker note shooting
     operatorController.y().onTrue(new SpeakerShot(intakeSubsystem, conveyorSubsystem, shooterSubsystem));
 
-    // Lift arms up and run conveyor until game piece is ready
+      // Lift arms up and run conveyor until game piece is ready
     operatorController.leftBumper().onTrue(
         new ParallelCommandGroup(
             new SequentialCommandGroup(
