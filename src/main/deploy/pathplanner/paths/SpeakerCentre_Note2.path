@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.43,
-        "y": 5.55
+        "x": 1.3682311551705513,
+        "y": 5.530762063751299
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.53,
-        "y": 5.55
+        "x": 1.4682311551705518,
+        "y": 5.530762063751299
       },
       "isLocked": false,
       "linkedName": "SpeakerCentre"

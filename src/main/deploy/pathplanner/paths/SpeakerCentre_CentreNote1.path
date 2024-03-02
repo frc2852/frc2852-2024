@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.43,
-        "y": 5.55
+        "x": 1.3682311551705513,
+        "y": 5.530762063751299
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4231285605428352,
-        "y": 7.481499328712943
+        "x": 1.361359715713387,
+        "y": 7.462261392464242
       },
       "isLocked": false,
       "linkedName": "SpeakerCentre"
@@ -57,13 +57,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 180.0,
     "velocity": 0
   },
   "useDefaultConstraints": true
