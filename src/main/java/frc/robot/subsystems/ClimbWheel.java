@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CanbusId;
+import frc.robot.Constants.Delay;
 import frc.robot.Constants.MotorSetpoint;
 import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
@@ -31,7 +32,7 @@ public class ClimbWheel extends SubsystemBase {
 
   public ClimbWheel() {
     // Initialize climb wheel motor
-    climbWheelMotor = new SparkFlex(CanbusId.CLIMB_WHEELS);
+    climbWheelMotor = new SparkFlex(CanbusId.CLIMB_WHEELS, Delay.CLIMB_WHEELS);
     climbWheelMotor.setIdleMode(IdleMode.kBrake);
     climbWheelMotor.setInverted(false);
 

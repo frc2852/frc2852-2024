@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CanbusId;
 import frc.robot.Constants.DIOId;
+import frc.robot.Constants.Delay;
 import frc.robot.Constants.MotorSetpoint;
 import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
@@ -42,12 +43,12 @@ public class Conveyor extends SubsystemBase {
 
   public Conveyor() {
     // Initialize motor controllers
-    topConveyor = new SparkFlex(CanbusId.CONVEYOR_TOP);
+    topConveyor = new SparkFlex(CanbusId.CONVEYOR_TOP, Delay.CONVEYOR);
     topConveyor.setIdleMode(IdleMode.kCoast);
     // changed from false to true
     topConveyor.setInverted(false);
 
-    bottomConveyor = new SparkFlex(CanbusId.CONVEYOR_BOTTOM);
+    bottomConveyor = new SparkFlex(CanbusId.CONVEYOR_BOTTOM, Delay.CONVEYOR);
     bottomConveyor.setIdleMode(IdleMode.kCoast);
     bottomConveyor.setInverted(true);
 

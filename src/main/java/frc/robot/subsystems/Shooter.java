@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CanbusId;
 import frc.robot.Constants.DIOId;
+import frc.robot.Constants.Delay;
 import frc.robot.Constants.MotorSetpoint;
 import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
@@ -45,11 +46,11 @@ public class Shooter extends SubsystemBase {
   public Shooter() {
 
     // Initialize motor controllers
-    topRoller = new SparkFlex(CanbusId.SHOOTER_TOP_ROLLER);
+    topRoller = new SparkFlex(CanbusId.SHOOTER_TOP_ROLLER, Delay.SHOOTER);
     topRoller.setIdleMode(IdleMode.kCoast);
     topRoller.setInverted(false);
 
-    bottomRoller = new SparkFlex(CanbusId.SHOOTER_BOTTOM_ROLLER);
+    bottomRoller = new SparkFlex(CanbusId.SHOOTER_BOTTOM_ROLLER, Delay.SHOOTER);
     bottomRoller.setIdleMode(IdleMode.kCoast);
     bottomRoller.setInverted(true);
 

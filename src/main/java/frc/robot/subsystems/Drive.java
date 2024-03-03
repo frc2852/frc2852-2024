@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CanbusId;
-import frc.robot.subsystems.vision.AprilTagDetection;
 import frc.robot.util.constants.SwerveConstants.SwerveDrive;
 import frc.robot.util.constants.SwerveConstants.SwerveModule;
 import frc.robot.util.swerve.MAXSwerveModule;
@@ -97,13 +96,11 @@ public class Drive extends SubsystemBase {
   );
 
   private final Field2d field = new Field2d();
-  private final AprilTagDetection aprilTagDetectionSubsystem;
 
   /** Creates a new DriveSubsystem. */
-  public Drive(AprilTagDetection aprilTagDetectionSubsystem) {
+  public Drive() {
     zeroHeading();
 
-    this.aprilTagDetectionSubsystem = aprilTagDetectionSubsystem;
     SmartDashboard.putData(field);
 
     // Configure AutoBuilder last
@@ -153,16 +150,6 @@ public class Drive extends SubsystemBase {
             rearLeft.getPosition(),
             rearRight.getPosition()
         });
-
-    if (aprilTagDetectionSubsystem != null) {
-      Optional<EstimatedRobotPose> visionPose = aprilTagDetectionSubsystem.getEstimatedGlobalPose(getPose());
-      if (visionPose.isPresent()) {
-        double currentTimeStamp = Timer.getFPGATimestamp();
-        EstimatedRobotPose estimatedRobotPose3d = visionPose.get();
-        Pose2d pose2d = estimatedRobotPose3d.estimatedPose.toPose2d();
-        poseEstimator.addVisionMeasurement(pose2d, currentTimeStamp);
-      }
-    }
 
     Pose2d pose = poseEstimator.getEstimatedPosition();
     field.setRobotPose(pose);

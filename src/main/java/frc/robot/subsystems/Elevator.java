@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CanbusId;
+import frc.robot.Constants.Delay;
 import frc.robot.Constants.MotorSetpoint;
 import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
@@ -33,7 +34,7 @@ public class Elevator extends SubsystemBase {
   public Elevator() {
 
     // Initialize motor controllers
-    motor = new SparkFlex(CanbusId.ELEVATOR);
+    motor = new SparkFlex(CanbusId.ELEVATOR, Delay.ELEVATOR);
     motor.setIdleMode(IdleMode.kBrake);
     motor.setInverted(false);
 

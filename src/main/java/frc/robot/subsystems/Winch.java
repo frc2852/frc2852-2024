@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CanbusId;
+import frc.robot.Constants.Delay;
 import frc.robot.Constants.MotorSetpoint;
 import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
@@ -38,11 +39,11 @@ public class Winch extends SubsystemBase {
 
   public Winch() {
     // Initialize motor controllers
-    leftWinchMotor = new SparkFlex(CanbusId.WINCH_LEFT);
+    leftWinchMotor = new SparkFlex(CanbusId.WINCH_LEFT, Delay.WINCH);
     leftWinchMotor.setIdleMode(IdleMode.kBrake);
     leftWinchMotor.setInverted(false);
 
-    rightWinchMotor = new SparkFlex(CanbusId.WINCH_RIGHT);
+    rightWinchMotor = new SparkFlex(CanbusId.WINCH_RIGHT, Delay.WINCH);
     rightWinchMotor.setIdleMode(IdleMode.kBrake);
     rightWinchMotor.setInverted(false);
 

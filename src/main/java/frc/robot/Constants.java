@@ -53,6 +53,19 @@ public final class Constants {
     public static final int CLIMB_WHEELS = 19;
   }
 
+  public static class Delay {
+    public static final double FRONT_LEFT = 0;
+    public static final double FRONT_RIGHT = 0;
+    public static final double RIGHT_LEFT = 0;
+    public static final double RIGHT_RIGHT = 0;
+    public static final double INTAKE = 0.1;
+    public static final double SHOOTER = 0.2;
+    public static final double CONVEYOR = 0.3;
+    public static final double WINCH = 0.4;
+    public static final double ELEVATOR = 0.5;
+    public static final double CLIMB_WHEELS = 0.6;
+  }
+
   public static class DIOId {
     public static final int INTAKE_BEAM_BREAK = 0;
     public static final int SHOOTER_BEAM_BREAK = 1;

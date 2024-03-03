@@ -4,7 +4,6 @@ import frc.robot.Constants.OperatorConstant;
 import frc.robot.commands.AmpNoteDischarge;
 import frc.robot.commands.SpeakerShot;
 import frc.robot.commands.ToggleIntake;
-import frc.robot.subsystems.PowerHub;
 import frc.robot.subsystems.ClimbWheel;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Drive;
@@ -45,8 +44,6 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
 
-  private final PowerHub powerHubSubsystem;
-
   private final Drive driveSubsystem;
   private final Conveyor conveyorSubsystem;
   private final Elevator elevatorSubsystem;
@@ -75,14 +72,8 @@ public class RobotContainer {
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OperatorConstant.OPERATOR_CONTROLLER_PORT);
 
-    // Initialize helpers
-    powerHubSubsystem = new PowerHub();
-    powerHubSubsystem.highBeamsOff();
-    powerHubSubsystem.reset();
-
     // Initialize subsystems
-    driveSubsystem = new Drive(null);
-
+    driveSubsystem = new Drive();
     conveyorSubsystem = new Conveyor();
     elevatorSubsystem = new Elevator();
     intakeSubsystem = new Intake();

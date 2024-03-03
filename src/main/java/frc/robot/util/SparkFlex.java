@@ -6,8 +6,6 @@ import com.revrobotics.REVLibError;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.util.constants.LogConstants;
-
 import java.util.function.Supplier;
 
 //TODO: This needs to be merged with SparkMax class, they are are fully identical except for the alt encoder which we can write a check for.
@@ -29,22 +27,11 @@ public class SparkFlex extends CANSparkFlex {
   private boolean initialized = false;
   private boolean deviceConnectionStatus = false;
 
-  public SparkFlex(int canBusId) {
+  public SparkFlex(int canBusId, double delay) {
     super(canBusId, MotorType.kBrushless);
 
-    // Check if the device is connected
-    if (isDeviceConnected()) {
-
-      // Restore factory defaults
-      restoreFactoryDefaults();
-
-      // Enable voltage compensation to 12V
-      enableVoltageCompensation(12.0);
-    } else {
-      String errorMessage = String.format("CANSparkFlex (%s): Device not connected, skipping", canBusId);
-      DataTracker.putString(LogConstants.ROBOT_SYSTEM, "SparkFlex", errorMessage, false);
-      DriverStation.reportError(errorMessage, false);
-    }
+    // Enable voltage compensation to 12V
+    enableVoltageCompensation(12.0);
   }
 
   // #region CANSparkLowLevel overrides
@@ -176,13 +163,6 @@ public class SparkFlex extends CANSparkFlex {
    */
   private REVLibError applyCommandWithRetry(Supplier<REVLibError> command, String methodName) {
     // Check if the device is connected before proceeding
-    if (!isDeviceConnected()) {
-      String errorMessage = String.format("CANSparkFlex (%s): Device not connected, skipping %s", this.getDeviceId(), methodName);
-      DataTracker.putString(LogConstants.ROBOT_SYSTEM, "SparkFlex", errorMessage, false);
-      DriverStation.reportError(errorMessage, false);
-      return REVLibError.kCANDisconnected;
-    }
-
     REVLibError status = REVLibError.kUnknown;
     double currentDelay = INITIAL_RETRY_DELAY;
 

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CanbusId;
 import frc.robot.Constants.DIOId;
+import frc.robot.Constants.Delay;
 import frc.robot.Constants.MotorSetpoint;
 import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
@@ -20,12 +21,12 @@ import frc.robot.util.SparkFlex;
 
 public class Intake extends SubsystemBase {
 
-  private final SparkFlex topRollers = new SparkFlex(CanbusId.INTAKE_TOP_ROLLER);
+  private final SparkFlex topRollers = new SparkFlex(CanbusId.INTAKE_TOP_ROLLER, Delay.INTAKE);
   private final SparkPIDController topRollersPID = topRollers.getPIDController();
   private final RelativeEncoder topRollersEncoder = topRollers.getEncoder();
   private PIDParameters topRollersPidParameters;
 
-  private final SparkFlex bottomRollers = new SparkFlex(CanbusId.INTAKE_BOTTOM_ROLLER);
+  private final SparkFlex bottomRollers = new SparkFlex(CanbusId.INTAKE_BOTTOM_ROLLER, Delay.INTAKE);
   private final SparkPIDController bottomRollersPID = bottomRollers.getPIDController();
   private final RelativeEncoder bottomRollersEncoder = bottomRollers.getEncoder();
   private PIDParameters bottomRollersPidParameters;
