@@ -64,7 +64,7 @@ public final class Constants {
     // make 5000
     public static final int INTAKE_VELOCITY = 5000;
     public static final int CONVEYOR_VELOCITY = 2000;
-    public static final int CLIMB_WHEEL_VELOCITY = 500;
+    public static final int CLIMB_WHEEL_VELOCITY = 5000;
 
     public static final int SHOOTER_MARGIN_OF_ERROR = 5;
     public static final int SHOOTER_DIVERT_VELOCITY = 1500;
@@ -81,7 +81,7 @@ public final class Constants {
 
     public static final int WINCH_ARMS_MARGIN_OF_ERROR = 2;
     public static final int WINCH_ARMS_UP_POSITION = 150;
-    public static final int WINCH_ARMS_DOWN_POSITION = 10;
+    public static final int WINCH_ARMS_DOWN_POSITION = 500;
 
     // Value is between 0 and 1. 0.1 = 10% output
     public static final double WINCH_MAX_OUPUT = 0.1;

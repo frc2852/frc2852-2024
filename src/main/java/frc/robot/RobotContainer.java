@@ -109,8 +109,8 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> driveSubsystem.drive(
-                -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND)),
-                -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND)),
+                SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND)),
+                SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND)),
                 -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND)),
                 true, true),
             driveSubsystem));
@@ -132,8 +132,39 @@ public class RobotContainer {
     operatorController.a().onTrue(new ToggleIntake(intakeSubsystem));
 
     // AMP note discharge
-    operatorController.b().onTrue(new AmpNoteDischarge(intakeSubsystem, conveyorSubsystem, shooterSubsystem, elevatorSubsystem));
+    operatorController.b().onTrue(
+        new SequentialCommandGroup(
+            // Run intake, conveyor, shooter in parallel until the game piece is ready
+            new ParallelCommandGroup(
+                new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
+                new RunCommand(() -> conveyorSubsystem.runConveyorForwardAmp(), conveyorSubsystem),
+                new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
+                .until(() -> conveyorSubsystem.isGamePieceAmpReady()),
 
+            // Stop intake, conveyor and shooter
+            new ParallelCommandGroup(
+                new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
+                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
+                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
+
+            // Then, move the elevator to amp position
+            new RunCommand(() -> elevatorSubsystem.ampPosition(), elevatorSubsystem)
+                .until(() -> elevatorSubsystem.isElevatorAtPosition()),
+
+            // Run the conveyor and shooter again to discharge the game piece
+            new ParallelCommandGroup(
+                new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem),
+                new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
+                .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
+
+            // Finally, stop the conveyor and shooter
+            new ParallelCommandGroup(
+                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
+                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
+
+            // Then, move the elevator to drive position
+            new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
+                .until(() -> elevatorSubsystem.isElevatorAtPosition())));
     // Speaker note shooting
     operatorController.y().onTrue(new SpeakerShot(intakeSubsystem, conveyorSubsystem, shooterSubsystem));
 

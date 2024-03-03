@@ -40,6 +40,18 @@
           "data": {
             "pathName": "SpeakerCentre_CentreNote1"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CentreNote1_SpeakerCentre"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpeakerShot"
+          }
         }
       ]
     }

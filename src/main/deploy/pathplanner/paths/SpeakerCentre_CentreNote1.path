@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3682311551705513,
-        "y": 5.530762063751299
+        "x": 1.436264756751988,
+        "y": 5.512750911994447
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.361359715713387,
-        "y": 7.462261392464242
+        "x": 1.4293933172948237,
+        "y": 7.44425024070739
       },
       "isLocked": false,
       "linkedName": "SpeakerCentre"
     },
     {
       "anchor": {
-        "x": 7.81,
-        "y": 7.447657752458362
+        "x": 8.561264432404007,
+        "y": 7.6342923173928074
       },
       "prevControl": {
-        "x": 6.81,
-        "y": 7.447657752458362
+        "x": 7.561264432404007,
+        "y": 7.6342923173928074
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.8,
+      "waypointRelativePos": 0.6,
       "command": {
         "type": "parallel",
         "data": {

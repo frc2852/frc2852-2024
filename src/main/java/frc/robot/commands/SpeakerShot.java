@@ -22,7 +22,7 @@ public class SpeakerShot extends SequentialCommandGroup {
         new RunCommand(() -> shooterSubsystem.flyWheelFullSpeed(), shooterSubsystem)
             .until(() -> shooterSubsystem.isShooterAtSpeed()),
 
-        new WaitCommand(0.2),
+        // new WaitCommand(0.2),
         // Run intake, conveyor, shooter in parallel until the game piece is ready
         new ParallelCommandGroup(
             new RunCommand(() -> shooterSubsystem.flyWheelFullSpeed(), shooterSubsystem),
