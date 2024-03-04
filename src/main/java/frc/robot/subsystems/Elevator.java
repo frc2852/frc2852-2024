@@ -9,10 +9,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMax;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.CanbusId;
 import frc.robot.Constants.Delay;
 import frc.robot.Constants.MotorSetpoint;
@@ -27,7 +24,7 @@ public class Elevator extends SubsystemBase {
   private final RelativeEncoder motorEncoder;
   private PIDParameters motorPidParameters;
 
-  private double positionSetpoint;
+  private double positionSetpoint = MotorSetpoint.ELEVATOR_DRIVE_POSITION;
 
   private boolean updateMotorPID = false;
 
@@ -63,57 +60,42 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Get current positions and calculate errors
-    double motorPosition = motorEncoder.getPosition();
-    double motorPositionError = positionSetpoint - motorPosition;
 
-    // Dashboard data tracking
-    DataTracker.putNumber(getName(), "PositionSetPoint", positionSetpoint, true);
-    DataTracker.putNumber(getName(), "Position", motorPosition, true);
-    DataTracker.putNumber(getName(), "PositionError", motorPositionError, true);
-
-    if (!DriverStation.isFMSAttached() && Constants.PID_TUNE_MODE) {
-
-      // PID updates from dashboard
-      updateMotorPID = SmartDashboard.getBoolean("UpdatePID", false);
-
-      if (motorPidParameters.updateParametersFromDashboard() && updateMotorPID) {
-        updateMotorPID = false;
-        motorPidParameters.applyParameters(motorPID);
-      }
-    }
   }
 
   public void drivePosition() {
-    setElevatorPosition(MotorSetpoint.ELEVATOR_DRIVE_POSITION);
+    if (positionSetpoint != MotorSetpoint.ELEVATOR_DRIVE_POSITION) {
+      positionSetpoint = MotorSetpoint.ELEVATOR_DRIVE_POSITION;
+      moveElevatorToPosition();
+    }
   }
 
   public void ampPosition() {
-    setElevatorPosition(MotorSetpoint.ELEVATOR_AMP_POSITION);
+    if (positionSetpoint != MotorSetpoint.ELEVATOR_AMP_POSITION) {
+      positionSetpoint = MotorSetpoint.ELEVATOR_AMP_POSITION;
+      moveElevatorToPosition();
+    }
   }
 
   public void climbPosition() {
-    setElevatorPosition(MotorSetpoint.ELEVATOR_CLIMB_POSITION);
+    if (positionSetpoint != MotorSetpoint.ELEVATOR_CLIMB_POSITION) {
+      positionSetpoint = MotorSetpoint.ELEVATOR_CLIMB_POSITION;
+      moveElevatorToPosition();
+    }
   }
 
   public void trapPosition() {
-    setElevatorPosition(MotorSetpoint.ELEVATOR_TRAP_POSITION);
+    if (positionSetpoint != MotorSetpoint.ELEVATOR_TRAP_POSITION) {
+      positionSetpoint = MotorSetpoint.ELEVATOR_TRAP_POSITION;
+      moveElevatorToPosition();
+    }
   }
 
   public boolean isElevatorAtPosition() {
     return Math.abs(motorEncoder.getPosition() - positionSetpoint) < MotorSetpoint.ELEVATOR_MARGIN_OF_ERROR;
   }
 
-  public void increasePosition() {
-    setElevatorPosition(positionSetpoint + 1);
-  }
-
-  public void decreasePosition() {
-    setElevatorPosition(positionSetpoint - 1);
-  }
-
-  private void setElevatorPosition(double position) {
-    positionSetpoint = position;
-    motorPID.setReference(position, CANSparkMax.ControlType.kPosition);
+  private void moveElevatorToPosition() {
+    motorPID.setReference(positionSetpoint, CANSparkMax.ControlType.kPosition);
   }
 }

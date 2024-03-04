@@ -60,7 +60,7 @@ public final class Constants {
     public static final double RIGHT_RIGHT = 0;
     public static final double INTAKE = 0.1;
     public static final double SHOOTER = 0.2;
-    public static final double CONVEYOR = 0.3;
+    public static final double CONVEYOR = 1;
     public static final double WINCH = 0.4;
     public static final double ELEVATOR = 0.5;
     public static final double CLIMB_WHEELS = 0.6;
