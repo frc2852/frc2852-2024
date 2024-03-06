@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
 
-//TODO: This needs to be merged with SparkMax class, they are are fully identical except for the alt encoder which we can write a check for.
 public class SparkFlex extends CANSparkFlex {
 
   public enum MotorModel {
@@ -31,7 +30,7 @@ public class SparkFlex extends CANSparkFlex {
     super(canBusId, MotorType.kBrushless);
 
     // Enable voltage compensation to 12V
-    enableVoltageCompensation(12.0);
+    // enableVoltageCompensation(12.0);
   }
 
   // #region CANSparkLowLevel overrides

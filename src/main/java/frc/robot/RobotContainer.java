@@ -112,13 +112,6 @@ public class RobotContainer {
    * devices to commands.
    */
   private void configureOperatorBindings() {
-
-    operatorController.povLeft().onTrue(new RunCommand(() -> elevatorSubsystem.decreasePosition(), elevatorSubsystem)
-        .until(() -> elevatorSubsystem.isElevatorAtPosition()));
-
-    operatorController.povRight().onTrue(new RunCommand(() -> elevatorSubsystem.increasePosition(), elevatorSubsystem)
-        .until(() -> elevatorSubsystem.isElevatorAtPosition()));
-
     // Intake note
     operatorController.a().onTrue(new ToggleIntake(intakeSubsystem));
 
