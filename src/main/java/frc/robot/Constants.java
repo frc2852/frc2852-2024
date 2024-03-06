@@ -102,7 +102,6 @@ public final class Constants {
 
   public static class LEDConstants {
     // I2C Addresses for the Arduino controllers
-    public static final int ARDUINO_LEFT_ADDRESS = 0x01;
-    public static final int ARDUINO_RIGHT_ADDRESS = 0x02;
+    public static final int ARDUINO_ADDRESS = 0x01;
   }
 }

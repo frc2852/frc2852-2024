@@ -10,10 +10,13 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CanbusId;
 import frc.robot.Constants.DIOId;
 import frc.robot.Constants.Delay;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.MotorSetpoint;
 import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
@@ -32,12 +35,18 @@ public class Intake extends SubsystemBase {
   private PIDParameters bottomRollersPidParameters;
 
   private final DigitalInput intakeBeamBreak;
+  private I2C ledStrip;
 
   private boolean isIntakeRunning = false;
   private boolean isConveyorMode = false;
   private double velocitySetpoint;
 
   private final double INTAKE_STOPPED_VELOCITY = 0.0;
+
+  public enum LEDMode {
+    OFF,
+    ON,
+  }
 
   public Intake() {
     // Set motor controller configurations
@@ -72,6 +81,8 @@ public class Intake extends SubsystemBase {
     // Save configuration to SparkMax flash
     topRollers.burnFlash();
     bottomRollers.burnFlash();
+
+    ledStrip = new I2C(Port.kOnboard, LEDConstants.ARDUINO_ADDRESS);
   }
 
   @Override
@@ -81,6 +92,13 @@ public class Intake extends SubsystemBase {
       isConveyorMode = true;
       stopIntake();
     }
+
+    if (isGamePieceLoaded()) {
+      setLEDMode(LEDMode.OFF);
+    } else {
+      setLEDMode(LEDMode.ON);
+    }
+
     UpdateDataTracking();
   }
 
@@ -129,5 +147,16 @@ public class Intake extends SubsystemBase {
     DataTracker.putNumber(getName(), "TopRollersVelocityError", topRollersVelocityError, true);
     DataTracker.putNumber(getName(), "BottomRollersVelocity", bottomRollersVelocity, true);
     DataTracker.putNumber(getName(), "BottomRollersVelocityError", bottomRollersVelocityError, true);
+  }
+
+  private void setLEDMode(LEDMode mode) {
+    byte[] message = new byte[1];
+    message[0] = (byte) mode.ordinal(); // Convert the mode to a byte value
+    byte[] messageRecieved = new byte[0];
+
+    // Send the mode to both Arduinos
+    if (ledStrip != null) {
+      ledStrip.transaction(message, message.length, messageRecieved, 0);
+    }
   }
 }
