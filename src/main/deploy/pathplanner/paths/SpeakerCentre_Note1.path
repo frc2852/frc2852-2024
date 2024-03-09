@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.4,
+        "y": 5.493976209291806
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.5971343783777237,
+        "y": 6.282513722802701
+      },
+      "isLocked": false,
+      "linkedName": "SpeakerCentre"
+    },
+    {
+      "anchor": {
+        "x": 3.0978259459356603,
+        "y": 7.033501830908315
+      },
+      "prevControl": {
+        "x": 1.1264821621584218,
+        "y": 7.108600641718875
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Note1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ToggleIntake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

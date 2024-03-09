@@ -89,7 +89,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (isGamePieceDetected()) {
+    if (!hasGamePieceBeenShot && isGamePieceDetected()) {
       hasGamePieceBeenShot = true;
     }
 
@@ -142,6 +142,10 @@ public class ShooterSubsystem extends SubsystemBase {
     hasGamePieceBeenShot = false;
     topRoller.stopMotor();
     bottomRoller.stopMotor();
+  }
+
+  public void resetState() {
+    hasGamePieceBeenShot = false;
   }
 
   public boolean isShooterAtSpeed() {

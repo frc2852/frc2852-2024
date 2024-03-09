@@ -9,6 +9,10 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -21,14 +25,15 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CanbusId;
-import frc.robot.subsystems.vision.AprilTagDetectionSubsystem;
 import frc.robot.util.constants.SwerveConstants.SwerveDrive;
+import frc.robot.util.constants.SwerveConstants.SwerveModule;
 import frc.robot.util.swerve.MAXSwerveModule;
 import frc.robot.util.swerve.SwerveUtils;
 
@@ -91,15 +96,38 @@ public class DriveSubsystem extends SubsystemBase {
   );
 
   private final Field2d field = new Field2d();
-  private final AprilTagDetectionSubsystem aprilTagDetectionSubsystem;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(AprilTagDetectionSubsystem aprilTagDetectionSubsystem) {
-    this.aprilTagDetectionSubsystem = aprilTagDetectionSubsystem;
+  public DriveSubsystem() {
+    zeroHeading();
+
     SmartDashboard.putData(field);
 
-    // TODO: Remove
-    zeroHeading();
+    // Configure AutoBuilder last
+    AutoBuilder.configureHolonomic(
+        this::getPose, // Robot pose supplier
+        this::resetPoseEstimator, // resetOdometry??? // Method to reset odometry (will be called if your auto has a starting pose)
+        this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+            new PIDConstants(5.0, SwerveModule.DRIVING_I, SwerveModule.DRIVING_D), // Translation PID constants
+            new PIDConstants(5.0, SwerveModule.TURNING_I, SwerveModule.TURNING_D), // Rotation PID constants
+            SwerveDrive.MAX_SPEED_METERS_PER_SECOND, // Max module speed, in m/s
+            0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+            new ReplanningConfig() // Default path replanning config. See the API for the options here
+        ),
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+          Optional<Alliance> alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        },
+        this // Reference to this subsystem to set requirements
+    );
   }
 
   @Override
@@ -123,16 +151,6 @@ public class DriveSubsystem extends SubsystemBase {
             rearRight.getPosition()
         });
 
-    if (aprilTagDetectionSubsystem != null) {
-      Optional<EstimatedRobotPose> visionPose = aprilTagDetectionSubsystem.getEstimatedGlobalPose(getPose());
-      if (visionPose.isPresent()) {
-        double currentTimeStamp = Timer.getFPGATimestamp();
-        EstimatedRobotPose estimatedRobotPose3d = visionPose.get();
-        Pose2d pose2d = estimatedRobotPose3d.estimatedPose.toPose2d();
-        poseEstimator.addVisionMeasurement(pose2d, currentTimeStamp);
-      }
-    }
-
     Pose2d pose = poseEstimator.getEstimatedPosition();
     field.setRobotPose(pose);
   }
@@ -143,6 +161,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
+    // TODO: Should this be odometry or poseEstimator?
+    // return odometry.getPoseMeters();
     return poseEstimator.getEstimatedPosition();
   }
 
@@ -243,7 +263,7 @@ public class DriveSubsystem extends SubsystemBase {
     double ySpeedDelivered = ySpeedCommanded * SwerveDrive.MAX_SPEED_METERS_PER_SECOND;
     double rotDelivered = currentRotation * SwerveDrive.MAX_ANGULAR_SPEED;
 
-    var swerveModuleStates = SwerveDrive.DRIVE_KINEMATICS.toSwerveModuleStates(
+    SwerveModuleState[] swerveModuleStates = SwerveDrive.DRIVE_KINEMATICS.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, getRotation())
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
@@ -310,5 +330,38 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public double getTurnRate() {
     return navX.getRate() * (SwerveDrive.GYRO_REVERSED ? -1.0 : 1.0);
+  }
+
+  /**
+   * Returns the current robot-relative ChassisSpeeds.
+   *
+   * @return The current robot-relative ChassisSpeeds.
+   */
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    // Retrieve the current states of each swerve module
+    SwerveModuleState frontLeftState = frontLeft.getState();
+    SwerveModuleState frontRightState = frontRight.getState();
+    SwerveModuleState rearLeftState = rearLeft.getState();
+    SwerveModuleState rearRightState = rearRight.getState();
+
+    // Convert the swerve module states to chassis speeds
+    return SwerveDrive.DRIVE_KINEMATICS.toChassisSpeeds(
+        frontLeftState, frontRightState, rearLeftState, rearRightState);
+  }
+
+  /**
+   * Drives the robot using robot-relative speeds.
+   *
+   * @param speeds The robot-relative ChassisSpeeds.
+   */
+  public void driveRobotRelative(ChassisSpeeds speeds) {
+    // Convert the robot-relative speeds to swerve module states
+    SwerveModuleState[] moduleStates = SwerveDrive.DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
+
+    // Desaturate the wheel speeds to ensure they are within the maximum speed
+    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, SwerveDrive.MAX_SPEED_METERS_PER_SECOND);
+
+    // Set the desired state for each swerve module
+    setModuleStates(moduleStates);
   }
 }

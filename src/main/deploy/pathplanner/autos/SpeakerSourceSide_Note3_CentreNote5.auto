@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.71,
+      "y": 4.38
+    },
+    "rotation": 120.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "SpeakerShot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SpeakerSourceSide_Note3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note3_SpeakerSourceSide"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpeakerShot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SpeakerSourceSide_CentreNote5"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

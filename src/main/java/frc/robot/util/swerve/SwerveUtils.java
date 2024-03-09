@@ -1,5 +1,7 @@
 package frc.robot.util.swerve;
 
+import frc.robot.Constants.OperatorConstant;
+
 public class SwerveUtils {
 
   /**
@@ -92,5 +94,20 @@ public class SwerveUtils {
     } else {
       return _angle;
     }
+  }
+  
+    /**
+   * Applies an exponential response curve to a joystick input value.
+   * 
+   * This method modifies the input value according to an exponential curve,
+   * making the response more sensitive at the extremes and less sensitive
+   * around the center. The shape of the curve is controlled by the
+   * {@link OperatorConstant#EXPONENTIAL_RESPONSE} constant.
+   *
+   * @param input The raw joystick input value, typically in the range [-1, 1].
+   * @return The modified input value after applying the exponential response curve.
+   */
+  public static double applyExponentialResponse(double input) {
+    return Math.signum(input) * Math.pow(Math.abs(input), OperatorConstant.EXPONENTIAL_RESPONSE);
   }
 }

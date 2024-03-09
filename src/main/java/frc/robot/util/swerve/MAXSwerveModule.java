@@ -66,6 +66,7 @@ public class MAXSwerveModule {
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
+    drivingSparkMax.setInverted(false);
     turningEncoder.setInverted(SwerveModule.TURNING_ENCODER_INVERTED);
 
     // Enable PID wrap around for the turning motor. This will allow the PID

@@ -27,6 +27,7 @@ public final class Constants {
     public static final int SYSID_CONTROLLER_PORT = 2;
 
     public static final double DEAD_BAND = 0.15;
+    public static final double EXPONENTIAL_RESPONSE = 2;
   }
 
   public static class CanbusId {
@@ -63,7 +64,6 @@ public final class Constants {
     // make 5000
     public static final int INTAKE_VELOCITY = 5000;
     public static final int CONVEYOR_VELOCITY = 2000;
-    public static final int CLIMB_WHEEL_VELOCITY = 500;
 
     public static final int SHOOTER_MARGIN_OF_ERROR = 5;
     public static final int SHOOTER_DIVERT_VELOCITY = 1500;
@@ -77,11 +77,13 @@ public final class Constants {
     // Value is between 0 and 1. 0.1 = 10% output
     public static final double ELEVAOTOR_MAX_OUPUT = 1.0;
 
-    public static final int WINCH_ARMS_MARGIN_OF_ERROR = 2;
-    public static final int WINCH_ARMS_UP_POSITION = 150;
-    public static final int WINCH_ARMS_DOWN_POSITION = 10;
 
     // Value is between 0 and 1. 0.1 = 10% output
     public static final double WINCH_MAX_OUPUT = 0.1;
+  }
+
+  public static class LEDConstants {
+    // I2C Addresses for the Arduino controllers
+    public static final int ARDUINO_ADDRESS = 0x01;
   }
 }

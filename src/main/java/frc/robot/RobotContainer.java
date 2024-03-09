@@ -1,14 +1,14 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstant;
+import frc.robot.commands.SpeakerShot;
+import frc.robot.commands.ToggleIntake;
 import frc.robot.subsystems.PowerHubSubsystem;
-import frc.robot.subsystems.ClimbWheelSubsystem;
 import frc.robot.subsystems.ConveyorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.WinchSubsystem;
 import frc.robot.subsystems.vision.AprilTagDetectionSubsystem;
 import frc.robot.subsystems.vision.GamePieceDetectionSubsystem;
 import frc.robot.util.DataTracker;
@@ -16,9 +16,14 @@ import frc.robot.util.constants.LogConstants;
 import frc.robot.util.constants.SwerveConstants.AutoConstants;
 import frc.robot.util.constants.SwerveConstants.SwerveDrive;
 import frc.robot.util.constants.VisionConstants.CameraTracking;
+import frc.robot.util.swerve.SwerveUtils;
 
 import java.util.List;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -30,6 +35,8 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -56,6 +63,8 @@ public class RobotContainer {
   // private final AprilTagDetectionSubsystem aprilTagDetectionSubsystem;
   // private final GamePieceDetectionSubsystem gamePieceDetectionSubsystem;
 
+  private SendableChooser<Command> autoChooser;
+
   private final PowerHubSubsystem powerHubSubsystem;
 
   private final DriveSubsystem driveSubsystem;
@@ -63,8 +72,6 @@ public class RobotContainer {
   private final ElevatorSubsystem elevatorSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
-  private final WinchSubsystem winchSubsystem;
-  private final ClimbWheelSubsystem climbWheelSubsystem;
 
   /**
    * Constructs the container for the robot. Subsystems and command mappings are
@@ -82,6 +89,9 @@ public class RobotContainer {
     // Initialize data tracker
     DataTracker.putBoolean(LogConstants.ROBOT_SYSTEM, "Intialization", true, false);
 
+    // Init camera
+    CameraServer.startAutomaticCapture();
+
     // Initialize controllers with distinct ports
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OperatorConstant.OPERATOR_CONTROLLER_PORT);
@@ -96,17 +106,15 @@ public class RobotContainer {
     // gamePieceDetectionSubsystem = new GamePieceDetectionSubsystem(CameraTracking.GAME_PIECE_CAMERA_CONFIG, powerHubSubsystem);
 
     // Initialize subsystems
-    driveSubsystem = new DriveSubsystem(null);
-    // driveSubsystem = new DriveSubsystem(aprilTagDetectionSubsystem);
+    driveSubsystem = new DriveSubsystem();
 
     conveyorSubsystem = new ConveyorSubsystem();
     elevatorSubsystem = new ElevatorSubsystem();
     intakeSubsystem = new IntakeSubsystem();
     shooterSubsystem = new ShooterSubsystem();
-    winchSubsystem = new WinchSubsystem();
-    climbWheelSubsystem = new ClimbWheelSubsystem();
 
     // Configuration
+    configurePathPlanner();
     configureDriverBindings();
     configureOperatorBindings();
     configureSysIdBindings();
@@ -125,9 +133,9 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> driveSubsystem.drive(
-                -MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND),
-                -MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND),
-                -MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND),
+                SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND)),
+                SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND)),
+                -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND)),
                 true, true),
             driveSubsystem));
   }
@@ -189,70 +197,21 @@ public class RobotContainer {
     // Speaker note shooting
     operatorController.y().onTrue(
         new SequentialCommandGroup(
+            new InstantCommand(() -> shooterSubsystem.resetState(), shooterSubsystem),
             // Get shooter rollers up to speed
             new RunCommand(() -> shooterSubsystem.flyWheelFullSpeed(), shooterSubsystem)
                 .until(() -> shooterSubsystem.isShooterAtSpeed()),
-
+            new WaitCommand(0.2),
             // Run intake, conveyor, shooter in parallel until the game piece is ready
             new ParallelCommandGroup(
                 new RunCommand(() -> shooterSubsystem.flyWheelFullSpeed(), shooterSubsystem),
                 new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
                 new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem))
-                .withTimeout(5),
-
-            // TODO: I'm worried that the game piece is going to pass by this sensor either too fast or too slow. If its too fast it will never be detected and the motors will never stop
-            // If its detected too soon the motors will cut power well shooting affecting the shot.
-            // So I've commented this out and added a timeout to the parallel command group above, this isn't the best fix but without having the robot to test its the best I can do for now.
-            // .until(() -> shooterSubsystem.hasGamePieceBeenShot()),
-
+                .until(() -> shooterSubsystem.hasGamePieceBeenShot()),
+            new WaitCommand(0.2),
             // Stop intake, conveyor and shooter
             new ParallelCommandGroup(
                 new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
-                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
-
-    // Lift arms up and run conveyor until game piece is ready
-    operatorController.leftBumper().onTrue(
-        new ParallelCommandGroup(
-            // Run winch arms up until they are at position
-            /*
-             * new RunCommand(() -> winchSubsystem.armsUp(), winchSubsystem)
-             * .until(() -> winchSubsystem.areArmsAtPosition()),
-             */
-
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                    new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem),
-                    new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
-                    new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
-                    .until(() -> conveyorSubsystem.isGamePieceAmpReady()),
-                new ParallelCommandGroup(
-                    new InstantCommand(() -> shooterSubsystem.stopShooter(), conveyorSubsystem),
-                    new InstantCommand(() -> conveyorSubsystem.stopConveyor(), intakeSubsystem),
-                    new InstantCommand(() -> intakeSubsystem.stopIntake(), shooterSubsystem)))));
-
-    // Quick Climb
-    operatorController.rightTrigger().onTrue(new RunCommand(() -> winchSubsystem.armsDown(), winchSubsystem).until(() -> winchSubsystem.areArmsAtPosition()));
-    // LIAM added this here for testing the climb to lower the winch so its easier to let the robot down.
-    operatorController.leftTrigger().onTrue(new RunCommand(() -> winchSubsystem.armsUp(), winchSubsystem).until(() -> winchSubsystem.areArmsAtPosition()));
-    // Climb and trap score
-    operatorController.rightBumper().onTrue(
-        new SequentialCommandGroup(
-            new ParallelCommandGroup(
-                new RunCommand(() -> climbWheelSubsystem.runClimbWheels(), climbWheelSubsystem),
-                new RunCommand(() -> winchSubsystem.armsDown(), winchSubsystem),
-                new RunCommand(() -> elevatorSubsystem.trapPosition(), elevatorSubsystem))
-                .until(() -> elevatorSubsystem.isElevatorAtPosition() && winchSubsystem.areArmsAtPosition()),
-
-            // Run the conveyor and shooter again to discharge the game piece
-            new ParallelCommandGroup(
-                new RunCommand(() -> climbWheelSubsystem.stopClimbWheels(), climbWheelSubsystem),
-                new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem),
-                new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem))
-                .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
-
-            // Finally, stop the conveyor and shooter
-            new ParallelCommandGroup(
                 new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
                 new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
   }
@@ -265,50 +224,22 @@ public class RobotContainer {
     // sysIdController.y().whileTrue(intakeSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
+  private void configurePathPlanner() {
+    // Register commands
+    NamedCommands.registerCommand("ToggleIntake", new ToggleIntake(intakeSubsystem));
+    NamedCommands.registerCommand("SpeakerShot", new SpeakerShot(intakeSubsystem, conveyorSubsystem, shooterSubsystem));
+
+    // Build an auto chooser
+    autoChooser = AutoBuilder.buildAutoChooser("SpeakerCentre_Quad");
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+  }
+
   /**
    * Gets the command to run in autonomous mode.
    *
    * @return The autonomous command to run.`
    */
   public Command getAutonomousCommand() {
-    return null;
-    // // Create config for trajectory
-    // TrajectoryConfig config = new TrajectoryConfig(
-    // AutoConstants.MAX_SPEED_METERS_PER_SECOND,
-    // AutoConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED)
-    // // Add kinematics to ensure max speed is actually obeyed
-    // .setKinematics(SwerveDrive.DRIVE_KINEMATICS);
-
-    // // An example trajectory to follow. All units in meters.
-    // Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-    // // Start at the origin facing the +X direction
-    // new Pose2d(0, 0, new Rotation2d(0)),
-    // // Pass through these two interior waypoints, making an 's' curve path
-    // List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-    // // End 3 meters straight ahead of where we started, facing forward
-    // new Pose2d(3, 0, new Rotation2d(0)),
-    // config);
-
-    // var thetaController = new ProfiledPIDController(
-    // AutoConstants.P_THETA_CONTROLLER, 0, 0, AutoConstants.THETA_CONTROLLER_CONSTRAINTS);
-    // thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    // SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-    // exampleTrajectory,
-    // driveSubsystem::getPose, // Functional interface to feed supplier
-    // SwerveDrive.DRIVE_KINEMATICS,
-
-    // // Position controllers
-    // new PIDController(AutoConstants.PX_CONTROLLER, 0, 0),
-    // new PIDController(AutoConstants.PY_CONTROLLER, 0, 0),
-    // thetaController,
-    // driveSubsystem::setModuleStates,
-    // driveSubsystem);
-
-    // // Reset odometry to the starting pose of the trajectory.
-    // driveSubsystem.resetOdometry(exampleTrajectory.getInitialPose());
-
-    // // Run path following command, then stop at the end.
-    // return swerveControllerCommand.andThen(() -> driveSubsystem.drive(0, 0, 0, false, false));
+    return autoChooser.getSelected();
   }
 }
