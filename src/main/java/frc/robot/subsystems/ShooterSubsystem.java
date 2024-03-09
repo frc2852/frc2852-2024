@@ -148,7 +148,6 @@ public class ShooterSubsystem extends SubsystemBase {
     double topRollerVelocity = topRollerEncoder.getVelocity();
     double bottomRollerVelocity = bottomRollerEncoder.getVelocity();
     return (Math.abs(topRollerVelocity - velocitySetpoint) < MotorSetpoint.SHOOTER_MARGIN_OF_ERROR && Math.abs(bottomRollerVelocity - velocitySetpoint) < MotorSetpoint.SHOOTER_MARGIN_OF_ERROR);
-
   }
 
   public boolean hasGamePieceBeenShot() {
