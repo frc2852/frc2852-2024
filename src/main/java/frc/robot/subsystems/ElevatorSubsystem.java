@@ -70,6 +70,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     DataTracker.putNumber(getName(), "PositionSetPoint", positionSetpoint, true);
     DataTracker.putNumber(getName(), "Position", motorPosition, true);
     DataTracker.putNumber(getName(), "PositionError", motorPositionError, true);
+   DataTracker.putBoolean(getName(), "helloWorld", isElevatorAtPosition(), true);
 
     if (!DriverStation.isFMSAttached() && Constants.PID_TUNE_MODE) {
 

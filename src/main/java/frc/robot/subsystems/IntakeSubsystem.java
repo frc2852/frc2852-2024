@@ -20,7 +20,9 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -45,12 +47,18 @@ public class IntakeSubsystem extends SubsystemBase {
   private PIDParameters bottomRollersPidParameters;
 
   private final DigitalInput intakeProximitySensor;
+  private I2C ledStrip;
 
   private boolean isIntakeRunning = false;
   private boolean isConveyorMode = false;
   private double velocitySetpoint;
 
   private final double INTAKE_STOPPED_VELOCITY = 0.0;
+
+  public enum LEDMode {
+    OFF,
+    ON,
+  }
 
   public IntakeSubsystem() {
 
@@ -87,6 +95,7 @@ public class IntakeSubsystem extends SubsystemBase {
     topRollers.burnFlash();
     bottomRollers.burnFlash();
 
+    ledStrip = new I2C(Port.kOnboard, 0x01);
     // SysId configurations
     // setSysIdRoutine(topRollers, "intake-top-rollers");
     // setSysIdRoutine(bottomRollers, "intake-bottom-rollers");
@@ -99,6 +108,13 @@ public class IntakeSubsystem extends SubsystemBase {
       isConveyorMode = true;
       stopIntake();
     }
+
+    if (isGamePieceLoaded()) {
+      setLEDMode(LEDMode.OFF);
+    } else {
+      setLEDMode(LEDMode.ON);
+    }
+
     UpdateDataTracking();
   }
 
@@ -180,6 +196,17 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return intakeSysIdRoutine.dynamic(direction);
+  }
+
+  private void setLEDMode(LEDMode mode) {
+    byte[] message = new byte[1];
+    message[0] = (byte) mode.ordinal(); // Convert the mode to a byte value
+    byte[] messageRecieved = new byte[0];
+
+    // Send the mode to both Arduinos
+    if (ledStrip != null) {
+      ledStrip.transaction(message, message.length, messageRecieved, 0);
+    }
   }
 
   // #endregion

@@ -89,9 +89,6 @@ public class RobotContainer {
     // Initialize data tracker
     DataTracker.putBoolean(LogConstants.ROBOT_SYSTEM, "Intialization", true, false);
 
-    // Init camera
-    CameraServer.startAutomaticCapture();
-
     // Initialize controllers with distinct ports
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OperatorConstant.OPERATOR_CONTROLLER_PORT);
@@ -125,9 +122,6 @@ public class RobotContainer {
    * devices to commands.
    */
   private void configureDriverBindings() {
-    driverController.leftBumper().onTrue(
-        new RunCommand(() -> driveSubsystem.lockDrive(), driveSubsystem));
-
     driveSubsystem.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
@@ -160,39 +154,42 @@ public class RobotContainer {
     operatorController.a().onTrue(new InstantCommand(intakeSubsystem::toggleIntake, intakeSubsystem));
 
     // AMP note discharge
-    operatorController.b().onTrue(
-        new SequentialCommandGroup(
-            // Run intake, conveyor, shooter in parallel until the game piece is ready
-            new ParallelCommandGroup(
-                new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
-                new RunCommand(() -> conveyorSubsystem.runConveyorForwardAmp(), conveyorSubsystem),
-                new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
-                .until(() -> conveyorSubsystem.isGamePieceAmpReady()),
+    // operatorController.b().onTrue(
+    //     new SequentialCommandGroup(
+    //         // Run intake, conveyor, shooter in parallel until the game piece is ready
+    //         new ParallelCommandGroup(
+    //             new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
+    //             new RunCommand(() -> conveyorSubsystem.runConveyorForwardAmp(), conveyorSubsystem),
+    //             new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
+    //             .until(() -> conveyorSubsystem.isGamePieceAmpReady()),
 
-            // Stop intake, conveyor and shooter
-            new ParallelCommandGroup(
-                new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
-                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
+    //         // Stop intake, conveyor and shooter
+    //         new ParallelCommandGroup(
+    //             new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
+    //             new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
+    //             new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
 
-            // Then, move the elevator to amp position
-            new RunCommand(() -> elevatorSubsystem.ampPosition(), elevatorSubsystem)
-                .until(() -> elevatorSubsystem.isElevatorAtPosition()),
+    //         // Then, move the elevator to amp position
+    //         new RunCommand(() -> elevatorSubsystem.ampPosition(), elevatorSubsystem)
+    //             .until(() -> elevatorSubsystem.isElevatorAtPosition())));
 
-            // Run the conveyor and shooter again to discharge the game piece
-            new ParallelCommandGroup(
-                new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem),
-                new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
-                .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
+                
+    // operatorController.x().onTrue(
+    //     new SequentialCommandGroup(
+    //         // Run the conveyor and shooter again to discharge the game piece
+    //         new ParallelCommandGroup(
+    //             new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem),
+    //             new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
+    //             .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
 
-            // Finally, stop the conveyor and shooter
-            new ParallelCommandGroup(
-                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
+    //         // Finally, stop the conveyor and shooter
+    //         new ParallelCommandGroup(
+    //             new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
+    //             new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
 
-            // Then, move the elevator to drive position
-            new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
-                .until(() -> elevatorSubsystem.isElevatorAtPosition())));
+    //         // Then, move the elevator to drive position
+    //         new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
+    //             .until(() -> elevatorSubsystem.isElevatorAtPosition())));
 
     // Speaker note shooting
     operatorController.y().onTrue(

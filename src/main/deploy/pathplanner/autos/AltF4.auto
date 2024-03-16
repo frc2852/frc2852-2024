@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.38,
-      "y": 4.56
+      "x": 0.53,
+      "y": 2.1
     },
     "rotation": 180.0
   },
@@ -12,27 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "SourceSideHack"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpeakerShot"
+            "waitTime": 2.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerSourceSide_Note3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note3_SpeakerSourceSide"
+            "pathName": "SpeakerSourceSideHack"
           }
         },
         {

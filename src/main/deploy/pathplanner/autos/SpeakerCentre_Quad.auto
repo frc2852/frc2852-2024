@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.44,
-      "y": 5.51
+      "x": 1.4,
+      "y": 5.49
     },
     "rotation": 180.0
   },
@@ -27,24 +27,6 @@
           "type": "path",
           "data": {
             "pathName": "Note3_SpeakerCentre"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpeakerShot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SpeakerCentre_Note1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note1_SpeakerCentre"
           }
         },
         {
