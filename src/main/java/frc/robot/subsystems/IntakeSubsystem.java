@@ -4,29 +4,14 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.MutableMeasure.mutable;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
-
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
-
-import edu.wpi.first.units.Angle;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.MutableMeasure;
-import edu.wpi.first.units.Velocity;
-import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.CanbusId;
 import frc.robot.Constants.DIOId;
 import frc.robot.Constants.MotorSetpoint;
@@ -96,9 +81,6 @@ public class IntakeSubsystem extends SubsystemBase {
     bottomRollers.burnFlash();
 
     ledStrip = new I2C(Port.kOnboard, 0x01);
-    // SysId configurations
-    // setSysIdRoutine(topRollers, "intake-top-rollers");
-    // setSysIdRoutine(bottomRollers, "intake-bottom-rollers");
   }
 
   @Override
@@ -165,39 +147,6 @@ public class IntakeSubsystem extends SubsystemBase {
     DataTracker.putNumber(getName(), "BottomRollersVelocityError", bottomRollersVelocityError, true);
   }
 
-  // #region SysId
-
-  // Mutable holder for unit-safe voltage and velocity values
-  private SysIdRoutine intakeSysIdRoutine;
-  private final MutableMeasure<Voltage> appliedVoltage = mutable(Volts.of(0));
-  private final MutableMeasure<Angle> distance = mutable(Rotations.of(0));
-  private final MutableMeasure<Velocity<Angle>> velocity = mutable(RotationsPerSecond.of(0));
-
-  // Create a new SysId routine for characterizing the intake.
-  private void setSysIdRoutine(SparkFlex motor, String motorName) {
-    RelativeEncoder encoder = motor.getEncoder();
-    intakeSysIdRoutine = new SysIdRoutine(new Config(), new SysIdRoutine.Mechanism(
-        (Measure<Voltage> voltage) -> motor.set(voltage.in(Volts) / RobotController.getBatteryVoltage()),
-        log -> {
-          log.motor(motorName)
-              .voltage(appliedVoltage.mut_replace(motor.get() * RobotController.getBatteryVoltage(), Volts))
-              .angularPosition(distance.mut_replace(encoder.getPosition(), Rotations))
-              .angularVelocity(velocity.mut_replace(encoder.getVelocity(), RotationsPerSecond));
-        }, this));
-  }
-
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    if (intakeSysIdRoutine == null) {
-      throw new IllegalStateException("SysId routine not initialized");
-    }
-
-    return intakeSysIdRoutine.quasistatic(direction);
-  }
-
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return intakeSysIdRoutine.dynamic(direction);
-  }
-
   private void setLEDMode(LEDMode mode) {
     byte[] message = new byte[1];
     message[0] = (byte) mode.ordinal(); // Convert the mode to a byte value
@@ -208,6 +157,4 @@ public class IntakeSubsystem extends SubsystemBase {
       ledStrip.transaction(message, message.length, messageRecieved, 0);
     }
   }
-
-  // #endregion
 }

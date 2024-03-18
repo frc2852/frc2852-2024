@@ -9,29 +9,13 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.vision.AprilTagDetectionSubsystem;
-import frc.robot.subsystems.vision.GamePieceDetectionSubsystem;
-import frc.robot.util.DataTracker;
-import frc.robot.util.constants.LogConstants;
-import frc.robot.util.constants.SwerveConstants.AutoConstants;
-import frc.robot.util.constants.SwerveConstants.SwerveDrive;
-import frc.robot.util.constants.VisionConstants.CameraTracking;
 import frc.robot.util.swerve.SwerveUtils;
 
-import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -42,12 +26,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.math.trajectory.Trajectory;
 
 /**
  * RobotContainer is the class where the bulk of the robot's systems are
@@ -58,10 +38,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 public class RobotContainer {
   private final CommandXboxController driverController;
   private final CommandXboxController operatorController;
-  private final CommandXboxController sysIdController;
-
-  // private final AprilTagDetectionSubsystem aprilTagDetectionSubsystem;
-  // private final GamePieceDetectionSubsystem gamePieceDetectionSubsystem;
 
   private SendableChooser<Command> autoChooser;
 
@@ -86,21 +62,13 @@ public class RobotContainer {
     // Port forwarding
     PortForwarder.add(5800, "photonvision.local", 5800);
 
-    // Initialize data tracker
-    DataTracker.putBoolean(LogConstants.ROBOT_SYSTEM, "Intialization", true, false);
-
     // Initialize controllers with distinct ports
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OperatorConstant.OPERATOR_CONTROLLER_PORT);
-    sysIdController = new CommandXboxController(OperatorConstant.SYSID_CONTROLLER_PORT);
 
     // Initialize helpers
     powerHubSubsystem = new PowerHubSubsystem();
     powerHubSubsystem.reset();
-
-    // Initialize vision subsystems
-    // aprilTagDetectionSubsystem = new AprilTagDetectionSubsystem(CameraTracking.APRIL_TAG_CAMERA_CONFIG);
-    // gamePieceDetectionSubsystem = new GamePieceDetectionSubsystem(CameraTracking.GAME_PIECE_CAMERA_CONFIG, powerHubSubsystem);
 
     // Initialize subsystems
     driveSubsystem = new DriveSubsystem();
@@ -114,7 +82,6 @@ public class RobotContainer {
     configurePathPlanner();
     configureDriverBindings();
     configureOperatorBindings();
-    configureSysIdBindings();
   }
 
   /**
@@ -140,56 +107,46 @@ public class RobotContainer {
    */
   private void configureOperatorBindings() {
 
-    // Set elevator to drive position, really shouldn't be used unless the operator messed up and pressed the climb button
-    operatorController.povDown().onTrue(new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
-        .until(() -> elevatorSubsystem.isElevatorAtPosition()));
-
-    operatorController.povLeft().onTrue(new RunCommand(() -> elevatorSubsystem.decreasePosition(), elevatorSubsystem)
-        .until(() -> elevatorSubsystem.isElevatorAtPosition()));
-
-    operatorController.povRight().onTrue(new RunCommand(() -> elevatorSubsystem.increasePosition(), elevatorSubsystem)
-        .until(() -> elevatorSubsystem.isElevatorAtPosition()));
-
     // Intake note
     operatorController.a().onTrue(new InstantCommand(intakeSubsystem::toggleIntake, intakeSubsystem));
 
+    // AMP note prepare
+    operatorController.b().onTrue(
+        new SequentialCommandGroup(
+            // Run intake, conveyor, shooter in parallel until the game piece is ready
+            new ParallelCommandGroup(
+                new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
+                new RunCommand(() -> conveyorSubsystem.runConveyorForwardAmp(), conveyorSubsystem),
+                new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
+                .until(() -> conveyorSubsystem.isGamePieceAmpReady()),
+
+            // Stop intake, conveyor and shooter
+            new ParallelCommandGroup(
+                new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
+                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
+                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
+
+            // Then, move the elevator to amp position
+            new RunCommand(() -> elevatorSubsystem.ampPosition(), elevatorSubsystem)
+                .until(() -> elevatorSubsystem.isElevatorAtPosition())));
+
     // AMP note discharge
-    // operatorController.b().onTrue(
-    //     new SequentialCommandGroup(
-    //         // Run intake, conveyor, shooter in parallel until the game piece is ready
-    //         new ParallelCommandGroup(
-    //             new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
-    //             new RunCommand(() -> conveyorSubsystem.runConveyorForwardAmp(), conveyorSubsystem),
-    //             new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
-    //             .until(() -> conveyorSubsystem.isGamePieceAmpReady()),
+    operatorController.x().onTrue(
+        new SequentialCommandGroup(
+            // Run the conveyor and shooter again to discharge the game piece
+            new ParallelCommandGroup(
+                new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem),
+                new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
+                .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
 
-    //         // Stop intake, conveyor and shooter
-    //         new ParallelCommandGroup(
-    //             new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
-    //             new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-    //             new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
+            // Finally, stop the conveyor and shooter
+            new ParallelCommandGroup(
+                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
+                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
 
-    //         // Then, move the elevator to amp position
-    //         new RunCommand(() -> elevatorSubsystem.ampPosition(), elevatorSubsystem)
-    //             .until(() -> elevatorSubsystem.isElevatorAtPosition())));
-
-                
-    // operatorController.x().onTrue(
-    //     new SequentialCommandGroup(
-    //         // Run the conveyor and shooter again to discharge the game piece
-    //         new ParallelCommandGroup(
-    //             new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem),
-    //             new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
-    //             .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
-
-    //         // Finally, stop the conveyor and shooter
-    //         new ParallelCommandGroup(
-    //             new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-    //             new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
-
-    //         // Then, move the elevator to drive position
-    //         new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
-    //             .until(() -> elevatorSubsystem.isElevatorAtPosition())));
+            // Then, move the elevator to drive position
+            new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
+                .until(() -> elevatorSubsystem.isElevatorAtPosition())));
 
     // Speaker note shooting
     operatorController.y().onTrue(
@@ -211,14 +168,6 @@ public class RobotContainer {
                 new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
                 new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
                 new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
-  }
-
-  private void configureSysIdBindings() {
-    // Intake
-    // sysIdController.a().whileTrue(intakeSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    // sysIdController.b().whileTrue(intakeSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    // sysIdController.x().whileTrue(intakeSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    // sysIdController.y().whileTrue(intakeSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   private void configurePathPlanner() {
