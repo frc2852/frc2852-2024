@@ -23,6 +23,7 @@ import frc.robot.util.SparkFlex;
 
 public class Shooter extends SubsystemBase {
 
+  // Controllers
   private final SparkFlex topRoller;
   private final SparkPIDController topRollerPID;
   private final RelativeEncoder topRollerEncoder;
@@ -33,14 +34,17 @@ public class Shooter extends SubsystemBase {
   private final RelativeEncoder bottomRollerEncoder;
   private PIDParameters bottomRollerPidParameters;
 
-  private double velocitySetpoint;
-
-  private boolean updateTopRollerPID = false;
-  private boolean updateBottomRollerPID = false;
-
+  // Sensors
   private final DigitalInput shooterBeamBreak;
 
+  // State
+  private double velocitySetpoint;
   private boolean hasGamePieceBeenShot = false;
+  private boolean autoKeepFlywheelRunning = false;
+
+  // Smartdashboard
+  private boolean updateTopRollerPID = false;
+  private boolean updateBottomRollerPID = false;
 
   public Shooter() {
 
@@ -91,6 +95,20 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    // Allows us to lock the fly wheel at full speed to speed up auto
+    if (autoKeepFlywheelRunning) {
+
+      // If the path ran too long and didn't stop the flywheel, stop it
+      if (DriverStation.isTeleop()) {
+        autoKeepFlywheelRunning = false;
+        stopShooter();
+      } else {
+        flyWheelFullSpeed();
+      }
+    }
+
+    // If the game piece has been shot, reset the state
     if (!hasGamePieceBeenShot && isGamePieceDetected()) {
       hasGamePieceBeenShot = true;
     }
@@ -140,6 +158,18 @@ public class Shooter extends SubsystemBase {
     setShooterSpeed(MotorSetpoint.SHOOTER_VELOCITY, false);
   }
 
+  // Only call this from auto, this will lock the flywheel on
+  public void autoShooterStart() {
+    autoKeepFlywheelRunning = true;
+    flyWheelFullSpeed();
+  }
+
+  // Only call this from auto
+  public void autoShooterStop() {
+    autoKeepFlywheelRunning = false;
+    stopShooter();
+  }
+
   public void stopShooter() {
     velocitySetpoint = 0;
     hasGamePieceBeenShot = false;
@@ -163,9 +193,8 @@ public class Shooter extends SubsystemBase {
 
   private void setShooterSpeed(double velocity, boolean inverseBottomRoller) {
     velocitySetpoint = velocity;
-    topRollerPID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
-    double bottomVelocity = inverseBottomRoller ? -velocity : velocity;
-    bottomRollerPID.setReference(bottomVelocity, CANSparkMax.ControlType.kVelocity);
+    topRollerPID.setReference(velocitySetpoint, CANSparkMax.ControlType.kVelocity);
+    bottomRollerPID.setReference(inverseBottomRoller ? -velocitySetpoint : velocitySetpoint, CANSparkMax.ControlType.kVelocity);
   }
 
   private boolean isGamePieceDetected() {

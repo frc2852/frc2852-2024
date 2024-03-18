@@ -11,6 +11,7 @@ import frc.robot.util.vision.Color;
 
 public class LEDs extends SubsystemBase {
 
+  // Sensors
   private SerialPort led;
 
   public LEDs() {

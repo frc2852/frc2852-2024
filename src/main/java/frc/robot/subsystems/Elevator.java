@@ -21,13 +21,16 @@ import frc.robot.util.SparkFlex;
 
 public class Elevator extends SubsystemBase {
 
+  // Controllers
   private final SparkFlex motor;
   private final SparkPIDController motorPID;
   private final RelativeEncoder motorEncoder;
   private PIDParameters motorPidParameters;
 
+  // State
   private double positionSetpoint;
 
+  // Smartdashboard
   private boolean updateMotorPID = false;
 
   public Elevator() {

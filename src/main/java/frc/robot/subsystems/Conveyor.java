@@ -23,6 +23,7 @@ import frc.robot.util.SparkFlex;
 
 public class Conveyor extends SubsystemBase {
 
+  // Controllers
   private final SparkFlex topConveyor;
   private final SparkPIDController topConveyorPID;
   private final RelativeEncoder topConveyorEncoder;
@@ -33,12 +34,15 @@ public class Conveyor extends SubsystemBase {
   private final RelativeEncoder bottomConveyorEncoder;
   private PIDParameters bottomConveyorPidParameters;
 
+  // Sensors
+  private final DigitalInput ampBeamBreak;
+
+  // State
   private double velocitySetpoint;
 
+  // Smartdashboard
   private boolean updateTopConveyorPID = false;
   private boolean updateBottomConveyorPID = false;
-
-  private final DigitalInput ampBeamBreak;
 
   public Conveyor() {
     // Initialize motor controllers

@@ -2,6 +2,8 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstant;
 import frc.robot.Constants.SubsystemEnable;
+import frc.robot.commands.AutoShooterStart;
+import frc.robot.commands.AutoShooterStop;
 import frc.robot.commands.SpeakerShot;
 import frc.robot.commands.ToggleIntake;
 import frc.robot.subsystems.PowerHub;
@@ -83,14 +85,24 @@ public class RobotContainer {
     shooter = initSubsystem(SubsystemEnable.SHOOTER, Shooter::new);
 
     // Configuration
-    configurePathPlanner();
+    configureBindings();
+  }
 
+  /**
+   * Configures the button bindings for the robot. This method will link input
+   * devices to commands.
+   */
+  private void configureBindings() {
     if (drive != null) {
       configureDriverBindings();
     }
 
     if (conveyor != null && elevator != null && intake != null && shooter != null) {
       configureOperatorBindings();
+    }
+
+    if (conveyor != null && elevator != null && intake != null && shooter != null && drive != null) {
+      configurePathPlanner();
     }
   }
 
@@ -183,6 +195,8 @@ public class RobotContainer {
   private void configurePathPlanner() {
     // Register commands
     NamedCommands.registerCommand("ToggleIntake", new ToggleIntake(intake));
+    NamedCommands.registerCommand("AutoShooterStart", new AutoShooterStart(shooter));
+    NamedCommands.registerCommand("AutoShooterStop", new AutoShooterStop(shooter));
     NamedCommands.registerCommand("SpeakerShot", new SpeakerShot(intake, conveyor, shooter));
 
     // Build an auto chooser

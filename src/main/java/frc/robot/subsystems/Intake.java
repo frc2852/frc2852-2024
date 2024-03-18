@@ -24,7 +24,7 @@ public class Intake extends SubsystemBase {
   // Subsystems
   private final LEDs ledSubsystem;
 
-  // Motor controllers
+  // Controllers
   private final SparkFlex topRollers = new SparkFlex(CanbusId.INTAKE_TOP_ROLLER);
   private final SparkPIDController topRollersPID = topRollers.getPIDController();
   private final RelativeEncoder topRollersEncoder = topRollers.getEncoder();
@@ -38,6 +38,7 @@ public class Intake extends SubsystemBase {
   // Sensors
   private final DigitalInput intakeBeamBreak;
 
+  // State
   private boolean isIntakeRunning = false;
   private boolean isConveyorMode = false;
   private double velocitySetpoint;
