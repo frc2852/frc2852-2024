@@ -11,7 +11,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
-/** Add your docs here. */
 public final class SwerveConstants {
 
   public static final class SwerveDrive {
@@ -50,7 +49,6 @@ public final class SwerveConstants {
     public static final double BACK_RIGHT_CHASSIS_ANGULAR_OFFSET = Math.PI / 2;
 
     public static final boolean GYRO_REVERSED = true;
-    
   }
 
   public static final class AutoConstants {
@@ -58,10 +56,6 @@ public final class SwerveConstants {
     public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3;
     public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = Math.PI;
     public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED = Math.PI;
-
-    public static final double PX_CONTROLLER = 1;
-    public static final double PY_CONTROLLER = 1;
-    public static final double P_THETA_CONTROLLER = 1;
 
     // Constraint for the motion profiled robot angle controller
     public static final TrapezoidProfile.Constraints THETA_CONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
@@ -74,7 +68,10 @@ public final class SwerveConstants {
     // This changes the drive speed of the module (a pinion gear with more teeth
     // will result in a
     // robot that drives faster).
-    public static final int DRIVING_MOTOR_PINION_TEETH = 13;
+    public static final int DRIVING_MOTOR_PINION_TEETH = 14;
+
+    // Invert the driving motor.
+    public static final boolean DRIVE_INVERTED = false;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
     // direction of
@@ -82,7 +79,7 @@ public final class SwerveConstants {
     public static final boolean TURNING_ENCODER_INVERTED = true;
 
     // Calculations required for driving motor conversion factors and feed forward
-    public static final double DRIVING_MOTOR_FREE_SPEED_RPS = NeoMotor.FREE_SPEED_RPM / 60;
+    public static final double DRIVING_MOTOR_FREE_SPEED_RPS = VortexMotor.FREE_SPEED_RPM / 60;
     public static final double WHEEL_DIAMETER_METERS = 0.0762;
     public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_METERS * Math.PI;
 
@@ -122,6 +119,10 @@ public final class SwerveConstants {
 
     public static final int DRIVING_MOTOR_CURRENT_LIMIT = 50; // amps
     public static final int TURNING_MOTOR_CURRENT_LIMIT = 20; // amps
+  }
+
+  public static final class VortexMotor {
+    public static final double FREE_SPEED_RPM = 6704;
   }
 
   public static final class NeoMotor {
