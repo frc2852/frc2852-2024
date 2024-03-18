@@ -10,20 +10,21 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.CanbusId;
 import frc.robot.Constants.DIOId;
 import frc.robot.Constants.MotorSetpoint;
 import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
 import frc.robot.util.SparkFlex;
+import frc.robot.util.vision.Color;
 
 public class IntakeSubsystem extends SubsystemBase {
 
+  // Subsystems
+  private final LEDSubsystem ledSubsystem;
+
+  // Motor controllers
   private final SparkFlex topRollers = new SparkFlex(CanbusId.INTAKE_TOP_ROLLER);
   private final SparkPIDController topRollersPID = topRollers.getPIDController();
   private final RelativeEncoder topRollersEncoder = topRollers.getEncoder();
@@ -34,15 +35,14 @@ public class IntakeSubsystem extends SubsystemBase {
   private final RelativeEncoder bottomRollersEncoder = bottomRollers.getEncoder();
   private PIDParameters bottomRollersPidParameters;
 
+  // Sensors
   private final DigitalInput intakeBeamBreak;
 
   private boolean isIntakeRunning = false;
   private boolean isConveyorMode = false;
   private double velocitySetpoint;
 
-  private final double INTAKE_STOPPED_VELOCITY = 0.0;
-
-  public IntakeSubsystem() {
+  public IntakeSubsystem(Object... args) {
 
     // Set motor controller configurations
     topRollers.setIdleMode(IdleMode.kBrake);
@@ -76,20 +76,22 @@ public class IntakeSubsystem extends SubsystemBase {
     // Save configuration to SparkMax flash
     topRollers.burnFlash();
     bottomRollers.burnFlash();
+
+    this.ledSubsystem = (LEDSubsystem) args[0];
   }
 
   @Override
   public void periodic() {
-    // Automatically stop intake if game piece is loaded and we are not in conveyor mode
-    if (isGamePieceLoaded() && isIntakeRunning && !isConveyorMode) {
-      isConveyorMode = true;
-      stopIntake();
-    }
-
     if (isGamePieceLoaded()) {
-      // TODO: LEDs ON
+      ledSubsystem.setLEDColor(Color.GREEN);
+
+      // Automatically stop intake if game piece is loaded and we are not in conveyor mode
+      if (isIntakeRunning && !isConveyorMode) {
+        isConveyorMode = true;
+        stopIntake();
+      }
     } else {
-      // TODO: LEDs OFF
+      ledSubsystem.setLEDColor(Color.OFF);
     }
 
     UpdateDataTracking();
@@ -115,9 +117,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void stopIntake() {
     isIntakeRunning = false;
-    velocitySetpoint = INTAKE_STOPPED_VELOCITY;
-    topRollersPID.setReference(INTAKE_STOPPED_VELOCITY, CANSparkMax.ControlType.kVelocity);
-    bottomRollersPID.setReference(INTAKE_STOPPED_VELOCITY, CANSparkMax.ControlType.kVelocity);
+
+    velocitySetpoint = 0;
+    topRollersPID.setReference(velocitySetpoint, CANSparkMax.ControlType.kVelocity);
+    bottomRollersPID.setReference(velocitySetpoint, CANSparkMax.ControlType.kVelocity);
   }
 
   public boolean isGamePieceLoaded() {

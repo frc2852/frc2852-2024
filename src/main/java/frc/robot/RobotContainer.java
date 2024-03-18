@@ -13,6 +13,7 @@ import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.util.swerve.SwerveUtils;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -76,11 +77,11 @@ public class RobotContainer {
 
     // Initialize subsystems
     driveSubsystem = initSubsystem(SubsystemEnable.DRIVE, DriveSubsystem::new);
+    ledSubsystem = initSubsystem(SubsystemEnable.LED, LEDSubsystem::new);
     conveyorSubsystem = initSubsystem(SubsystemEnable.CONVEYOR, ConveyorSubsystem::new);
     elevatorSubsystem = initSubsystem(SubsystemEnable.ELEVATOR, ElevatorSubsystem::new);
-    intakeSubsystem = initSubsystem(SubsystemEnable.INTAKE, IntakeSubsystem::new);
+    intakeSubsystem = initSubsystem(SubsystemEnable.INTAKE, IntakeSubsystem::new, ledSubsystem);
     shooterSubsystem = initSubsystem(SubsystemEnable.SHOOTER, ShooterSubsystem::new);
-    ledSubsystem = initSubsystem(SubsystemEnable.LED, LEDSubsystem::new);
 
     // Configuration
     configurePathPlanner();
@@ -210,4 +211,18 @@ public class RobotContainer {
   private <T extends SubsystemBase> T initSubsystem(boolean enabled, Supplier<T> constructor) {
     return enabled ? constructor.get() : null;
   }
+
+  /**
+   * Initializes a subsystem if it is enabled.
+   *
+   * @param <T>         The type of the subsystem that extends {@link SubsystemBase}.
+   * @param enabled     A boolean indicating whether the subsystem should be initialized.
+   * @param constructor A {@link Function} that takes an array of {@link Object} and returns the subsystem.
+   * @param args        The arguments to pass to the subsystem constructor.
+   * @return An instance of the subsystem if enabled, otherwise {@code null}.
+   */
+  private <T extends SubsystemBase> T initSubsystem(boolean enabled, Function<Object[], T> constructor, Object... args) {
+    return enabled ? constructor.apply(args) : null;
+  }
+
 }
