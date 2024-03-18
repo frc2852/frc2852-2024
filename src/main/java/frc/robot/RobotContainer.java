@@ -4,13 +4,13 @@ import frc.robot.Constants.OperatorConstant;
 import frc.robot.Constants.SubsystemEnable;
 import frc.robot.commands.SpeakerShot;
 import frc.robot.commands.ToggleIntake;
-import frc.robot.subsystems.PowerHubSubsystem;
-import frc.robot.subsystems.ConveyorSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.PowerHub;
+import frc.robot.subsystems.Conveyor;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
+import frc.robot.subsystems.Shooter;
 import frc.robot.util.swerve.SwerveUtils;
 
 import java.util.function.Function;
@@ -46,14 +46,13 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
 
-  private final PowerHubSubsystem powerHubSubsystem;
-
-  private final DriveSubsystem driveSubsystem;
-  private final ConveyorSubsystem conveyorSubsystem;
-  private final ElevatorSubsystem elevatorSubsystem;
-  private final IntakeSubsystem intakeSubsystem;
-  private final ShooterSubsystem shooterSubsystem;
-  private final LEDSubsystem ledSubsystem;
+  private final PowerHub powerHub;
+  private final Drive drive;
+  private final Conveyor conveyor;
+  private final Elevator elevator;
+  private final Intake intake;
+  private final Shooter shooter;
+  private final LEDs leds;
 
   /**
    * Constructs the container for the robot. Subsystems and command mappings are
@@ -73,24 +72,24 @@ public class RobotContainer {
     operatorController = new CommandXboxController(OperatorConstant.OPERATOR_CONTROLLER_PORT);
 
     // Initialize helpers
-    powerHubSubsystem = new PowerHubSubsystem();
+    powerHub = new PowerHub();
 
     // Initialize subsystems
-    driveSubsystem = initSubsystem(SubsystemEnable.DRIVE, DriveSubsystem::new);
-    ledSubsystem = initSubsystem(SubsystemEnable.LED, LEDSubsystem::new);
-    conveyorSubsystem = initSubsystem(SubsystemEnable.CONVEYOR, ConveyorSubsystem::new);
-    elevatorSubsystem = initSubsystem(SubsystemEnable.ELEVATOR, ElevatorSubsystem::new);
-    intakeSubsystem = initSubsystem(SubsystemEnable.INTAKE, IntakeSubsystem::new, ledSubsystem);
-    shooterSubsystem = initSubsystem(SubsystemEnable.SHOOTER, ShooterSubsystem::new);
+    drive = initSubsystem(SubsystemEnable.DRIVE, Drive::new);
+    leds = initSubsystem(SubsystemEnable.LED, LEDs::new);
+    conveyor = initSubsystem(SubsystemEnable.CONVEYOR, Conveyor::new);
+    elevator = initSubsystem(SubsystemEnable.ELEVATOR, Elevator::new);
+    intake = initSubsystem(SubsystemEnable.INTAKE, Intake::new, leds);
+    shooter = initSubsystem(SubsystemEnable.SHOOTER, Shooter::new);
 
     // Configuration
     configurePathPlanner();
 
-    if (driveSubsystem != null) {
+    if (drive != null) {
       configureDriverBindings();
     }
 
-    if (conveyorSubsystem != null && elevatorSubsystem != null && intakeSubsystem != null && shooterSubsystem != null) {
+    if (conveyor != null && elevator != null && intake != null && shooter != null) {
       configureOperatorBindings();
     }
   }
@@ -100,16 +99,16 @@ public class RobotContainer {
    * devices to commands.
    */
   private void configureDriverBindings() {
-    driveSubsystem.setDefaultCommand(
+    drive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
-            () -> driveSubsystem.drive(
+            () -> drive.drive(
                 SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND)),
                 SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND)),
                 -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND)),
                 true, true),
-            driveSubsystem));
+            drive));
   }
 
   /**
@@ -119,72 +118,72 @@ public class RobotContainer {
   private void configureOperatorBindings() {
 
     // Intake note
-    operatorController.a().onTrue(new InstantCommand(intakeSubsystem::toggleIntake, intakeSubsystem));
+    operatorController.a().onTrue(new InstantCommand(intake::toggleIntake, intake));
 
     // AMP note prepare
     operatorController.b().onTrue(
         new SequentialCommandGroup(
             // Run intake, conveyor, shooter in parallel until the game piece is ready
             new ParallelCommandGroup(
-                new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
-                new RunCommand(() -> conveyorSubsystem.runConveyorForwardAmp(), conveyorSubsystem),
-                new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
-                .until(() -> conveyorSubsystem.isGamePieceAmpReady()),
+                new RunCommand(() -> intake.runIntake(true), intake),
+                new RunCommand(() -> conveyor.runConveyorForwardAmp(), conveyor),
+                new RunCommand(() -> shooter.divertGamePiece(), shooter))
+                .until(() -> conveyor.isGamePieceAmpReady()),
 
             // Stop intake, conveyor and shooter
             new ParallelCommandGroup(
-                new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
-                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
+                new InstantCommand(() -> intake.stopIntake(), intake),
+                new InstantCommand(() -> conveyor.stopConveyor(), conveyor),
+                new InstantCommand(() -> shooter.stopShooter(), shooter)),
 
             // Then, move the elevator to amp position
-            new RunCommand(() -> elevatorSubsystem.ampPosition(), elevatorSubsystem)
-                .until(() -> elevatorSubsystem.isElevatorAtPosition())));
+            new RunCommand(() -> elevator.ampPosition(), elevator)
+                .until(() -> elevator.isElevatorAtPosition())));
 
     // AMP note discharge
     operatorController.x().onTrue(
         new SequentialCommandGroup(
             // Run the conveyor and shooter again to discharge the game piece
             new ParallelCommandGroup(
-                new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem),
-                new RunCommand(() -> shooterSubsystem.divertGamePiece(), shooterSubsystem))
-                .until(() -> !conveyorSubsystem.isGamePieceAmpReady()),
+                new RunCommand(() -> conveyor.runConveyorForward(), conveyor),
+                new RunCommand(() -> shooter.divertGamePiece(), shooter))
+                .until(() -> !conveyor.isGamePieceAmpReady()),
 
             // Finally, stop the conveyor and shooter
             new ParallelCommandGroup(
-                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem)),
+                new InstantCommand(() -> conveyor.stopConveyor(), conveyor),
+                new InstantCommand(() -> shooter.stopShooter(), shooter)),
 
             // Then, move the elevator to drive position
-            new RunCommand(() -> elevatorSubsystem.drivePosition(), elevatorSubsystem)
-                .until(() -> elevatorSubsystem.isElevatorAtPosition())));
+            new RunCommand(() -> elevator.drivePosition(), elevator)
+                .until(() -> elevator.isElevatorAtPosition())));
 
     // Speaker note shooting
     operatorController.y().onTrue(
         new SequentialCommandGroup(
-            new InstantCommand(() -> shooterSubsystem.resetState(), shooterSubsystem),
+            new InstantCommand(() -> shooter.resetState(), shooter),
             // Get shooter rollers up to speed
-            new RunCommand(() -> shooterSubsystem.flyWheelFullSpeed(), shooterSubsystem)
-                .until(() -> shooterSubsystem.isShooterAtSpeed()),
+            new RunCommand(() -> shooter.flyWheelFullSpeed(), shooter)
+                .until(() -> shooter.isShooterAtSpeed()),
             new WaitCommand(0.2),
             // Run intake, conveyor, shooter in parallel until the game piece is ready
             new ParallelCommandGroup(
-                new RunCommand(() -> shooterSubsystem.flyWheelFullSpeed(), shooterSubsystem),
-                new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
-                new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem))
-                .until(() -> shooterSubsystem.hasGamePieceBeenShot()),
+                new RunCommand(() -> shooter.flyWheelFullSpeed(), shooter),
+                new RunCommand(() -> intake.runIntake(true), intake),
+                new RunCommand(() -> conveyor.runConveyorForward(), conveyor))
+                .until(() -> shooter.hasGamePieceBeenShot()),
             new WaitCommand(0.2),
             // Stop intake, conveyor and shooter
             new ParallelCommandGroup(
-                new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),
-                new InstantCommand(() -> conveyorSubsystem.stopConveyor(), conveyorSubsystem),
-                new InstantCommand(() -> shooterSubsystem.stopShooter(), shooterSubsystem))));
+                new InstantCommand(() -> intake.stopIntake(), intake),
+                new InstantCommand(() -> conveyor.stopConveyor(), conveyor),
+                new InstantCommand(() -> shooter.stopShooter(), shooter))));
   }
 
   private void configurePathPlanner() {
     // Register commands
-    NamedCommands.registerCommand("ToggleIntake", new ToggleIntake(intakeSubsystem));
-    NamedCommands.registerCommand("SpeakerShot", new SpeakerShot(intakeSubsystem, conveyorSubsystem, shooterSubsystem));
+    NamedCommands.registerCommand("ToggleIntake", new ToggleIntake(intake));
+    NamedCommands.registerCommand("SpeakerShot", new SpeakerShot(intake, conveyor, shooter));
 
     // Build an auto chooser
     autoChooser = AutoBuilder.buildAutoChooser("SpeakerCentre_Quad");

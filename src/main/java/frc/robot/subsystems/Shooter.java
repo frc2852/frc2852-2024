@@ -21,7 +21,7 @@ import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
 import frc.robot.util.SparkFlex;
 
-public class ShooterSubsystem extends SubsystemBase {
+public class Shooter extends SubsystemBase {
 
   private final SparkFlex topRoller;
   private final SparkPIDController topRollerPID;
@@ -42,7 +42,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private boolean hasGamePieceBeenShot = false;
 
-  public ShooterSubsystem() {
+  public Shooter() {
 
     // Initialize motor controllers
     topRoller = new SparkFlex(CanbusId.SHOOTER_TOP_ROLLER);

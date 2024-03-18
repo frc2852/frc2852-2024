@@ -27,7 +27,7 @@ import frc.robot.util.vision.CameraConfiguration;
  * This class manages a PhotonCamera and uses it to detect and estimate positions
  * of AprilTags in the camera's field of view.
  */
-public class AprilTagDetectionSubsystem extends SubsystemBase {
+public class AprilTagDetection extends SubsystemBase {
 
   private final PhotonCamera camera;
   private final CameraConfiguration cameraConfig;
@@ -45,7 +45,7 @@ public class AprilTagDetectionSubsystem extends SubsystemBase {
    * @param cameraConfig The configuration settings for the camera.
    * @throws IllegalArgumentException if the cameraConfig parameter is null.
    */
-  public AprilTagDetectionSubsystem(CameraConfiguration cameraConfig) {
+  public AprilTagDetection(CameraConfiguration cameraConfig) {
     if (cameraConfig == null) {
       throw new IllegalArgumentException("Camera configuration cannot be null.");
     }

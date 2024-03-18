@@ -19,10 +19,10 @@ import frc.robot.util.PIDParameters;
 import frc.robot.util.SparkFlex;
 import frc.robot.util.vision.Color;
 
-public class IntakeSubsystem extends SubsystemBase {
+public class Intake extends SubsystemBase {
 
   // Subsystems
-  private final LEDSubsystem ledSubsystem;
+  private final LEDs ledSubsystem;
 
   // Motor controllers
   private final SparkFlex topRollers = new SparkFlex(CanbusId.INTAKE_TOP_ROLLER);
@@ -42,7 +42,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private boolean isConveyorMode = false;
   private double velocitySetpoint;
 
-  public IntakeSubsystem(Object... args) {
+  public Intake(Object... args) {
 
     // Set motor controller configurations
     topRollers.setIdleMode(IdleMode.kBrake);
@@ -77,7 +77,7 @@ public class IntakeSubsystem extends SubsystemBase {
     topRollers.burnFlash();
     bottomRollers.burnFlash();
 
-    this.ledSubsystem = (LEDSubsystem) args[0];
+    this.ledSubsystem = (LEDs) args[0];
   }
 
   @Override

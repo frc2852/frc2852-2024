@@ -9,11 +9,11 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.vision.Color;
 
-public class LEDSubsystem extends SubsystemBase {
+public class LEDs extends SubsystemBase {
 
   private SerialPort led;
 
-  public LEDSubsystem() {
+  public LEDs() {
     try {
       // Initialize the serial port for communication with the Arduino
       led = new SerialPort(9600, SerialPort.Port.kOnboard); // Adjust the baud rate as needed

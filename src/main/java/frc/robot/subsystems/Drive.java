@@ -34,7 +34,7 @@ import frc.robot.util.constants.SwerveConstants.SwerveModule;
 import frc.robot.util.swerve.MAXSwerveModule;
 import frc.robot.util.swerve.SwerveUtils;
 
-public class DriveSubsystem extends SubsystemBase {
+public class Drive extends SubsystemBase {
 
   // Create MAXSwerveModules
   private final MAXSwerveModule frontLeft = new MAXSwerveModule(
@@ -95,7 +95,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final Field2d field = new Field2d();
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
+  public Drive() {
     zeroHeading();
 
     SmartDashboard.putData(field);

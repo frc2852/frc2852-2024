@@ -19,7 +19,7 @@ import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
 import frc.robot.util.SparkFlex;
 
-public class ElevatorSubsystem extends SubsystemBase {
+public class Elevator extends SubsystemBase {
 
   private final SparkFlex motor;
   private final SparkPIDController motorPID;
@@ -30,7 +30,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private boolean updateMotorPID = false;
 
-  public ElevatorSubsystem() {
+  public Elevator() {
 
     // Initialize motor controllers
     motor = new SparkFlex(CanbusId.ELEVATOR);
