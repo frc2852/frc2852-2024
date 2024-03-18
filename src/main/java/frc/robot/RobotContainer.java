@@ -9,6 +9,7 @@ import frc.robot.subsystems.ConveyorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.util.swerve.SwerveUtils;
 
@@ -51,6 +52,7 @@ public class RobotContainer {
   private final ElevatorSubsystem elevatorSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
+  private final LEDSubsystem ledSubsystem;
 
   /**
    * Constructs the container for the robot. Subsystems and command mappings are
@@ -71,7 +73,6 @@ public class RobotContainer {
 
     // Initialize helpers
     powerHubSubsystem = new PowerHubSubsystem();
-    powerHubSubsystem.reset();
 
     // Initialize subsystems
     driveSubsystem = initSubsystem(SubsystemEnable.DRIVE, DriveSubsystem::new);
@@ -79,6 +80,7 @@ public class RobotContainer {
     elevatorSubsystem = initSubsystem(SubsystemEnable.ELEVATOR, ElevatorSubsystem::new);
     intakeSubsystem = initSubsystem(SubsystemEnable.INTAKE, IntakeSubsystem::new);
     shooterSubsystem = initSubsystem(SubsystemEnable.SHOOTER, ShooterSubsystem::new);
+    ledSubsystem = initSubsystem(SubsystemEnable.LED, LEDSubsystem::new);
 
     // Configuration
     configurePathPlanner();

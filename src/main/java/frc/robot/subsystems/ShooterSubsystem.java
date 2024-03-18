@@ -83,8 +83,10 @@ public class ShooterSubsystem extends SubsystemBase {
     bottomRoller.burnFlash();
 
     // Add update buttons to dashboard
-    DataTracker.putBoolean(getName(), "UpdateTopRollerPID", updateTopRollerPID, true);
-    DataTracker.putBoolean(getName(), "UpdateBottomRollerPID", updateBottomRollerPID, true);
+    if (!DriverStation.isFMSAttached() && Constants.PID_TUNE_MODE) {
+      DataTracker.putBoolean(getName(), "UpdateTopRollerPID", updateTopRollerPID, true);
+      DataTracker.putBoolean(getName(), "UpdateBottomRollerPID", updateBottomRollerPID, true);
+    }
   }
 
   @Override
@@ -93,38 +95,39 @@ public class ShooterSubsystem extends SubsystemBase {
       hasGamePieceBeenShot = true;
     }
 
-    // Get current positions and calculate errors
-    double topRollerVelocity = topRollerEncoder.getVelocity();
-    double topRollerVelocityError = velocitySetpoint == 0 ? 0 : topRollerVelocity - velocitySetpoint;
+    if (!DriverStation.isFMSAttached()) {
+      // Get current positions and calculate errors
+      double topRollerVelocity = topRollerEncoder.getVelocity();
+      double topRollerVelocityError = velocitySetpoint == 0 ? 0 : topRollerVelocity - velocitySetpoint;
 
-    double bottomRollerVelocity = bottomRollerEncoder.getVelocity();
-    double bottomRollerVelocityError = velocitySetpoint == 0 ? 0 : topRollerVelocity - velocitySetpoint;
+      double bottomRollerVelocity = bottomRollerEncoder.getVelocity();
+      double bottomRollerVelocityError = velocitySetpoint == 0 ? 0 : topRollerVelocity - velocitySetpoint;
 
-    // Dashboard data tracking
-    DataTracker.putBoolean(getName(), "HasGamePieceBeenShot", hasGamePieceBeenShot, true);
+      // Dashboard data tracking
+      DataTracker.putBoolean(getName(), "HasGamePieceBeenShot", hasGamePieceBeenShot, true);
 
-    DataTracker.putNumber(getName(), "VelocitySetPoint", velocitySetpoint, true);
+      DataTracker.putNumber(getName(), "VelocitySetPoint", velocitySetpoint, true);
 
-    DataTracker.putNumber(getName(), "TopRollerVelocity", topRollerVelocity, true);
-    DataTracker.putNumber(getName(), "TopRollerVelocityError", topRollerVelocityError, true);
+      DataTracker.putNumber(getName(), "TopRollerVelocity", topRollerVelocity, true);
+      DataTracker.putNumber(getName(), "TopRollerVelocityError", topRollerVelocityError, true);
 
-    DataTracker.putNumber(getName(), "BottomRollerVelocity", bottomRollerVelocity, true);
-    DataTracker.putNumber(getName(), "BottomRollerVelocityError", bottomRollerVelocityError, true);
+      DataTracker.putNumber(getName(), "BottomRollerVelocity", bottomRollerVelocity, true);
+      DataTracker.putNumber(getName(), "BottomRollerVelocityError", bottomRollerVelocityError, true);
 
-    if (!DriverStation.isFMSAttached() && Constants.PID_TUNE_MODE) {
+      if (Constants.PID_TUNE_MODE) {
+        // PID updates from dashboard
+        updateTopRollerPID = SmartDashboard.getBoolean("UpdateTopRollerPID", false);
+        updateBottomRollerPID = SmartDashboard.getBoolean("UpdateBottomRollerPID", false);
 
-      // PID updates from dashboard
-      updateTopRollerPID = SmartDashboard.getBoolean("UpdateTopRollerPID", false);
-      updateBottomRollerPID = SmartDashboard.getBoolean("UpdateBottomRollerPID", false);
+        if (topRollerPidParameters.updateParametersFromDashboard() && updateTopRollerPID) {
+          updateTopRollerPID = false;
+          topRollerPidParameters.applyParameters(topRollerPID);
+        }
 
-      if (topRollerPidParameters.updateParametersFromDashboard() && updateTopRollerPID) {
-        updateTopRollerPID = false;
-        topRollerPidParameters.applyParameters(topRollerPID);
-      }
-
-      if (bottomRollerPidParameters.updateParametersFromDashboard() && updateBottomRollerPID) {
-        updateBottomRollerPID = false;
-        bottomRollerPidParameters.applyParameters(bottomRollerPID);
+        if (bottomRollerPidParameters.updateParametersFromDashboard() && updateBottomRollerPID) {
+          updateBottomRollerPID = false;
+          bottomRollerPidParameters.applyParameters(bottomRollerPID);
+        }
       }
     }
   }

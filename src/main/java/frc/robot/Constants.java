@@ -78,5 +78,6 @@ public final class Constants {
     public static final boolean SHOOTER = false;
     public static final boolean CONVEYOR = false;
     public static final boolean ELEVATOR = false;
+    public static final boolean LED = false;
   }
 }

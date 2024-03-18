@@ -57,29 +57,32 @@ public class ElevatorSubsystem extends SubsystemBase {
     motor.burnFlash();
 
     // Add update buttons to dashboard
-    DataTracker.putBoolean(getName(), "UpdatePID", updateMotorPID, true);
+    if (!DriverStation.isFMSAttached() && Constants.PID_TUNE_MODE) {
+      DataTracker.putBoolean(getName(), "UpdatePID", updateMotorPID, true);
+    }
   }
 
   @Override
   public void periodic() {
-    // Get current positions and calculate errors
-    double motorPosition = motorEncoder.getPosition();
-    double motorPositionError = positionSetpoint - motorPosition;
+    if (!DriverStation.isFMSAttached()) {
+      // Get current positions and calculate errors
+      double motorPosition = motorEncoder.getPosition();
+      double motorPositionError = positionSetpoint - motorPosition;
 
-    // Dashboard data tracking
-    DataTracker.putNumber(getName(), "PositionSetPoint", positionSetpoint, true);
-    DataTracker.putNumber(getName(), "Position", motorPosition, true);
-    DataTracker.putNumber(getName(), "PositionError", motorPositionError, true);
-   DataTracker.putBoolean(getName(), "helloWorld", isElevatorAtPosition(), true);
+      // Dashboard data tracking
+      DataTracker.putNumber(getName(), "PositionSetPoint", positionSetpoint, true);
+      DataTracker.putNumber(getName(), "Position", motorPosition, true);
+      DataTracker.putNumber(getName(), "PositionError", motorPositionError, true);
+      DataTracker.putBoolean(getName(), "helloWorld", isElevatorAtPosition(), true);
 
-    if (!DriverStation.isFMSAttached() && Constants.PID_TUNE_MODE) {
+      if (Constants.PID_TUNE_MODE) {
+        // PID updates from dashboard
+        updateMotorPID = SmartDashboard.getBoolean("UpdatePID", false);
 
-      // PID updates from dashboard
-      updateMotorPID = SmartDashboard.getBoolean("UpdatePID", false);
-
-      if (motorPidParameters.updateParametersFromDashboard() && updateMotorPID) {
-        updateMotorPID = false;
-        motorPidParameters.applyParameters(motorPID);
+        if (motorPidParameters.updateParametersFromDashboard() && updateMotorPID) {
+          updateMotorPID = false;
+          motorPidParameters.applyParameters(motorPID);
+        }
       }
     }
   }
@@ -98,14 +101,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public boolean isElevatorAtPosition() {
     return Math.abs(motorEncoder.getPosition() - positionSetpoint) < MotorSetpoint.ELEVATOR_MARGIN_OF_ERROR;
-  }
-
-  public void increasePosition(){
-    setElevatorPosition(positionSetpoint+1);
-  }
-
-  public void decreasePosition(){
-    setElevatorPosition(positionSetpoint-1);
   }
 
   private void setElevatorPosition(double position) {

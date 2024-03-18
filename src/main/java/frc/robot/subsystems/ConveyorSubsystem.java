@@ -80,42 +80,44 @@ public class ConveyorSubsystem extends SubsystemBase {
     bottomConveyor.burnFlash();
 
     // Add update buttons to dashboard
-    DataTracker.putBoolean(getName(), "UpdateTopMotorPID", updateTopConveyorPID, true);
-    DataTracker.putBoolean(getName(), "UpdateBottomMotorPID", updateBottomConveyorPID, true);
+    if (!DriverStation.isFMSAttached() && Constants.PID_TUNE_MODE) {
+      DataTracker.putBoolean(getName(), "UpdateTopMotorPID", updateTopConveyorPID, true);
+      DataTracker.putBoolean(getName(), "UpdateBottomMotorPID", updateBottomConveyorPID, true);
+    }
   }
 
   @Override
   public void periodic() {
-    // Get current velocities of the conveyors
-    double topConveyorVelocity = topConveyorEncoder.getVelocity();
-    double bottomConveyorVelocity = bottomConveyorEncoder.getVelocity();
+    if (!DriverStation.isFMSAttached()) {
+      // Get current velocities of the conveyors
+      double topConveyorVelocity = topConveyorEncoder.getVelocity();
+      double bottomConveyorVelocity = bottomConveyorEncoder.getVelocity();
 
-    // Calculate the velocity errors
-    double topConveyorVelocityError = velocitySetpoint == 0 ? 0 : topConveyorVelocity - velocitySetpoint;
-    double bottomConveyorVelocityError = velocitySetpoint == 0 ? 0 : bottomConveyorVelocity - velocitySetpoint;
+      // Calculate the velocity errors
+      double topConveyorVelocityError = velocitySetpoint == 0 ? 0 : topConveyorVelocity - velocitySetpoint;
+      double bottomConveyorVelocityError = velocitySetpoint == 0 ? 0 : bottomConveyorVelocity - velocitySetpoint;
 
-    // Dashboard data tracking
-    DataTracker.putNumber(getName(), "VelocitySetPoint", velocitySetpoint, true);
-    DataTracker.putNumber(getName(), "TopVelocity", topConveyorVelocity, true);
-    DataTracker.putNumber(getName(), "TopVelocityError", topConveyorVelocityError, true);
-    DataTracker.putNumber(getName(), "BottomVelocity", bottomConveyorVelocity, true);
-    DataTracker.putNumber(getName(), "BottomVelocityError", bottomConveyorVelocityError, true);
-    DataTracker.putBoolean(getName(), "IsGamePieceAmpReady", isGamePieceAmpReady(), true);
+      DataTracker.putNumber(getName(), "VelocitySetPoint", velocitySetpoint, true);
+      DataTracker.putNumber(getName(), "TopVelocity", topConveyorVelocity, true);
+      DataTracker.putNumber(getName(), "TopVelocityError", topConveyorVelocityError, true);
+      DataTracker.putNumber(getName(), "BottomVelocity", bottomConveyorVelocity, true);
+      DataTracker.putNumber(getName(), "BottomVelocityError", bottomConveyorVelocityError, true);
+      DataTracker.putBoolean(getName(), "IsGamePieceAmpReady", isGamePieceAmpReady(), true);
 
-    if (!DriverStation.isFMSAttached() && Constants.PID_TUNE_MODE) {
+      if (Constants.PID_TUNE_MODE) {
+        // PID updates from dashboard
+        updateTopConveyorPID = SmartDashboard.getBoolean("UpdateTopMotorPID", false);
+        updateBottomConveyorPID = SmartDashboard.getBoolean("UpdateBottomMotorPID", false);
 
-      // PID updates from dashboard
-      updateTopConveyorPID = SmartDashboard.getBoolean("UpdateTopMotorPID", false);
-      updateBottomConveyorPID = SmartDashboard.getBoolean("UpdateBottomMotorPID", false);
+        if (topConveyorPidParameters.updateParametersFromDashboard() && updateTopConveyorPID) {
+          updateTopConveyorPID = false;
+          topConveyorPidParameters.applyParameters(topConveyorPID);
+        }
 
-      if (topConveyorPidParameters.updateParametersFromDashboard() && updateTopConveyorPID) {
-        updateTopConveyorPID = false;
-        topConveyorPidParameters.applyParameters(topConveyorPID);
-      }
-
-      if (bottomConveyorPidParameters.updateParametersFromDashboard() && updateBottomConveyorPID) {
-        updateBottomConveyorPID = false;
-        bottomConveyorPidParameters.applyParameters(bottomConveyorPID);
+        if (bottomConveyorPidParameters.updateParametersFromDashboard() && updateBottomConveyorPID) {
+          updateBottomConveyorPID = false;
+          bottomConveyorPidParameters.applyParameters(bottomConveyorPID);
+        }
       }
     }
   }

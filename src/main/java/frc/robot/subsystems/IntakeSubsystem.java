@@ -9,9 +9,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.CanbusId;
 import frc.robot.Constants.DIOId;
 import frc.robot.Constants.MotorSetpoint;
@@ -32,18 +35,12 @@ public class IntakeSubsystem extends SubsystemBase {
   private PIDParameters bottomRollersPidParameters;
 
   private final DigitalInput intakeBeamBreak;
-  private I2C ledStrip;
 
   private boolean isIntakeRunning = false;
   private boolean isConveyorMode = false;
   private double velocitySetpoint;
 
   private final double INTAKE_STOPPED_VELOCITY = 0.0;
-
-  public enum LEDMode {
-    OFF,
-    ON,
-  }
 
   public IntakeSubsystem() {
 
@@ -79,8 +76,6 @@ public class IntakeSubsystem extends SubsystemBase {
     // Save configuration to SparkMax flash
     topRollers.burnFlash();
     bottomRollers.burnFlash();
-
-    ledStrip = new I2C(Port.kOnboard, 0x01);
   }
 
   @Override
@@ -92,9 +87,9 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     if (isGamePieceLoaded()) {
-      setLEDMode(LEDMode.OFF);
+      // TODO: LEDs ON
     } else {
-      setLEDMode(LEDMode.ON);
+      // TODO: LEDs OFF
     }
 
     UpdateDataTracking();
@@ -130,31 +125,22 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   private void UpdateDataTracking() {
-    // Get current positions and calculate errors
-    double topRollersVelocity = topRollersEncoder.getVelocity();
-    double topRollersVelocityError = velocitySetpoint - topRollersVelocity;
-
-    double bottomRollersVelocity = bottomRollersEncoder.getVelocity();
-    double bottomRollersVelocityError = velocitySetpoint - bottomRollersVelocity;
-
-    DataTracker.putBoolean(getName(), "IsRunning", isIntakeRunning, true);
+    DataTracker.putBoolean(getName(), "IsIntakeRunning", isIntakeRunning, true);
     DataTracker.putBoolean(getName(), "IsGamePieceLoaded", isGamePieceLoaded(), true);
 
-    DataTracker.putNumber(getName(), "VelocitySetPoint", velocitySetpoint, true);
-    DataTracker.putNumber(getName(), "TopRollersVelocity", topRollersVelocity, true);
-    DataTracker.putNumber(getName(), "TopRollersVelocityError", topRollersVelocityError, true);
-    DataTracker.putNumber(getName(), "BottomRollersVelocity", bottomRollersVelocity, true);
-    DataTracker.putNumber(getName(), "BottomRollersVelocityError", bottomRollersVelocityError, true);
-  }
+    if (!DriverStation.isFMSAttached()) {
+      // Get current positions and calculate errors
+      double topRollersVelocity = topRollersEncoder.getVelocity();
+      double topRollersVelocityError = velocitySetpoint - topRollersVelocity;
 
-  private void setLEDMode(LEDMode mode) {
-    byte[] message = new byte[1];
-    message[0] = (byte) mode.ordinal(); // Convert the mode to a byte value
-    byte[] messageRecieved = new byte[0];
+      double bottomRollersVelocity = bottomRollersEncoder.getVelocity();
+      double bottomRollersVelocityError = velocitySetpoint - bottomRollersVelocity;
 
-    // Send the mode to both Arduinos
-    if (ledStrip != null) {
-      ledStrip.transaction(message, message.length, messageRecieved, 0);
+      DataTracker.putNumber(getName(), "VelocitySetPoint", velocitySetpoint, true);
+      DataTracker.putNumber(getName(), "TopRollersVelocity", topRollersVelocity, true);
+      DataTracker.putNumber(getName(), "TopRollersVelocityError", topRollersVelocityError, true);
+      DataTracker.putNumber(getName(), "BottomRollersVelocity", bottomRollersVelocity, true);
+      DataTracker.putNumber(getName(), "BottomRollersVelocityError", bottomRollersVelocityError, true);
     }
   }
 }
