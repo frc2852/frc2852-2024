@@ -10,15 +10,7 @@ import frc.robot.util.constants.LogConstants;
 
 import java.util.function.Supplier;
 
-//TODO: This needs to be merged with SparkMax class, they are are fully identical except for the alt encoder which we can write a check for.
 public class SparkFlex extends CANSparkFlex {
-
-  public enum MotorModel {
-    VORTEX,
-    NEO,
-    NEO_550,
-    BRUSHED
-  }
 
   private static final int MAX_RETRIES = 5;
 

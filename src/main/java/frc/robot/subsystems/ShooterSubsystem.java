@@ -38,7 +38,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private boolean updateTopRollerPID = false;
   private boolean updateBottomRollerPID = false;
 
-  private final DigitalInput shooterProximitySensor;
+  private final DigitalInput shooterBeamBreak;
 
   private boolean hasGamePieceBeenShot = false;
 
@@ -53,8 +53,8 @@ public class ShooterSubsystem extends SubsystemBase {
     bottomRoller.setIdleMode(IdleMode.kCoast);
     bottomRoller.setInverted(true);
 
-    // Initialize proximity sensors
-    shooterProximitySensor = new DigitalInput(DIOId.SHOOTER_PROXIMITY_SENSOR);
+    // Initialize sensors
+    shooterBeamBreak = new DigitalInput(DIOId.SHOOTER_BEAM_BREAK);
 
     // Initialize PID controllers
     topRollerPID = topRoller.getPIDController();
@@ -166,6 +166,6 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   private boolean isGamePieceDetected() {
-    return !shooterProximitySensor.get();
+    return !shooterBeamBreak.get();
   }
 }

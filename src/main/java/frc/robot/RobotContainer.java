@@ -1,6 +1,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstant;
+import frc.robot.Constants.SubsystemEnable;
 import frc.robot.commands.SpeakerShot;
 import frc.robot.commands.ToggleIntake;
 import frc.robot.subsystems.PowerHubSubsystem;
@@ -11,6 +12,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.util.swerve.SwerveUtils;
 
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -26,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -71,17 +74,22 @@ public class RobotContainer {
     powerHubSubsystem.reset();
 
     // Initialize subsystems
-    driveSubsystem = new DriveSubsystem();
-
-    conveyorSubsystem = new ConveyorSubsystem();
-    elevatorSubsystem = new ElevatorSubsystem();
-    intakeSubsystem = new IntakeSubsystem();
-    shooterSubsystem = new ShooterSubsystem();
+    driveSubsystem = initSubsystem(SubsystemEnable.DRIVE, DriveSubsystem::new);
+    conveyorSubsystem = initSubsystem(SubsystemEnable.CONVEYOR, ConveyorSubsystem::new);
+    elevatorSubsystem = initSubsystem(SubsystemEnable.ELEVATOR, ElevatorSubsystem::new);
+    intakeSubsystem = initSubsystem(SubsystemEnable.INTAKE, IntakeSubsystem::new);
+    shooterSubsystem = initSubsystem(SubsystemEnable.SHOOTER, ShooterSubsystem::new);
 
     // Configuration
     configurePathPlanner();
-    configureDriverBindings();
-    configureOperatorBindings();
+
+    if (driveSubsystem != null) {
+      configureDriverBindings();
+    }
+
+    if (conveyorSubsystem != null && elevatorSubsystem != null && intakeSubsystem != null && shooterSubsystem != null) {
+      configureOperatorBindings();
+    }
   }
 
   /**
@@ -187,5 +195,17 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+  }
+
+  /**
+   * Initializes a subsystem if it is enabled.
+   *
+   * @param <T>         The type of the subsystem that extends {@link SubsystemBase}.
+   * @param enabled     A boolean indicating whether the subsystem should be initialized.
+   * @param constructor A {@link Supplier} that provides the constructor for the subsystem.
+   * @return An instance of the subsystem if enabled, otherwise {@code null}.
+   */
+  private <T extends SubsystemBase> T initSubsystem(boolean enabled, Supplier<T> constructor) {
+    return enabled ? constructor.get() : null;
   }
 }

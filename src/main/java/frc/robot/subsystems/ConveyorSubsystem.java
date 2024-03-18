@@ -38,21 +38,20 @@ public class ConveyorSubsystem extends SubsystemBase {
   private boolean updateTopConveyorPID = false;
   private boolean updateBottomConveyorPID = false;
 
-  private final DigitalInput ampGamePieceReady;
+  private final DigitalInput ampBeamBreak;
 
   public ConveyorSubsystem() {
     // Initialize motor controllers
     topConveyor = new SparkFlex(CanbusId.CONVEYOR_TOP);
     topConveyor.setIdleMode(IdleMode.kCoast);
-    //changed from false to true
     topConveyor.setInverted(false);
 
     bottomConveyor = new SparkFlex(CanbusId.CONVEYOR_BOTTOM);
     bottomConveyor.setIdleMode(IdleMode.kCoast);
     bottomConveyor.setInverted(true);
 
-    // Initialize proximity sensors
-    ampGamePieceReady = new DigitalInput(DIOId.CONVEYOR_PROXIMITY_SENSOR);
+    // Initialize sensors
+    ampBeamBreak = new DigitalInput(DIOId.CONVEYOR_BEAM_BREAK);
 
     // Initialize PID controllers
     topConveyorPID = topConveyor.getPIDController();
@@ -135,12 +134,12 @@ public class ConveyorSubsystem extends SubsystemBase {
     bottomConveyor.stopMotor();
   }
 
-  public void runConveyorForwardAmp(){
+  public void runConveyorForwardAmp() {
     setConveyorVelocity(1000);
   }
 
   public boolean isGamePieceAmpReady() {
-    return !ampGamePieceReady.get();
+    return !ampBeamBreak.get();
   }
 
   private void setConveyorVelocity(double velocity) {

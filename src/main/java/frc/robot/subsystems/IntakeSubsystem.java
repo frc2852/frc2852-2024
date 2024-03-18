@@ -31,7 +31,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final RelativeEncoder bottomRollersEncoder = bottomRollers.getEncoder();
   private PIDParameters bottomRollersPidParameters;
 
-  private final DigitalInput intakeProximitySensor;
+  private final DigitalInput intakeBeamBreak;
   private I2C ledStrip;
 
   private boolean isIntakeRunning = false;
@@ -58,8 +58,8 @@ public class IntakeSubsystem extends SubsystemBase {
     topRollersEncoder.setPosition(0);
     bottomRollersEncoder.setPosition(0);
 
-    // Initialize proximity sensors
-    intakeProximitySensor = new DigitalInput(DIOId.INTAKE_PROXIMITY_SENSOR);
+    // Initialize sensors
+    intakeBeamBreak = new DigitalInput(DIOId.INTAKE_BEAM_BREAK);
 
     // PID coefficients
     topRollersPidParameters = new PIDParameters(
@@ -126,7 +126,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public boolean isGamePieceLoaded() {
-    return !intakeProximitySensor.get();
+    return !intakeBeamBreak.get();
   }
 
   private void UpdateDataTracking() {
