@@ -41,6 +41,4 @@ public class PowerHub extends SubsystemBase {
   public void highBeamsOn() {
     powerDistribution.setSwitchableChannel(true);
   }
-
-
 }
