@@ -15,7 +15,7 @@ public final class SwerveConstants {
 
   public static final class SwerveDrive {
     // Meters per second
-    public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
+    public static final double MAX_SPEED_METERS_PER_SECOND = 5.74;
 
     // Radians per second
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI;
@@ -30,10 +30,10 @@ public final class SwerveConstants {
     public static final double ROTATIONAL_SLEW_RATE = 2.0;
 
     // Chassis configuration
-    public static final double TRACK_WIDTH = Units.inchesToMeters(26);
+    public static final double TRACK_WIDTH = Units.inchesToMeters(29.5);
 
     // Distance between centers of right and left wheels on robot
-    public static final double WHEEL_BASE = Units.inchesToMeters(26);
+    public static final double WHEEL_BASE = Units.inchesToMeters(29.5);
 
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics DRIVE_KINEMATICS = new SwerveDriveKinematics(

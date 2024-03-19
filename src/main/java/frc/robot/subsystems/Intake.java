@@ -22,7 +22,8 @@ import frc.robot.util.vision.Color;
 public class Intake extends SubsystemBase {
 
   // Subsystems
-  private final LEDs ledSubsystem;
+  private final LEDs leds;
+  private final PowerHub powerHub;
 
   // Controllers
   private final SparkFlex topRollers = new SparkFlex(CanbusId.INTAKE_TOP_ROLLER);
@@ -78,13 +79,16 @@ public class Intake extends SubsystemBase {
     topRollers.burnFlash();
     bottomRollers.burnFlash();
 
-    this.ledSubsystem = (LEDs) args[0];
+    // Subsystems
+    leds = (LEDs) args[0];
+    powerHub = (PowerHub) args[1];
   }
 
   @Override
   public void periodic() {
     if (isGamePieceLoaded()) {
-      ledSubsystem.setLEDColor(Color.GREEN);
+      leds.setLEDColor(Color.GREEN);
+      powerHub.highBeamsOff();
 
       // Automatically stop intake if game piece is loaded and we are not in conveyor mode
       if (isIntakeRunning && !isConveyorMode) {
@@ -92,7 +96,8 @@ public class Intake extends SubsystemBase {
         stopIntake();
       }
     } else {
-      ledSubsystem.setLEDColor(Color.OFF);
+      leds.setLEDColor(Color.OFF);
+      powerHub.highBeamsOn();
     }
 
     UpdateDataTracking();

@@ -13,6 +13,8 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.vision.GamePieceDetection;
+import frc.robot.util.constants.VisionConstants;
 import frc.robot.util.swerve.SwerveUtils;
 
 import java.util.function.Function;
@@ -56,6 +58,9 @@ public class RobotContainer {
   private final Shooter shooter;
   private final LEDs leds;
 
+  // Vision
+  private final GamePieceDetection gamePieceDetection;
+
   /**
    * Constructs the container for the robot. Subsystems and command mappings are
    * initialized here.
@@ -76,13 +81,17 @@ public class RobotContainer {
     // Initialize helpers
     powerHub = new PowerHub();
 
+    // Initialize vision
+    gamePieceDetection = new GamePieceDetection(VisionConstants.CameraTracking.GAME_PIECE_CAMERA_CONFIG);
+
     // Initialize subsystems
-    drive = initSubsystem(SubsystemEnable.DRIVE, Drive::new);
-    leds = initSubsystem(SubsystemEnable.LED, LEDs::new);
+    drive = new Drive(gamePieceDetection);
+    leds = new LEDs();
+
+    shooter = initSubsystem(SubsystemEnable.SHOOTER, Shooter::new);
     conveyor = initSubsystem(SubsystemEnable.CONVEYOR, Conveyor::new);
     elevator = initSubsystem(SubsystemEnable.ELEVATOR, Elevator::new);
-    intake = initSubsystem(SubsystemEnable.INTAKE, Intake::new, leds);
-    shooter = initSubsystem(SubsystemEnable.SHOOTER, Shooter::new);
+    intake = initSubsystem(SubsystemEnable.INTAKE, Intake::new, leds, powerHub);
 
     // Configuration
     configureBindings();
@@ -99,9 +108,6 @@ public class RobotContainer {
 
     if (conveyor != null && elevator != null && intake != null && shooter != null) {
       configureOperatorBindings();
-    }
-
-    if (conveyor != null && elevator != null && intake != null && shooter != null && drive != null) {
       configurePathPlanner();
     }
   }
@@ -111,6 +117,10 @@ public class RobotContainer {
    * devices to commands.
    */
   private void configureDriverBindings() {
+
+    // Auto game piece tracking
+    driverController.a().onTrue(new RunCommand(() -> drive.alignAndPickUpNote(), drive));
+
     drive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.

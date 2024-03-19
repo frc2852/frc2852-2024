@@ -4,11 +4,10 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.PowerHub;
 import frc.robot.util.vision.CameraConfiguration;
+import frc.robot.util.vision.TargetInfo;
 
 /**
  * Subsystem for detecting game pieces using PhotonVision.
@@ -19,9 +18,7 @@ public class GamePieceDetection extends SubsystemBase {
 
   private final PhotonCamera camera;
   private final CameraConfiguration cameraConfig;
-  private final PowerHub powerHubSubsystem;
 
-  private boolean trackingMode = false;
   private PhotonTrackedTarget currentTarget = null;
 
   /**
@@ -34,12 +31,11 @@ public class GamePieceDetection extends SubsystemBase {
    * @param ledSubsystem An instance of LEDSubsystem for LED control and feedback.
    * @throws IllegalArgumentException if the cameraConfig parameter is null, ensuring that valid configuration is provided.
    */
-  public GamePieceDetection(CameraConfiguration cameraConfig, PowerHub ledSubsystem) {
+  public GamePieceDetection(CameraConfiguration cameraConfig) {
     if (cameraConfig == null) {
       throw new IllegalArgumentException("Camera configuration cannot be null.");
     }
 
-    this.powerHubSubsystem = ledSubsystem;
     this.cameraConfig = cameraConfig;
     this.camera = initializePhotonVisionCamera();
   }
@@ -48,20 +44,12 @@ public class GamePieceDetection extends SubsystemBase {
    * Initializes the PhotonVision camera.
    * <p>
    * This method creates a new PhotonCamera instance using the camera name from the camera configuration.
-   * It checks if the camera is connected and reports an error to the DriverStation if the connection fails.
-   * If the camera is successfully connected, the driver mode is set to false, and the LED mode is turned off.
+   * The driver mode is set to false, and the LED mode is turned off.
    * 
    * @return The initialized PhotonCamera if successful, or null if the camera is not connected.
    */
   private PhotonCamera initializePhotonVisionCamera() {
     PhotonCamera newCamera = new PhotonCamera(cameraConfig.getCameraName());
-
-    // Check if the newCamera object is not null and is connected, otherwise report error
-    if (newCamera == null || !newCamera.isConnected()) {
-      DriverStation.reportError("April Tag Camera connection failed, camera initialization aborted.", false);
-      return null;
-    }
-
     newCamera.setDriverMode(false);
     newCamera.setLED(VisionLEDMode.kOff);
     return newCamera;
@@ -77,51 +65,13 @@ public class GamePieceDetection extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    // Check if the camera is not connected and report a warning
-    if (camera != null && !camera.isConnected()) {
-      DriverStation.reportWarning("Camera is not connected. Cannot update game piece visibility.", false);
-      currentTarget = null;
-      SmartDashboard.putBoolean("Game Piece Visible", false);
+    if (isCameraDisconnected()) {
+      handleDisconnectedCamera();
       return;
     }
 
-    // If not in tracking mode, simply return
-    if (!trackingMode) {
-      return;
-    }
-
-    // When in tracking mode and camera is connected, update target visibility
-    var result = camera.getLatestResult();
-    if (!result.hasTargets()) {
-      SmartDashboard.putBoolean("Game Piece Visible", false);
-      currentTarget = null;
-    } else {
-      currentTarget = result.getBestTarget();
-      SmartDashboard.putBoolean("Game Piece Visible", true);
-    }
-  }
-
-  /**
-   * Enables the tracking mode for detecting game pieces.
-   * When tracking mode is enabled, the system actively seeks and tracks game pieces,
-   * and the LED subsystem is set to high beam mode for enhanced visibility.
-   */
-  public void enableTrackingMode() {
-    trackingMode = true;
-    powerHubSubsystem.highBeamsOn();
-  }
-
-  /**
-   * Disables the tracking mode for detecting game pieces.
-   * When tracking mode is disabled, the system stops tracking game pieces,
-   * turns off the high beam mode in the LED subsystem, and updates the SmartDashboard
-   * to indicate that the game piece is no longer visible.
-   */
-  public void disableTrackingMode() {
-    currentTarget = null;
-    trackingMode = false;
-    powerHubSubsystem.highBeamsOff();
-    SmartDashboard.putBoolean("Game Piece Visible", false);
+    updateTargetVisibility();
+    SmartDashboard.putBoolean("Game Piece Visible", isGamePieceVisible());
   }
 
   /**
@@ -134,22 +84,67 @@ public class GamePieceDetection extends SubsystemBase {
   }
 
   /**
-   * Retrieves the yaw angle of the currently visible game piece.
-   * If no game piece is visible, returns 0.0.
+   * Gets the angle and distance to the current target.
    *
-   * @return The yaw angle of the visible game piece, or 0.0 if no game piece is visible.
+   * @return A TargetInfo object containing the angle and distance to the target, or null if no target is visible.
    */
-  public double getTargetYaw() {
-    return currentTarget != null ? currentTarget.getYaw() : 0.0;
+  public TargetInfo getTargetInfo() {
+    if (currentTarget == null) {
+      return null;
+    }
+
+    double targetAngle = currentTarget.getYaw();
+    double targetDistance = calculateDistance(currentTarget); // You need to implement this based on your camera setup
+
+    return new TargetInfo(targetAngle, targetDistance);
   }
 
   /**
-   * Retrieves the area of the currently visible game piece.
-   * If no game piece is visible, returns 0.0.
+   * Calculates the distance to the target based on camera data.
+   * Implement this method based on your camera setup and target dimensions.
    *
-   * @return The area of the visible game piece, or 0.0 if no game piece is visible.
+   * @param target The detected target.
+   * @return The distance to the target.
    */
-  public double getTargetArea() {
-    return currentTarget != null ? currentTarget.getArea() : 0.0;
+  private double calculateDistance(PhotonTrackedTarget target) {
+    // Example implementation, replace with actual calculation
+    double targetHeight = 0.0508; // Height of the target in meters
+    double cameraHeight = 1.2; // Height of the camera from the ground in meters
+    double cameraAngle = 30.0; // Angle of the camera in degrees
+
+    double angleToTarget = Math.toRadians(cameraAngle + target.getPitch());
+    return (targetHeight - cameraHeight) / Math.tan(angleToTarget);
+  }
+
+  /**
+   * Updates the visibility status of the game piece based on the latest camera result.
+   * If the camera has detected targets, the best target is selected as the current target.
+   * If no targets are detected, the current target is set to null.
+   */
+  private void updateTargetVisibility() {
+    var result = camera.getLatestResult();
+    if (!result.hasTargets()) {
+      currentTarget = null;
+    } else {
+      currentTarget = result.getBestTarget();
+    }
+  }
+
+  /**
+   * Checks if the camera is disconnected.
+   *
+   * @return True if the camera is not connected, false otherwise.
+   */
+  private boolean isCameraDisconnected() {
+    return camera != null && !camera.isConnected();
+  }
+
+  /**
+   * Handles the situation when the camera is disconnected.
+   * Sets the current target to null and updates the SmartDashboard to indicate that the game piece is not visible.
+   */
+  private void handleDisconnectedCamera() {
+    currentTarget = null;
+    SmartDashboard.putBoolean("Game Piece Visible", isGamePieceVisible());
   }
 }

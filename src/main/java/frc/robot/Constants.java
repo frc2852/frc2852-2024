@@ -73,11 +73,9 @@ public final class Constants {
   }
 
   public static class SubsystemEnable {
-    public static final boolean DRIVE = true;
     public static final boolean INTAKE = true;
     public static final boolean SHOOTER = true;
     public static final boolean CONVEYOR = true;
     public static final boolean ELEVATOR = true;
-    public static final boolean LED = true;
   }
 }

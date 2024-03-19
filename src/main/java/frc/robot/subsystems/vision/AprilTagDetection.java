@@ -59,20 +59,12 @@ public class AprilTagDetection extends SubsystemBase {
    * Initializes the PhotonVision camera.
    * <p>
    * This method creates a new PhotonCamera instance using the camera name from the camera configuration.
-   * It checks if the camera is connected and reports an error to the DriverStation if the connection fails.
-   * If the camera is successfully connected, the driver mode is set to false, and the LED mode is turned off.
+   * The driver mode is set to false, and the LED mode is turned off.
    * 
    * @return The initialized PhotonCamera if successful, or null if the camera is not connected.
    */
   private PhotonCamera initializePhotonVisionCamera() {
     PhotonCamera newCamera = new PhotonCamera(cameraConfig.getCameraName());
-
-    // Check if the newCamera object is not null and is connected, otherwise report error
-    if (newCamera == null || !newCamera.isConnected()) {
-      DriverStation.reportError("April Tag Camera connection failed, camera initialization aborted.", false);
-      return null;
-    }
-
     newCamera.setDriverMode(false);
     newCamera.setLED(VisionLEDMode.kOff);
     return newCamera;
@@ -109,16 +101,15 @@ public class AprilTagDetection extends SubsystemBase {
   public void periodic() {
     // Check if the camera is connected before attempting to process the data.
     if (camera != null && camera.isConnected()) {
-      // Retrieve the latest photon pipeline result from the camera.
-      PhotonPipelineResult photonPipelineResult = camera.getLatestResult();
-      visibleTags = photonPipelineResult.targets;
-
-      // Update the SmartDashboard with the latest information.
-      updateSmartDashboard();
-    } else {
-      // Report a warning to the DriverStation if the camera is not connected.
-      DriverStation.reportWarning("Camera is not connected. Cannot update AprilTags.", false);
+      return;
     }
+    
+    // Retrieve the latest photon pipeline result from the camera.
+    PhotonPipelineResult photonPipelineResult = camera.getLatestResult();
+    visibleTags = photonPipelineResult.targets;
+
+    // Update the SmartDashboard with the latest information.
+    updateSmartDashboard();
   }
 
   /**
