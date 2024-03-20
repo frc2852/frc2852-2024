@@ -1,11 +1,12 @@
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstant;
-import frc.robot.Constants.SubsystemEnable;
 import frc.robot.commands.AutoShooterStart;
 import frc.robot.commands.AutoShooterStop;
 import frc.robot.commands.SpeakerShot;
 import frc.robot.commands.ToggleIntake;
+import frc.robot.constants.VisionConstants;
+import frc.robot.constants.Constants.OperatorConstant;
+import frc.robot.constants.Constants.SubsystemEnable;
 import frc.robot.subsystems.PowerHub;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Drive;
@@ -14,7 +15,6 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.vision.GamePieceDetection;
-import frc.robot.util.constants.VisionConstants;
 import frc.robot.util.swerve.SwerveUtils;
 
 import java.util.function.Function;

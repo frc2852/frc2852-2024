@@ -8,7 +8,7 @@ import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
 
 public class PIDParameters {
 

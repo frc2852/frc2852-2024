@@ -7,10 +7,10 @@ package frc.robot.util.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.constants.SwerveConstants.SwerveModule;
 import frc.robot.util.SparkFlex;
 import frc.robot.util.SparkMax;
 import frc.robot.util.SparkMax.MotorModel;
-import frc.robot.util.constants.SwerveConstants.SwerveModule;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder.Type;

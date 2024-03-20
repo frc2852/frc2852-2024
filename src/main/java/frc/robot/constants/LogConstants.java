@@ -1,4 +1,4 @@
-package frc.robot.util.constants;
+package frc.robot.constants;
 
 public class LogConstants {
   public static final String ROBOT_SYSTEM = "RobotSystem";
