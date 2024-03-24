@@ -57,10 +57,10 @@ public final class Constants {
 
   public static class MotorSetpoint {
     public static final int INTAKE_VELOCITY = 5000;
-    public static final int CONVEYOR_VELOCITY = 2000;
+    public static final int CONVEYOR_VELOCITY = 6784;
 
     public static final int SHOOTER_MARGIN_OF_ERROR = 5;
-    public static final int SHOOTER_DIVERT_VELOCITY = 1500;
+    public static final int SHOOTER_DIVERT_VELOCITY = 6784;
     public static final int SHOOTER_VELOCITY = 3000;
 
     public static final int ELEVATOR_MARGIN_OF_ERROR = 2;
