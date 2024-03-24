@@ -170,7 +170,10 @@ public class RobotContainer {
                 new RunCommand(() -> conveyor.runConveyorForward(), conveyor),
                 new RunCommand(() -> shooter.divertGamePiece(), shooter))
                 .until(() -> !conveyor.isGamePieceAmpReady()),
-
+          
+            // Wait for 0.5 seconds
+            new WaitCommand(0.5),
+          
             // Finally, stop the conveyor and shooter
             new ParallelCommandGroup(
                 new InstantCommand(() -> conveyor.stopConveyor(), conveyor),
