@@ -59,7 +59,7 @@ public class Drive extends SubsystemBase {
       SwerveDrive.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET);
 
   // Sensors
-  private final AHRS navX = new AHRS(SerialPort.Port.kUSB);
+  private final AHRS navX = new AHRS(SerialPort.Port.kMXP);
 
   // Slew rate filter variables for controlling lateral acceleration
   private double currentRotation = 0.0;
