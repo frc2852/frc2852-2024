@@ -191,10 +191,10 @@ public class Shooter extends SubsystemBase {
     return hasGamePieceBeenShot;
   }
 
-  private void setShooterSpeed(double velocity, boolean inverseBottomRoller) {
+  private void setShooterSpeed(double velocity, boolean isAmpShot) {
     velocitySetpoint = velocity;
-    topRollerPID.setReference(velocitySetpoint, CANSparkMax.ControlType.kVelocity);
-    bottomRollerPID.setReference(inverseBottomRoller ? -velocitySetpoint : velocitySetpoint, CANSparkMax.ControlType.kVelocity);
+    topRollerPID.setReference(isAmpShot ? -velocitySetpoint : velocitySetpoint, CANSparkMax.ControlType.kVelocity);
+    bottomRollerPID.setReference(isAmpShot ? -velocitySetpoint : velocitySetpoint, CANSparkMax.ControlType.kVelocity);
   }
 
   private boolean isGamePieceDetected() {
