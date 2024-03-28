@@ -193,7 +193,7 @@ public class Shooter extends SubsystemBase {
 
   private void setShooterSpeed(double velocity, boolean isAmpShot) {
     velocitySetpoint = velocity;
-    topRollerPID.setReference(isAmpShot ? -velocitySetpoint : velocitySetpoint, CANSparkMax.ControlType.kVelocity);
+    topRollerPID.setReference(isAmpShot ? 0 : velocitySetpoint, CANSparkMax.ControlType.kVelocity);
     bottomRollerPID.setReference(isAmpShot ? -velocitySetpoint : velocitySetpoint, CANSparkMax.ControlType.kVelocity);
   }
 

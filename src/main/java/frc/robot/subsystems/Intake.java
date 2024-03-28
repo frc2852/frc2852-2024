@@ -86,9 +86,12 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if(isIntakeRunning){
+      leds.setLEDColor(Color.BLUE);
+    }
+
     if (isGamePieceLoaded()) {
       leds.setLEDColor(Color.GREEN);
-      powerHub.highBeamsOff();
 
       // Automatically stop intake if game piece is loaded and we are not in conveyor mode
       if (isIntakeRunning && !isConveyorMode) {
@@ -97,7 +100,6 @@ public class Intake extends SubsystemBase {
       }
     } else {
       leds.setLEDColor(Color.OFF);
-      powerHub.highBeamsOn();
     }
 
     UpdateDataTracking();

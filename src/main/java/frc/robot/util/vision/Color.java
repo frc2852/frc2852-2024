@@ -6,9 +6,9 @@ package frc.robot.util.vision;
 
 public enum Color {
     RED(255, 0, 0),
-    GREEN(0, 255, 0),
-    BLUE(0, 0, 255),
-    PINK(255, 192, 203),
+    GREEN(0, 0, 255),
+    BLUE(0, 255, 0),
+    PINK(255, 203, 192),
     OFF(0, 0, 0);
 
     private final int red;

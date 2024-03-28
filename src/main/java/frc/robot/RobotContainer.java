@@ -1,7 +1,5 @@
 package frc.robot;
 
-import frc.robot.commands.AutoShooterStart;
-import frc.robot.commands.AutoShooterStop;
 import frc.robot.commands.SpeakerShot;
 import frc.robot.commands.ToggleIntake;
 import frc.robot.constants.VisionConstants;
@@ -16,6 +14,7 @@ import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.vision.GamePieceDetection;
 import frc.robot.util.swerve.SwerveUtils;
+import frc.robot.util.vision.Color;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -87,6 +86,7 @@ public class RobotContainer {
     // Initialize subsystems
     drive = new Drive(gamePieceDetection);
     leds = new LEDs();
+    leds.setLEDColor(Color.PINK);
 
     shooter = initSubsystem(SubsystemEnable.SHOOTER, Shooter::new);
     conveyor = initSubsystem(SubsystemEnable.CONVEYOR, Conveyor::new);
@@ -208,8 +208,6 @@ public class RobotContainer {
   private void configurePathPlanner() {
     // Register commands
     NamedCommands.registerCommand("ToggleIntake", new ToggleIntake(intake));
-    NamedCommands.registerCommand("AutoShooterStart", new AutoShooterStart(shooter));
-    NamedCommands.registerCommand("AutoShooterStop", new AutoShooterStop(shooter));
     NamedCommands.registerCommand("SpeakerShot", new SpeakerShot(intake, conveyor, shooter));
 
     // Build an auto chooser
