@@ -27,7 +27,7 @@ public class SpeakerShot extends SequentialCommandGroup {
             new RunCommand(() -> intakeSubsystem.runIntake(true), intakeSubsystem),
             new RunCommand(() -> conveyorSubsystem.runConveyorForward(), conveyorSubsystem))
             .until(() -> shooterSubsystem.hasGamePieceBeenShot()),
-        new WaitCommand(0.2),
+        // new WaitCommand(0.2),
         // Stop intake, conveyor and shooter
         new ParallelCommandGroup(
             new InstantCommand(() -> intakeSubsystem.stopIntake(), intakeSubsystem),

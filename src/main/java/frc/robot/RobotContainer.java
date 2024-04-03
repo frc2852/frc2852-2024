@@ -1,5 +1,6 @@
 package frc.robot;
 
+import frc.robot.commands.Discharge;
 import frc.robot.commands.SpeakerShot;
 import frc.robot.commands.ToggleIntake;
 import frc.robot.constants.VisionConstants;
@@ -88,7 +89,7 @@ public class RobotContainer {
     leds = new LEDs();
     leds.setLEDColor(Color.PINK);
 
-    shooter = initSubsystem(SubsystemEnable.SHOOTER, Shooter::new);
+    shooter = initSubsystem(SubsystemEnable.SHOOTER, Shooter::new, leds);
     conveyor = initSubsystem(SubsystemEnable.CONVEYOR, Conveyor::new);
     elevator = initSubsystem(SubsystemEnable.ELEVATOR, Elevator::new);
     intake = initSubsystem(SubsystemEnable.INTAKE, Intake::new, leds, powerHub);
@@ -129,6 +130,9 @@ public class RobotContainer {
                 SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND)),
                 SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND)),
                 -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND)),
+                // MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND),
+                // MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND),
+                // -MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND),
                 true, true),
             drive));
   }
@@ -138,6 +142,11 @@ public class RobotContainer {
    * devices to commands.
    */
   private void configureOperatorBindings() {
+
+    // Stop shooter
+    operatorController.rightBumper().onTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> shooter.stopShooter(), shooter),
+      new InstantCommand(() -> conveyor.stopConveyor(), conveyor)));
 
     // Intake note
     operatorController.a().onTrue(new InstantCommand(intake::toggleIntake, intake));
@@ -170,10 +179,10 @@ public class RobotContainer {
                 new RunCommand(() -> conveyor.runConveyorForward(), conveyor),
                 new RunCommand(() -> shooter.divertGamePiece(), shooter))
                 .until(() -> !conveyor.isGamePieceAmpReady()),
-          
+
             // Wait for 0.5 seconds
             new WaitCommand(0.5),
-          
+
             // Finally, stop the conveyor and shooter
             new ParallelCommandGroup(
                 new InstantCommand(() -> conveyor.stopConveyor(), conveyor),
@@ -209,6 +218,7 @@ public class RobotContainer {
     // Register commands
     NamedCommands.registerCommand("ToggleIntake", new ToggleIntake(intake));
     NamedCommands.registerCommand("SpeakerShot", new SpeakerShot(intake, conveyor, shooter));
+    NamedCommands.registerCommand("Discharge", new Discharge(intake, conveyor, shooter));
 
     // Build an auto chooser
     autoChooser = AutoBuilder.buildAutoChooser("SpeakerCentre_Quad");

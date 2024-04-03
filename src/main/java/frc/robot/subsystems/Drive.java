@@ -104,11 +104,11 @@ public class Drive extends SubsystemBase {
 
             // Translation PID constants
             // TODO: P = 2
-            new PIDConstants(5.0, SwerveModule.DRIVING_I, SwerveModule.DRIVING_D),
+            new PIDConstants(2, SwerveModule.DRIVING_I, SwerveModule.DRIVING_D),
 
             // Rotation PID constants
             // TODO: P = 1
-            new PIDConstants(5.0, SwerveModule.TURNING_I, SwerveModule.TURNING_D),
+            new PIDConstants(2, SwerveModule.TURNING_I, SwerveModule.TURNING_D),
 
             // Max module speed, in m/s
             SwerveDrive.MAX_SPEED_METERS_PER_SECOND,

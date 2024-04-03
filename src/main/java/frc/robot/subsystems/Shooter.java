@@ -20,6 +20,7 @@ import frc.robot.constants.Constants.MotorSetpoint;
 import frc.robot.util.DataTracker;
 import frc.robot.util.PIDParameters;
 import frc.robot.util.SparkFlex;
+import frc.robot.util.vision.Color;
 
 public class Shooter extends SubsystemBase {
 
@@ -46,7 +47,9 @@ public class Shooter extends SubsystemBase {
   private boolean updateTopRollerPID = false;
   private boolean updateBottomRollerPID = false;
 
-  public Shooter() {
+  private LEDs leds;
+
+  public Shooter(Object... args) {
 
     // Initialize motor controllers
     topRoller = new SparkFlex(CanbusId.SHOOTER_TOP_ROLLER);
@@ -91,6 +94,8 @@ public class Shooter extends SubsystemBase {
       DataTracker.putBoolean(getName(), "UpdateTopRollerPID", updateTopRollerPID, true);
       DataTracker.putBoolean(getName(), "UpdateBottomRollerPID", updateBottomRollerPID, true);
     }
+
+    leds = (LEDs) args[0];
   }
 
   @Override
@@ -111,6 +116,10 @@ public class Shooter extends SubsystemBase {
     // If the game piece has been shot, reset the state
     if (!hasGamePieceBeenShot && isGamePieceDetected()) {
       hasGamePieceBeenShot = true;
+    }
+
+    if (isShooterRunning()) {
+      leds.setLEDColor(Color.RED);
     }
 
     if (!DriverStation.isFMSAttached()) {
@@ -154,6 +163,10 @@ public class Shooter extends SubsystemBase {
     setShooterSpeed(MotorSetpoint.SHOOTER_DIVERT_VELOCITY, true);
   }
 
+  public void flyWheelHalfSpeed() {
+    setShooterSpeed(MotorSetpoint.SHOOTER_HALF_VELOCITY, false);
+  }
+
   public void flyWheelFullSpeed() {
     setShooterSpeed(MotorSetpoint.SHOOTER_VELOCITY, false);
   }
@@ -185,6 +198,10 @@ public class Shooter extends SubsystemBase {
     double topRollerVelocity = topRollerEncoder.getVelocity();
     double bottomRollerVelocity = bottomRollerEncoder.getVelocity();
     return (Math.abs(topRollerVelocity - velocitySetpoint) < MotorSetpoint.SHOOTER_MARGIN_OF_ERROR && Math.abs(bottomRollerVelocity - velocitySetpoint) < MotorSetpoint.SHOOTER_MARGIN_OF_ERROR);
+  }
+
+  public boolean isShooterRunning() {
+    return velocitySetpoint > 0;
   }
 
   public boolean hasGamePieceBeenShot() {

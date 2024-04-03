@@ -27,7 +27,7 @@ public final class Constants {
     public static final int SYSID_CONTROLLER_PORT = 2;
 
     public static final double DEAD_BAND = 0.15;
-    public static final double EXPONENTIAL_RESPONSE = 2;
+    public static final double EXPONENTIAL_RESPONSE = 3;
   }
 
   public static class CanbusId {
@@ -61,6 +61,7 @@ public final class Constants {
 
     public static final int SHOOTER_MARGIN_OF_ERROR = 5;
     public static final int SHOOTER_DIVERT_VELOCITY = 6784;
+    public static final int SHOOTER_HALF_VELOCITY = 1500;
     public static final int SHOOTER_VELOCITY = 3000;
 
     public static final int ELEVATOR_MARGIN_OF_ERROR = 2;
