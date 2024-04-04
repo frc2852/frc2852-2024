@@ -64,6 +64,12 @@
           "data": {
             "pathName": "Note1_SpeakerCentre_Tight"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpeakerShot"
+          }
         }
       ]
     }

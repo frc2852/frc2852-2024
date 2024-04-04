@@ -70,7 +70,7 @@ public final class Constants {
 
     
     public static final int ELEVATOR_CLIMB_DOWN_POSITION = 0;
-    public static final int ELEVATOR_CLIMB_UP_POSITION = 70;
+    public static final int ELEVATOR_CLIMB_UP_POSITION = 40;
 
     // Value is between 0 and 1. 0.1 = 10% output
     public static final double ELEVAOTOR_MAX_OUPUT = 1.0;
