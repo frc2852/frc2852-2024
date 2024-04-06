@@ -3,7 +3,6 @@ package frc.robot;
 import frc.robot.commands.Discharge;
 import frc.robot.commands.SpeakerShot;
 import frc.robot.commands.ToggleIntake;
-import frc.robot.constants.VisionConstants;
 import frc.robot.constants.Constants.OperatorConstant;
 import frc.robot.constants.Constants.SubsystemEnable;
 import frc.robot.subsystems.PowerHub;
@@ -13,7 +12,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.vision.GamePieceDetection;
+import frc.robot.subsystems.vision.LimeLightSubsystem;
 import frc.robot.util.swerve.SwerveUtils;
 import frc.robot.util.vision.Color;
 
@@ -59,7 +58,7 @@ public class RobotContainer {
   private final LEDs leds;
 
   // Vision
-  private final GamePieceDetection gamePieceDetection;
+  private final LimeLightSubsystem gamePieceDetection;
 
   /**
    * Constructs the container for the robot. Subsystems and command mappings are
@@ -73,6 +72,9 @@ public class RobotContainer {
 
     // Port forwarding
     PortForwarder.add(5800, "photonvision.local", 5800);
+    for (int port = 5800; port <= 5809; port++) {
+      PortForwarder.add(port, "limelight.local", port);
+    }
 
     // Initialize controllers with distinct ports
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
@@ -82,7 +84,7 @@ public class RobotContainer {
     powerHub = new PowerHub();
 
     // Initialize vision
-    gamePieceDetection = new GamePieceDetection(VisionConstants.CameraTracking.GAME_PIECE_CAMERA_CONFIG);
+    gamePieceDetection = new LimeLightSubsystem();
 
     // Initialize subsystems
     drive = new Drive(gamePieceDetection);
@@ -124,6 +126,9 @@ public class RobotContainer {
     driverController.povUp().onTrue(new InstantCommand(() -> elevator.manualElevatorUp(), elevator));
     driverController.povDown().onTrue(new InstantCommand(() -> elevator.manualElevatorDown(), elevator));
 
+    //Note alignment
+    // driverController.a().whileTrue(new RunCommand(() -> drive.autoAlign(), drive));
+
     drive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
@@ -144,8 +149,8 @@ public class RobotContainer {
 
     // Stop shooter
     operatorController.rightBumper().onTrue(new SequentialCommandGroup(
-      new InstantCommand(() -> shooter.stopShooter(), shooter),
-      new InstantCommand(() -> conveyor.stopConveyor(), conveyor)));
+        new InstantCommand(() -> shooter.stopShooter(), shooter),
+        new InstantCommand(() -> conveyor.stopConveyor(), conveyor)));
 
     // Intake note
     operatorController.a().onTrue(new InstantCommand(intake::toggleIntake, intake));

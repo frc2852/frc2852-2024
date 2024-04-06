@@ -27,13 +27,14 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
+import frc.robot.constants.SwerveConstants;
 import frc.robot.constants.Constants.CanbusId;
 import frc.robot.constants.SwerveConstants.SwerveDrive;
 import frc.robot.constants.SwerveConstants.SwerveModule;
-import frc.robot.subsystems.vision.GamePieceDetection;
+import frc.robot.subsystems.vision.LimeLightSubsystem;
 import frc.robot.util.swerve.MAXSwerveModule;
 import frc.robot.util.swerve.SwerveUtils;
-import frc.robot.util.vision.TargetInfo;
 
 public class Drive extends SubsystemBase {
 
@@ -87,9 +88,9 @@ public class Drive extends SubsystemBase {
   private final Field2d field = new Field2d();
 
   // Subsystems
-  private final GamePieceDetection gamePieceDetection;
+  private final LimeLightSubsystem gamePieceDetection;
 
-  public Drive(GamePieceDetection gamePieceDetection) {
+  public Drive(LimeLightSubsystem gamePieceDetection) {
 
     // Reset the gyro for field orientation
     zeroHeading();
@@ -256,16 +257,6 @@ public class Drive extends SubsystemBase {
   }
 
   /**
-   * Sets the wheels into an X formation to prevent movement.
-   */
-  public void lockDrive() {
-    frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-    frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-  }
-
-  /**
    * Sets the swerve ModuleStates.
    *
    * @param desiredStates The desired SwerveModule states.
@@ -346,34 +337,45 @@ public class Drive extends SubsystemBase {
     setModuleStates(moduleStates);
   }
 
-  // #region Note alignment
-
-  /**
-   * Aligns the robot with the note and drives to pick it up.
-   */
-  public void alignAndPickUpNote() {
-    TargetInfo targetInfo = gamePieceDetection.getTargetInfo();
-    if (targetInfo == null) {
-      // No target detected, stop the robot
-      drive(0, 0, 0, false, false);
-      return;
-    }
-
-    double targetAngle = targetInfo.getAngle();
-    double targetDistance = targetInfo.getDistance();
-
-    // Calculate the desired robot heading and position to align with and approach the note
-    double desiredHeading = getHeadingDegrees() + targetAngle;
-    double deltaX = targetDistance * Math.cos(Math.toRadians(desiredHeading));
-    double deltaY = targetDistance * Math.sin(Math.toRadians(desiredHeading));
-
-    // Convert desired position and heading to field-relative speeds
-    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        deltaX, deltaY, 0, getRotation());
-
-    // Drive the robot towards the calculated position and orientation
-    driveRobotRelative(speeds);
+  public void autoAlign() {
+    final var rotLimelight = limelightAimProportional();
+    final var forwardLimelight = limelightRangeProportional();
+    drive(forwardLimelight, 0, rotLimelight, true, false);
   }
 
-  // #endregion
+  // simple proportional turning control with Limelight.
+  // "proportional control" is a control algorithm in which the output is proportional to the error.
+  // in this case, we are going to return an angular velocity that is proportional to the
+  // "tx" value from the Limelight.
+  double limelightAimProportional() {
+    // kP (constant of proportionality)
+    // this is a hand-tuned number that determines the aggressiveness of our proportional control loop
+    // if it is too high, the robot will oscillate around.
+    // if it is too low, the robot will never reach its target
+    // if the robot never turns in the correct direction, kP should be inverted.
+    double kP = .035;
+
+    // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of
+    // your limelight 3 feed, tx should return roughly 31 degrees.
+    double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kP;
+
+    // convert to radians per second for our drive method
+    targetingAngularVelocity *= SwerveConstants.SwerveDrive.MAX_ANGULAR_SPEED;
+
+    // invert since tx is positive when the target is to the right of the crosshair
+    targetingAngularVelocity *= -1.0;
+
+    return targetingAngularVelocity;
+  }
+
+  // simple proportional ranging control with Limelight's "ty" value
+  // this works best if your Limelight's mount height and target mount height are different.
+  // if your limelight and target are mounted at the same or similar heights, use "ta" (area) for target ranging rather than "ty"
+  double limelightRangeProportional() {
+    double kP = .1;
+    double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kP;
+    targetingForwardSpeed *= SwerveConstants.SwerveDrive.MAX_SPEED_METERS_PER_SECOND;
+    targetingForwardSpeed *= -1.0;
+    return targetingForwardSpeed;
+  }
 }
