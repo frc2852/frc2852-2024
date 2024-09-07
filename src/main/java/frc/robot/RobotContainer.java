@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -20,6 +21,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  */
 public class RobotContainer {
   private final CommandXboxController driverController;
+
+  private SendableChooser<Command> autoChooser;
 
   private final Drive drive;
 
@@ -51,7 +54,9 @@ public class RobotContainer {
    * devices to commands.
    */
   private void configureBindings() {
-    configureDriverBindings();
+    if (drive != null) {
+      configureDriverBindings();
+    }
   }
 
   /**
@@ -59,6 +64,16 @@ public class RobotContainer {
    * devices to commands.
    */
   private void configureDriverBindings() {
+    drive.setDefaultCommand(
+        // The left stick controls translation of the robot.
+        // Turning is controlled by the X axis of the right stick.
+        new RunCommand(
+            () -> drive.drive(
+                SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND)),
+                -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND)),
+                -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND)),
+                true, true),
+            drive));
   }
 
   /**
@@ -67,6 +82,6 @@ public class RobotContainer {
    * @return The autonomous command to run.`
    */
   public Command getAutonomousCommand() {
-    return null;
+    return autoChooser.getSelected();
   }
 }

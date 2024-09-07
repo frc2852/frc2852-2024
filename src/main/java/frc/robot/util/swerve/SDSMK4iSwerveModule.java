@@ -40,12 +40,14 @@ public class SDSMK4iSwerveModule {
    * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
    * Encoder.
    */
-  public SDSMK4iSwerveModule(int drivingCANId, int turningCANId, int canCoderCANId, double chassisAngularOffset) {
+  public SDSMK4iSwerveModule(int drivingCANId, Boolean driveInverted, int turningCANId, int canCoderCANId, double chassisAngularOffset) {
     driveMotor = new SparkFlex(drivingCANId);
     drivePIDController = driveMotor.getPIDController();
     driveEncoder = driveMotor.getEncoder();
     drivePIDController.setFeedbackDevice(driveEncoder);
-    driveMotor.setInverted(SwerveModule.DRIVE_INVERTED);
+    driveMotor.setInverted(driveInverted);
+    driveMotor.setIdleMode(SwerveModule.DRVING_MOTOR_IDLE_MODE);
+    driveMotor.setSmartCurrentLimit(SwerveModule.DRIVING_MOTOR_CURRENT_LIMIT);
 
     // Apply position and velocity conversion factors for the driving encoder. The
     // native units for position and velocity are rotations and RPM, respectively,
@@ -59,12 +61,14 @@ public class SDSMK4iSwerveModule {
     drivePIDController.setFF(SwerveModule.DRIVING_FF);
     drivePIDController.setOutputRange(SwerveModule.DRIVING_MIN_OUTPUT, SwerveModule.DRIVING_MAX_OUTPUT);
 
-    driveMotor.setIdleMode(SwerveModule.DRVING_MOTOR_IDLE_MODE);
-    driveMotor.setSmartCurrentLimit(SwerveModule.DRIVING_MOTOR_CURRENT_LIMIT);
     driveMotor.burnFlash();
 
-    //Turning motor configuration
+    // Turning motor configuration
     turnMotor = new SparkMax(turningCANId, MotorModel.NEO);
+    turnMotor.setInverted(SwerveModule.TURN_INVERTED);
+    turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
+    turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
+
     turnPIDController = new PIDController(0.55, 0, 0.01);
     turnPIDController.enableContinuousInput(0, 2 * Math.PI);
 
@@ -77,8 +81,6 @@ public class SDSMK4iSwerveModule {
     config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
     turnEncoder.getConfigurator().apply(config);
 
-    turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
-    turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
     turnMotor.burnFlash();
 
     this.chassisAngularOffset = chassisAngularOffset;

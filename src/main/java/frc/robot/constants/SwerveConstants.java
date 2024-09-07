@@ -18,7 +18,7 @@ public final class SwerveConstants {
     public static final double MAX_SPEED_METERS_PER_SECOND = 5.74;
 
     // Radians per second
-    public static final double MAX_ANGULAR_SPEED = 2 * Math.PI;
+    public static final double MAX_ANGULAR_SPEED = Math.PI;
 
     // Radians per second
     public static final double DIRECTION_SLEW_RATE = 1.2;
@@ -30,10 +30,10 @@ public final class SwerveConstants {
     public static final double ROTATIONAL_SLEW_RATE = 2.0;
 
     // Chassis configuration
-    public static final double TRACK_WIDTH = Units.inchesToMeters(29.5);
+    public static final double TRACK_WIDTH = Units.inchesToMeters(15.75);
 
     // Distance between centers of right and left wheels on robot
-    public static final double WHEEL_BASE = Units.inchesToMeters(29.5);
+    public static final double WHEEL_BASE = Units.inchesToMeters(15.75);
 
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics DRIVE_KINEMATICS = new SwerveDriveKinematics(
@@ -63,40 +63,37 @@ public final class SwerveConstants {
   }
 
   public static final class SwerveModule {
-    // The MAXSwerve module can be configured with one of three pinion gears: 12T,
-    // 13T, or 14T.
-    // This changes the drive speed of the module (a pinion gear with more teeth
-    // will result in a
-    // robot that drives faster).
-    public static final int DRIVING_MOTOR_PINION_TEETH = 14;
 
     // Invert the driving motor.
     public static final boolean DRIVE_INVERTED = false;
 
+    // Invert the driving motor.
+    public static final boolean TURN_INVERTED = false;
+
+    // TODO: Reimplement this in SDSMK4i Swerve Module
     // Invert the turning encoder, since the output shaft rotates in the opposite
     // direction of
     // the steering motor in the MAXSwerve Module.
     public static final boolean TURNING_ENCODER_INVERTED = true;
 
     // Calculations required for driving motor conversion factors and feed forward
-    public static final double DRIVING_MOTOR_FREE_SPEED_RPS = VortexMotor.FREE_SPEED_RPM / 60;
-    public static final double WHEEL_DIAMETER_METERS = 0.0762;
+    public static final double WHEEL_DIAMETER_METERS = Units.inchesToMeters(4);
     public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_METERS * Math.PI;
 
-    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
-    // teeth on the bevel pinion
-    public static final double DRIVING_MOTOR_REDUCTION = (45.0 * 22) / (DRIVING_MOTOR_PINION_TEETH * 15);
-    public static final double DRIVE_WHEEL_FREEE_SPEED_RPS = (DRIVING_MOTOR_FREE_SPEED_RPS * WHEEL_CIRCUMFERENCE_METERS)
-        / DRIVING_MOTOR_REDUCTION;
+    // TODO: Make this dynamic based on L1,L2,L3
+    // Gear reduction ratio for the L2 stage of the SDS MK4i swerve module
+    public static final double DRIVING_MOTOR_REDUCTION = 6.75;
 
-    public static final double DRIVING_ENCODER_POSITION_FACTOR = (WHEEL_DIAMETER_METERS * Math.PI)
-        / DRIVING_MOTOR_REDUCTION; // Meters
-    public static final double DRIVING_ENCODER_VELOCITY_FACTOR = ((WHEEL_DIAMETER_METERS * Math.PI)
-        / DRIVING_MOTOR_REDUCTION) / 60.0; // Meters per second
+    // TODO: Make this dynamic based on Drive motor configuration
+    public static final double DRIVING_MOTOR_FREE_SPEED_RPS = VortexMotor.FREE_SPEED_RPM / 60;
+    public static final double DRIVE_WHEEL_FREEE_SPEED_RPS = (DRIVING_MOTOR_FREE_SPEED_RPS * WHEEL_CIRCUMFERENCE_METERS) / DRIVING_MOTOR_REDUCTION;
 
+    public static final double DRIVING_ENCODER_POSITION_FACTOR = (WHEEL_DIAMETER_METERS * Math.PI) / DRIVING_MOTOR_REDUCTION; // Meters
+    public static final double DRIVING_ENCODER_VELOCITY_FACTOR = ((WHEEL_DIAMETER_METERS * Math.PI) / DRIVING_MOTOR_REDUCTION) / 60.0; // Meters per second
+
+    // TODO: Reimplement this in SDSMK4i Swerve Module
     public static final double TURNING_ENCODER_POSITION_FACTOR = (2 * Math.PI); // Radians
     public static final double TURNING_ENCODER_VELOCITY_FACTOR = (2 * Math.PI) / 60.0; // Radians per second
-
     public static final double TURNING_ENCODER_POSITION_PID_MIN_INPUT = 0; // Radians
     public static final double TURNING_ENCODER_POSITION_PID_MAX_INPUT = TURNING_ENCODER_POSITION_FACTOR; // Radians
 
@@ -107,6 +104,7 @@ public final class SwerveConstants {
     public static final double DRIVING_MIN_OUTPUT = -1;
     public static final double DRIVING_MAX_OUTPUT = 1;
 
+    // TODO: Reimplement this in SDSMK4i Swerve Module
     public static final double TURNING_P = 1;
     public static final double TURNING_I = 0;
     public static final double TURNING_D = 0;
