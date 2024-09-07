@@ -15,16 +15,18 @@ public class SDSMK4iTurnModule {
   private final SparkMax turnMotor;
   private final CANcoder turnEncoder;
   private final PIDController turnPIDController;
+  private final double canId;
 
   public SDSMK4iTurnModule(int turningCANId, int canCoderCANId) {
+    canId = turningCANId;
     // Initialize turning motor and encoder
     turnMotor = new SparkMax(turningCANId, MotorModel.NEO);
     turnEncoder = new CANcoder(canCoderCANId);
 
-    // Set up the PID controller for degrees (0 - 360)
-    turnPIDController = new PIDController(0.01, 0, 0);
-    // Continuous input for 0 to 360 degrees
-    turnPIDController.enableContinuousInput(0, 360);
+    // Set up the PID controller for radians (0 - 2 * PI)
+    turnPIDController = new PIDController(0.55, 0, 0.01);
+    // Continuous input for 0 to 2 * PI radians
+    turnPIDController.enableContinuousInput(0, 2 * Math.PI);
 
     // CANCoder configuration
     CANcoderConfiguration config = new CANcoderConfiguration();
@@ -43,21 +45,30 @@ public class SDSMK4iTurnModule {
     turnMotor.burnFlash();
   }
 
-  // Set the desired angle (in degrees) for the turn module
-  public void setAngle(double angleDegrees) {
-    // Get the current angle in degrees
-    double currentAngleDegrees = getAngle();
+  // Set the desired angle (in radians) for the turn module
+  public void setAngle(double angleRadians) {
+    // Get the current angle in radians
+    double currentAngleRadians = getAngle();
+
+    SmartDashboard.putNumber(canId + "Current Angle", Math.toDegrees(currentAngleRadians));
 
     // Calculate PID output to reach the target angle
-    double turnOutput = turnPIDController.calculate(currentAngleDegrees, angleDegrees);
+    double turnOutput = turnPIDController.calculate(currentAngleRadians, angleRadians);
 
     // Set motor output based on PID output
     turnMotor.set(turnOutput);
   }
 
-  // Get the current angle from the encoder in degrees
+  // Get the current angle from the encoder in radians
   public double getAngle() {
-    // The encoder gives a value between 0 and 1, representing full rotation, so multiply by 360
-    return turnEncoder.getAbsolutePosition().getValue() * 360;
+    // The encoder gives a value between 0 and 1, representing full rotation, so multiply by 2 * PI
+    return turnEncoder.getAbsolutePosition().getValue() * 2 * Math.PI;
+  }
+
+  // Update PID values
+  public void updatePID(double p, double i, double d) {
+    turnPIDController.setP(p);
+    turnPIDController.setI(i);
+    turnPIDController.setD(d);
   }
 }
