@@ -47,26 +47,11 @@ public class SDSMK4iSwerveModule {
     drivePIDController.setFeedbackDevice(driveEncoder);
     driveMotor.setInverted(SwerveModule.DRIVE_INVERTED);
 
-    turnMotor = new SparkMax(turningCANId, MotorModel.NEO);
-    turnPIDController = new PIDController(8, 0, 0.3);
-    turnPIDController.enableContinuousInput(0, 2 * Math.PI);
-
     // Apply position and velocity conversion factors for the driving encoder. The
     // native units for position and velocity are rotations and RPM, respectively,
     // but we want meters and meters per second to use with WPILib's swerve APIs.
     driveEncoder.setPositionConversionFactor(SwerveModule.DRIVING_ENCODER_POSITION_FACTOR);
     driveEncoder.setVelocityConversionFactor(SwerveModule.DRIVING_ENCODER_VELOCITY_FACTOR);
-
-    // CANCoder configuration
-    turnEncoder = new CANcoder(canCoderCANId);
-
-    CANcoderConfiguration config = new CANcoderConfiguration();
-    CANcoderConfigurator canCoderConfigurator = turnEncoder.getConfigurator();
-    CANcoderConfiguration oldConfig = new CANcoderConfiguration();
-    canCoderConfigurator.refresh(oldConfig);
-    config.MagnetSensor.MagnetOffset = oldConfig.MagnetSensor.MagnetOffset;
-    config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    turnEncoder.getConfigurator().apply(config);
 
     drivePIDController.setP(SwerveModule.DRIVING_P);
     drivePIDController.setI(SwerveModule.DRIVING_I);
@@ -75,11 +60,25 @@ public class SDSMK4iSwerveModule {
     drivePIDController.setOutputRange(SwerveModule.DRIVING_MIN_OUTPUT, SwerveModule.DRIVING_MAX_OUTPUT);
 
     driveMotor.setIdleMode(SwerveModule.DRVING_MOTOR_IDLE_MODE);
-    turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
     driveMotor.setSmartCurrentLimit(SwerveModule.DRIVING_MOTOR_CURRENT_LIMIT);
-    turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
-
     driveMotor.burnFlash();
+
+    //Turning motor configuration
+    turnMotor = new SparkMax(turningCANId, MotorModel.NEO);
+    turnPIDController = new PIDController(0.55, 0, 0.01);
+    turnPIDController.enableContinuousInput(0, 2 * Math.PI);
+
+    turnEncoder = new CANcoder(canCoderCANId);
+    CANcoderConfiguration config = new CANcoderConfiguration();
+    CANcoderConfigurator canCoderConfigurator = turnEncoder.getConfigurator();
+    CANcoderConfiguration oldConfig = new CANcoderConfiguration();
+    canCoderConfigurator.refresh(oldConfig);
+    config.MagnetSensor.MagnetOffset = oldConfig.MagnetSensor.MagnetOffset;
+    config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    turnEncoder.getConfigurator().apply(config);
+
+    turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
+    turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
     turnMotor.burnFlash();
 
     this.chassisAngularOffset = chassisAngularOffset;
@@ -119,6 +118,7 @@ public class SDSMK4iSwerveModule {
   }
 
   public double getAngle() {
+    // The encoder gives a value between 0 and 1, representing full rotation, so multiply by 2 * PI
     return turnEncoder.getAbsolutePosition().getValue() * 2 * Math.PI;
   }
 }
