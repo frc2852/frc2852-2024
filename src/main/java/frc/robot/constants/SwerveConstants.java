@@ -118,7 +118,7 @@ public final class SwerveConstants {
     public static final IdleMode TURNING_MOTOR_IDLE_MODE = IdleMode.kBrake;
 
     public static final int DRIVING_MOTOR_CURRENT_LIMIT = 50; // amps
-    public static final int TURNING_MOTOR_CURRENT_LIMIT = 20; // amps
+    public static final int TURNING_MOTOR_CURRENT_LIMIT = 30; // amps
   }
 
   public static final class VortexMotor {
