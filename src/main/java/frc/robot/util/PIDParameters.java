@@ -97,7 +97,7 @@ public class PIDParameters {
   }
 
   public boolean updateParametersFromDashboard() {
-    if (DriverStation.isFMSAttached() || !Constants.PID_TUNE_MODE)
+    if (DriverStation.isFMSAttached())
       return false;
 
     double newP = getNumber(groupId, namePrefix + "P", P);
@@ -156,7 +156,7 @@ public class PIDParameters {
   }
 
   private void displayParameters() {
-    if (DriverStation.isFMSAttached() || !Constants.PID_TUNE_MODE)
+    if (DriverStation.isFMSAttached())
       return;
 
     DataTracker.putNumber(groupId, namePrefix + "P", P, true);

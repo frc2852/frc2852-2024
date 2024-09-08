@@ -18,9 +18,6 @@ package frc.robot.constants;
  */
 public final class Constants {
 
-  // Setting true will enable SmartDashboard PID tuning
-  public static boolean PID_TUNE_MODE = false;
-
   public static class OperatorConstant {
     public static final int DRIVER_CONTROLLER_PORT = 0;
     public static final int OPERATOR_CONTROLLER_PORT = 1;

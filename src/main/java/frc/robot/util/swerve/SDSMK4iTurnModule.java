@@ -3,8 +3,8 @@ package frc.robot.util.swerve;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.SwerveConstants.SwerveModule;
-import frc.robot.util.SparkMax;
-import frc.robot.util.SparkMax.MotorModel;
+import frc.robot.util.Spark;
+import frc.robot.util.Spark.MotorModel;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -12,7 +12,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class SDSMK4iTurnModule {
 
-  private final SparkMax turnMotor;
+  private final Spark turnMotor;
   private final CANcoder turnEncoder;
   private final PIDController turnPIDController;
   private final double canId;
@@ -20,7 +20,7 @@ public class SDSMK4iTurnModule {
   public SDSMK4iTurnModule(int turningCANId, int canCoderCANId) {
     canId = turningCANId;
     // Initialize turning motor and encoder
-    turnMotor = new SparkMax(turningCANId, MotorModel.NEO);
+    turnMotor = new Spark(turningCANId, MotorModel.NEO);
     turnEncoder = new CANcoder(canCoderCANId);
 
     // Set up the PID controller for radians (0 - 2 * PI)

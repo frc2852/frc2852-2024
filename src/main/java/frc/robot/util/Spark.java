@@ -9,7 +9,14 @@ import edu.wpi.first.wpilibj.Timer;
 
 import java.util.function.Supplier;
 
-public class SparkFlex extends CANSparkFlex {
+public class Spark extends CANSparkFlex {
+
+  public enum MotorModel {
+    VORTEX,
+    NEO,
+    NEO_550,
+    BRUSHED
+  }
 
   private static final int MAX_RETRIES = 5;
 
@@ -17,9 +24,8 @@ public class SparkFlex extends CANSparkFlex {
   private static final double MAX_RETRY_DELAY = 2.0; // Maximum delay in seconds
   private static final double BACKOFF_MULTIPLIER = 2.0; // Multiplier for each retry
 
-
-  public SparkFlex(int canBusId) {
-    super(canBusId, MotorType.kBrushless);
+  public Spark(int canBusId, MotorModel motorType) {
+    super(canBusId, (motorType == MotorModel.VORTEX || motorType == MotorModel.NEO || motorType == MotorModel.NEO_550) ? MotorType.kBrushless : MotorType.kBrushed);
 
     // Restore factory defaults
     restoreFactoryDefaults();
@@ -27,6 +33,11 @@ public class SparkFlex extends CANSparkFlex {
     // Enable voltage compensation to 12V
     enableVoltageCompensation(12.0);
 
+    // For NEO_550 motors, enable Smart Current Limit to 20 amps
+    // This can be overridden by the caller if needed
+    if (motorType == MotorModel.NEO_550) {
+      setSmartCurrentLimit(20);
+    }
   }
 
   // #region CANSparkLowLevel overrides
@@ -168,11 +179,11 @@ public class SparkFlex extends CANSparkFlex {
       currentDelay = Math.min(currentDelay * BACKOFF_MULTIPLIER, MAX_RETRY_DELAY);
 
       // Log retry attempt
-      String retryLog = String.format("CANSparkMax (%s): %s attempt %d failed, retrying in %.2f seconds", this.getDeviceId(), methodName, i + 1, currentDelay);
+      String retryLog = String.format("CANSpark (%s): %s attempt %d failed, retrying in %.2f seconds", this.getDeviceId(), methodName, i + 1, currentDelay);
       DriverStation.reportError(retryLog, false);
     }
 
-    String error = String.format("CANSparkMax (%s): %s failed after %s attempts", this.getDeviceId(), methodName, MAX_RETRIES);
+    String error = String.format("CANSpark (%s): %s failed after %s attempts", this.getDeviceId(), methodName, MAX_RETRIES);
     DriverStation.reportError(error, false);
     return status;
   }
