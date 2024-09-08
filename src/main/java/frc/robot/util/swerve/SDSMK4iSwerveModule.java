@@ -9,8 +9,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.constants.SwerveConstants.SwerveModule;
-import frc.robot.util.Spark;
-import frc.robot.util.Spark.MotorModel;
+import frc.robot.util.hardware.CANSpark;
+import frc.robot.util.hardware.CANSpark.MotorModel;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
@@ -22,11 +22,11 @@ import com.revrobotics.RelativeEncoder;
 
 public class SDSMK4iSwerveModule {
 
-  private final Spark driveMotor;
+  private final CANSpark driveMotor;
   private final RelativeEncoder driveEncoder;
   private final SparkPIDController drivePIDController;
 
-  private final Spark turnMotor;
+  private final CANSpark turnMotor;
   private final CANcoder turnEncoder;
   private final PIDController turnPIDController;
 
@@ -40,7 +40,7 @@ public class SDSMK4iSwerveModule {
    * Encoder.
    */
   public SDSMK4iSwerveModule(int drivingCANId, Boolean driveInverted, int turningCANId, int canCoderCANId, double chassisAngularOffset) {
-    driveMotor = new Spark(drivingCANId, MotorModel.VORTEX);
+    driveMotor = new CANSpark(drivingCANId, MotorModel.VORTEX);
     drivePIDController = driveMotor.getPIDController();
     driveEncoder = driveMotor.getEncoder();
     drivePIDController.setFeedbackDevice(driveEncoder);
@@ -63,7 +63,7 @@ public class SDSMK4iSwerveModule {
     driveMotor.burnFlash();
 
     // Turning motor configuration
-    turnMotor = new Spark(turningCANId, MotorModel.NEO);
+    turnMotor = new CANSpark(turningCANId, MotorModel.NEO);
     turnMotor.setInverted(SwerveModule.TURN_INVERTED);
     turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
     turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);

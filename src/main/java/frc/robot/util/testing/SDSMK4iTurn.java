@@ -1,26 +1,27 @@
-package frc.robot.util.swerve;
+package frc.robot.util.testing;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.SwerveConstants.SwerveModule;
-import frc.robot.util.Spark;
-import frc.robot.util.Spark.MotorModel;
+import frc.robot.util.hardware.CANSpark;
+import frc.robot.util.hardware.CANSpark.MotorModel;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-public class SDSMK4iTurnModule {
+public class SDSMK4iTurn {
 
-  private final Spark turnMotor;
+  private final CANSpark turnMotor;
   private final CANcoder turnEncoder;
   private final PIDController turnPIDController;
   private final double canId;
 
-  public SDSMK4iTurnModule(int turningCANId, int canCoderCANId) {
+  public SDSMK4iTurn(int turningCANId, int canCoderCANId) {
     canId = turningCANId;
     // Initialize turning motor and encoder
-    turnMotor = new Spark(turningCANId, MotorModel.NEO);
+    turnMotor = new CANSpark(turningCANId, MotorModel.NEO);
     turnEncoder = new CANcoder(canCoderCANId);
 
     // Set up the PID controller for radians (0 - 2 * PI)

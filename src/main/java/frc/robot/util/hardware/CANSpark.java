@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.util.hardware;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 import java.util.function.Supplier;
 
-public class Spark extends CANSparkFlex {
+public class CANSpark extends CANSparkFlex {
 
   public enum MotorModel {
     VORTEX,
@@ -24,7 +24,7 @@ public class Spark extends CANSparkFlex {
   private static final double MAX_RETRY_DELAY = 2.0; // Maximum delay in seconds
   private static final double BACKOFF_MULTIPLIER = 2.0; // Multiplier for each retry
 
-  public Spark(int canBusId, MotorModel motorType) {
+  public CANSpark(int canBusId, MotorModel motorType) {
     super(canBusId, (motorType == MotorModel.VORTEX || motorType == MotorModel.NEO || motorType == MotorModel.NEO_550) ? MotorType.kBrushless : MotorType.kBrushed);
 
     // Restore factory defaults

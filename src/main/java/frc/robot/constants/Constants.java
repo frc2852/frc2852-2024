@@ -33,5 +33,19 @@ public final class Constants {
     public static final int REAR_LEFT_DRIVE = 5, REAR_LEFT_TURNING = 6, REAR_LEFT_ENCODER = 7;
     public static final int FRONT_RIGHT_DRIVE = 8, FRONT_RIGHT_TURNING = 9, FRONT_RIGHT_ENCODER = 10;
     public static final int REAR_RIGHT_DRIVE = 11, REAR_RIGHT_TURNING = 12, REAR_RIGHT_ENCODER = 13;
+
+    public static final int INTAKE_BOTTOM = 14, INTAKE_TOP = 15;
+    public static final int PIVOT = 16;
+    public static final int SHOOTER_LEFT = 17, SHOOTER_RIGHT = 18;
+  }
+
+  public static class DIOId {
+    public static final int SHOOTER_BEAM_BREAK = 0;
+    public static final int INTAKE_BEAM_BREAK = 1;
+  }
+
+  public static class MotorSetPoint {
+    public static final int STOP = 0;
+    public static final int INTAKE_VELOCITY = 1000;
   }
 }
