@@ -3,41 +3,82 @@ package frc.robot.util.hardware;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.REVLibError;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.util.DataTracker;
+import frc.robot.util.PIDParameters;
+import frc.robot.util.constants.motor.Motor;
+import frc.robot.util.constants.motor.MotorFactory;
 
 import java.util.function.Supplier;
 
 public class CANSpark extends CANSparkFlex {
 
-  public enum MotorModel {
-    VORTEX,
-    NEO,
-    NEO_550,
-    BRUSHED
-  }
+  public SparkPIDController pidController;
+  public PIDParameters pidParameters;
+  public RelativeEncoder encoder;
+
+  private CANDevice canDevice;
+  private Motor motorSpecs;
+
+  private Double velocitySetpoint = null;
+  private Double positionSetpoint = null;
 
   private static final int MAX_RETRIES = 5;
-
   private static final double INITIAL_RETRY_DELAY = 0.3; // Initial delay in seconds
   private static final double MAX_RETRY_DELAY = 2.0; // Maximum delay in seconds
   private static final double BACKOFF_MULTIPLIER = 2.0; // Multiplier for each retry
 
-  public CANSpark(int canBusId, MotorModel motorType) {
-    super(canBusId, (motorType == MotorModel.VORTEX || motorType == MotorModel.NEO || motorType == MotorModel.NEO_550) ? MotorType.kBrushless : MotorType.kBrushed);
+  public CANSpark(CANDevice canDevice) {
+    super(canDevice.getCanId(), MotorType.kBrushless);
+
+    this.canDevice = canDevice;
+    motorSpecs = MotorFactory.getMotorSpecs(canDevice.getDevice());
 
     // Restore factory defaults
     restoreFactoryDefaults();
 
     // Enable voltage compensation to 12V
     enableVoltageCompensation(12.0);
+    setSmartCurrentLimit(motorSpecs.getCurrentLimit());
 
-    // For NEO_550 motors, enable Smart Current Limit to 20 amps
-    // This can be overridden by the caller if needed
-    if (motorType == MotorModel.NEO_550) {
-      setSmartCurrentLimit(20);
+    pidController = getPIDController();
+    encoder = getEncoder();
+    pidParameters = new PIDParameters(canDevice.getSubsystem(), canDevice.getDeviceName(), pidController);
+  }
+
+  public void periodic() {
+    pidParameters.periodic();
+    if (velocitySetpoint != null) {
+      // Get current velocity and calculate errors
+      double velocity = encoder.getVelocity();
+      double velocityError = velocitySetpoint - velocity;
+
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "VelocitySetPoint", velocitySetpoint);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "Velocity", velocity);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "VelocityError", velocityError);
+    } else if (positionSetpoint != null) {
+      // Get current positions and calculate errors
+      double position = encoder.getPosition();
+      double positionError = positionSetpoint - position;
+
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "PositionSetPoint", positionSetpoint);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "Position", position);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "PositionError", positionError);
     }
+  }
+
+  public void setVelocity(double velocity) {
+    velocitySetpoint = velocity;
+    pidController.setReference(velocitySetpoint, ControlType.kVelocity);
+  }
+
+  public void setPosition(double position) {
+    positionSetpoint = position;
+    pidController.setReference(positionSetpoint, ControlType.kPosition);
   }
 
   // #region CANSparkLowLevel overrides

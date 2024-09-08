@@ -24,8 +24,8 @@ public class DataTracker {
   /**
    * Retrieves a boolean value from SmartDashboard using the specified group and key.
    *
-   * @param groupId The group ID for categorizing the log entry.
-   * @param key     The key identifying the log entry.
+   * @param groupId      The group ID for categorizing the log entry.
+   * @param key          The key identifying the log entry.
    * @param defaultValue The default value to return if the key does not exist.
    * @return The boolean value from SmartDashboard, or the default value if not found.
    */
@@ -36,19 +36,30 @@ public class DataTracker {
   /**
    * Logs a numeric value with specified group and key.
    *
-   * @param groupId              The group ID for categorizing the log entry.
-   * @param key                  The key identifying the log entry.
-   * @param value                The numeric value to log.
+   * @param groupId The group ID for categorizing the log entry.
+   * @param key     The key identifying the log entry.
+   * @param value   The numeric value to log.
    */
   public static void putNumber(String groupId, String key, double value) {
     SmartDashboard.putNumber(groupId + key, value);
   }
 
   /**
-   * Retrieves a numeric value from SmartDashboard using the specified group and key.
+   * Logs a numeric value with specified group and key.
    *
    * @param groupId The group ID for categorizing the log entry.
    * @param key     The key identifying the log entry.
+   * @param value   The numeric value to log.
+   */
+  public static void putNumber(String groupId, String deviceName, String key, double value) {
+    SmartDashboard.putNumber(groupId + deviceName + key, value);
+  }
+
+  /**
+   * Retrieves a numeric value from SmartDashboard using the specified group and key.
+   *
+   * @param groupId      The group ID for categorizing the log entry.
+   * @param key          The key identifying the log entry.
    * @param defaultValue The default value to return if the key does not exist.
    * @return The numeric value from SmartDashboard, or the default value if not found.
    */
@@ -57,11 +68,23 @@ public class DataTracker {
   }
 
   /**
+   * Retrieves a numeric value from SmartDashboard using the specified group and key.
+   *
+   * @param groupId      The group ID for categorizing the log entry.
+   * @param key          The key identifying the log entry.
+   * @param defaultValue The default value to return if the key does not exist.
+   * @return The numeric value from SmartDashboard, or the default value if not found.
+   */
+  public static double getNumber(String groupId, String deviceName, String key, double defaultValue) {
+    return SmartDashboard.getNumber(groupId + deviceName + key, defaultValue);
+  }
+
+  /**
    * Logs a string value with specified group and key.
    *
-   * @param groupId              The group ID for categorizing the log entry.
-   * @param key                  The key identifying the log entry.
-   * @param value                The string value to log.
+   * @param groupId The group ID for categorizing the log entry.
+   * @param key     The key identifying the log entry.
+   * @param value   The string value to log.
    */
   public static void putString(String groupId, String key, String value) {
     SmartDashboard.putString(groupId + key, value);
@@ -70,8 +93,8 @@ public class DataTracker {
   /**
    * Retrieves a string value from SmartDashboard using the specified group and key.
    *
-   * @param groupId The group ID for categorizing the log entry.
-   * @param key     The key identifying the log entry.
+   * @param groupId      The group ID for categorizing the log entry.
+   * @param key          The key identifying the log entry.
    * @param defaultValue The default value to return if the key does not exist.
    * @return The string value from SmartDashboard, or the default value if not found.
    */

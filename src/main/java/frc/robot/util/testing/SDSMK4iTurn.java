@@ -3,8 +3,8 @@ package frc.robot.util.testing;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.SwerveConstants.SwerveModule;
+import frc.robot.util.hardware.CANDevice;
 import frc.robot.util.hardware.CANSpark;
-import frc.robot.util.hardware.CANSpark.MotorModel;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
@@ -16,13 +16,11 @@ public class SDSMK4iTurn {
   private final CANSpark turnMotor;
   private final CANcoder turnEncoder;
   private final PIDController turnPIDController;
-  private final double canId;
 
-  public SDSMK4iTurn(int turningCANId, int canCoderCANId) {
-    canId = turningCANId;
+  public SDSMK4iTurn(CANDevice turnDevice, CANDevice encoderDevice) {
     // Initialize turning motor and encoder
-    turnMotor = new CANSpark(turningCANId, MotorModel.NEO);
-    turnEncoder = new CANcoder(canCoderCANId);
+    turnMotor = new CANSpark(turnDevice);
+    turnEncoder = new CANcoder(encoderDevice.getCanId());
 
     // Set up the PID controller for radians (0 - 2 * PI)
     turnPIDController = new PIDController(0.55, 0, 0.01);
@@ -51,7 +49,7 @@ public class SDSMK4iTurn {
     // Get the current angle in radians
     double currentAngleRadians = getAngle();
 
-    SmartDashboard.putNumber(canId + "Current Angle", Math.toDegrees(currentAngleRadians));
+    SmartDashboard.putNumber("Current Angle", Math.toDegrees(currentAngleRadians));
 
     // Calculate PID output to reach the target angle
     double turnOutput = turnPIDController.calculate(currentAngleRadians, angleRadians);

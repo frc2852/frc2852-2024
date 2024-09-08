@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.CanbusId;
+import frc.robot.constants.Constants.CANBus;
 import frc.robot.constants.SwerveConstants.SwerveDrive;
 import frc.robot.util.swerve.SDSMK4iSwerveModule;
 import frc.robot.util.swerve.SwerveUtils;
@@ -28,31 +28,31 @@ public class Drive extends SubsystemBase {
 
   // Create SDSMK4iSwerveModules
   private final SDSMK4iSwerveModule frontLeft = new SDSMK4iSwerveModule(
-      CanbusId.FRONT_LEFT_DRIVE,
+      CANBus.FRONT_LEFT_DRIVE,
       true,
-      CanbusId.FRONT_LEFT_TURNING,
-      CanbusId.FRONT_LEFT_ENCODER,
+      CANBus.FRONT_LEFT_TURN,
+      CANBus.FRONT_LEFT_ENCODER,
       SwerveDrive.FRONT_LEFT_CHASSSIS_ANGULAR_OFFSET);
 
   private final SDSMK4iSwerveModule frontRight = new SDSMK4iSwerveModule(
-      CanbusId.FRONT_RIGHT_DRIVE,
+      CANBus.FRONT_RIGHT_DRIVE,
       false,
-      CanbusId.FRONT_RIGHT_TURNING,
-      CanbusId.FRONT_RIGHT_ENCODER,
+      CANBus.FRONT_RIGHT_TURN,
+      CANBus.FRONT_RIGHT_ENCODER,
       SwerveDrive.FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET);
 
   private final SDSMK4iSwerveModule rearLeft = new SDSMK4iSwerveModule(
-      CanbusId.REAR_LEFT_DRIVE,
+      CANBus.REAR_LEFT_DRIVE,
       false,
-      CanbusId.REAR_LEFT_TURNING,
-      CanbusId.REAR_LEFT_ENCODER,
+      CANBus.REAR_LEFT_TURN,
+      CANBus.REAR_LEFT_ENCODER,
       SwerveDrive.BACK_LEFT_CHASSIS_ANGULAR_OFFSET);
 
   private final SDSMK4iSwerveModule rearRight = new SDSMK4iSwerveModule(
-      CanbusId.REAR_RIGHT_DRIVE,
+      CANBus.REAR_RIGHT_DRIVE,
       true,
-      CanbusId.REAR_RIGHT_TURNING,
-      CanbusId.REAR_RIGHT_ENCODER,
+      CANBus.REAR_RIGHT_TURN,
+      CANBus.REAR_RIGHT_ENCODER,
       SwerveDrive.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET);
 
   // Sensors

@@ -8,8 +8,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.constants.SwerveConstants.SwerveModule;
+import frc.robot.util.hardware.CANDevice;
 import frc.robot.util.hardware.CANSpark;
-import frc.robot.util.hardware.CANSpark.MotorModel;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
@@ -18,8 +18,8 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 
 public class MAXSwerveModule {
-  private final CANSpark drivingSparkFlex;
-  private final CANSpark turningSparkMax;
+  private final CANSpark driveSpark;
+  private final CANSpark turnSpark;
 
   private final RelativeEncoder drivingEncoder;
   private final AbsoluteEncoder turningEncoder;
@@ -36,15 +36,15 @@ public class MAXSwerveModule {
    * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
    * Encoder.
    */
-  public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset) {
-    drivingSparkFlex = new CANSpark(drivingCANId, MotorModel.NEO);
-    turningSparkMax = new CANSpark(turningCANId, MotorModel.NEO_550);
+  public MAXSwerveModule(CANDevice driveCANDevice, CANDevice turnCANDevice, double chassisAngularOffset) {
+    driveSpark = new CANSpark(driveCANDevice);
+    turnSpark = new CANSpark(turnCANDevice);
 
     // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
-    drivingEncoder = drivingSparkFlex.getEncoder();
-    turningEncoder = turningSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
-    drivingPIDController = drivingSparkFlex.getPIDController();
-    turningPIDController = turningSparkMax.getPIDController();
+    drivingEncoder = driveSpark.getEncoder();
+    turningEncoder = turnSpark.getAbsoluteEncoder(Type.kDutyCycle);
+    drivingPIDController = driveSpark.getPIDController();
+    turningPIDController = turnSpark.getPIDController();
     drivingPIDController.setFeedbackDevice(drivingEncoder);
     turningPIDController.setFeedbackDevice(turningEncoder);
 
@@ -62,7 +62,7 @@ public class MAXSwerveModule {
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
-    drivingSparkFlex.setInverted(SwerveModule.DRIVE_INVERTED);
+    driveSpark.setInverted(SwerveModule.DRIVE_INVERTED);
     turningEncoder.setInverted(SwerveModule.TURNING_ENCODER_INVERTED);
 
     // Enable PID wrap around for the turning motor. This will allow the PID
@@ -91,15 +91,15 @@ public class MAXSwerveModule {
     turningPIDController.setOutputRange(SwerveModule.TURNING_MIN_OUTPUT,
         SwerveModule.TURNING_MAX_OUTPUT);
 
-    drivingSparkFlex.setIdleMode(SwerveModule.DRVING_MOTOR_IDLE_MODE);
-    turningSparkMax.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
-    drivingSparkFlex.setSmartCurrentLimit(SwerveModule.DRIVING_MOTOR_CURRENT_LIMIT);
-    turningSparkMax.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
+    driveSpark.setIdleMode(SwerveModule.DRVING_MOTOR_IDLE_MODE);
+    turnSpark.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
+    driveSpark.setSmartCurrentLimit(SwerveModule.DRIVING_MOTOR_CURRENT_LIMIT);
+    turnSpark.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
 
     // Save the SPARK MAX configurations. If a SPARK MAX browns out during
     // operation, it will maintain the above configurations.
-    drivingSparkFlex.burnFlash();
-    turningSparkMax.burnFlash();
+    driveSpark.burnFlash();
+    turnSpark.burnFlash();
 
     this.chassisAngularOffset = chassisAngularOffset;
     desiredState.angle = new Rotation2d(turningEncoder.getPosition());
