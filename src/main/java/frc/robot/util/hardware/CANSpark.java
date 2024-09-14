@@ -22,7 +22,7 @@ public class CANSpark extends CANSparkFlex {
   public RelativeEncoder encoder;
 
   private CANDevice canDevice;
-  private Motor motorSpecs;
+  public Motor motorSpecs;
 
   private Double velocitySetpoint = null;
   private Double positionSetpoint = null;

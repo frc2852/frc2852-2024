@@ -62,7 +62,7 @@ public class MAXSwerveModule {
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
-    driveSpark.setInverted(SwerveModule.DRIVE_INVERTED);
+    driveSpark.setInverted(false);
     turningEncoder.setInverted(SwerveModule.TURNING_ENCODER_INVERTED);
 
     // Enable PID wrap around for the turning motor. This will allow the PID
@@ -79,8 +79,6 @@ public class MAXSwerveModule {
     drivingPIDController.setI(SwerveModule.DRIVING_I);
     drivingPIDController.setD(SwerveModule.DRIVING_D);
     drivingPIDController.setFF(SwerveModule.DRIVING_FF);
-    drivingPIDController.setOutputRange(SwerveModule.DRIVING_MIN_OUTPUT,
-        SwerveModule.DRIVING_MAX_OUTPUT);
 
     // Set the PID gains for the turning motor. Note these are example gains, and you
     // may need to tune them for your own robot!
@@ -88,8 +86,6 @@ public class MAXSwerveModule {
     turningPIDController.setI(SwerveModule.TURNING_I);
     turningPIDController.setD(SwerveModule.TURNING_D);
     turningPIDController.setFF(SwerveModule.TURNING_FF);
-    turningPIDController.setOutputRange(SwerveModule.TURNING_MIN_OUTPUT,
-        SwerveModule.TURNING_MAX_OUTPUT);
 
     driveSpark.setIdleMode(SwerveModule.DRVING_MOTOR_IDLE_MODE);
     turnSpark.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);

@@ -63,18 +63,9 @@ public final class SwerveConstants {
   }
 
   public static final class SwerveModule {
-
-    // Invert the driving motor.
-    public static final boolean DRIVE_INVERTED = false;
-
-    // Invert the driving motor.
-    public static final boolean TURN_INVERTED = false;
-
-    // TODO: Reimplement this in SDSMK4i Swerve Module
     // Invert the turning encoder, since the output shaft rotates in the opposite
-    // direction of
-    // the steering motor in the MAXSwerve Module.
-    public static final boolean TURNING_ENCODER_INVERTED = true;
+    // direction of the steering motor in the Swerve Module.
+    public static final boolean TURNING_ENCODER_INVERTED = false;
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double WHEEL_DIAMETER_METERS = Units.inchesToMeters(4);
@@ -101,16 +92,11 @@ public final class SwerveConstants {
     public static final double DRIVING_I = 0;
     public static final double DRIVING_D = 0;
     public static final double DRIVING_FF = 1 / DRIVE_WHEEL_FREEE_SPEED_RPS;
-    public static final double DRIVING_MIN_OUTPUT = -1;
-    public static final double DRIVING_MAX_OUTPUT = 1;
 
-    // TODO: Reimplement this in SDSMK4i Swerve Module
-    public static final double TURNING_P = 1;
+    public static final double TURNING_P = 0.55;
     public static final double TURNING_I = 0;
-    public static final double TURNING_D = 0;
+    public static final double TURNING_D = 0.01;
     public static final double TURNING_FF = 0;
-    public static final double TURNING_MIN_OUTPUT = -1;
-    public static final double TURNING_MAX_OUTPUT = 1;
 
     public static final IdleMode DRVING_MOTOR_IDLE_MODE = IdleMode.kBrake;
     public static final IdleMode TURNING_MOTOR_IDLE_MODE = IdleMode.kBrake;

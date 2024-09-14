@@ -58,26 +58,26 @@ public class SDSMK4iSwerveModule {
     drivePIDController.setI(SwerveModule.DRIVING_I);
     drivePIDController.setD(SwerveModule.DRIVING_D);
     drivePIDController.setFF(SwerveModule.DRIVING_FF);
-    drivePIDController.setOutputRange(SwerveModule.DRIVING_MIN_OUTPUT, SwerveModule.DRIVING_MAX_OUTPUT);
 
     driveMotor.burnFlash();
 
     // Turning motor configuration
     turnMotor = new CANSpark(turnCANDevice);
-    turnMotor.setInverted(SwerveModule.TURN_INVERTED);
+    turnMotor.setInverted(false);
     turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
     turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
 
-    turnPIDController = new PIDController(0.55, 0, 0.01);
+    turnPIDController = new PIDController(SwerveModule.TURNING_P, SwerveModule.TURNING_I, SwerveModule.TURNING_D);
     turnPIDController.enableContinuousInput(0, 2 * Math.PI);
 
+    //TODO: This needs to be cleaned up, make a wrapper for CANCoder
     turnEncoder = new CANcoder(encoderCANDevice.getCanId());
     CANcoderConfiguration config = new CANcoderConfiguration();
     CANcoderConfigurator canCoderConfigurator = turnEncoder.getConfigurator();
     CANcoderConfiguration oldConfig = new CANcoderConfiguration();
     canCoderConfigurator.refresh(oldConfig);
     config.MagnetSensor.MagnetOffset = oldConfig.MagnetSensor.MagnetOffset;
-    config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    config.MagnetSensor.SensorDirection = SwerveModule.TURNING_ENCODER_INVERTED ? SensorDirectionValue.CounterClockwise_Positive : SensorDirectionValue.Clockwise_Positive;
     turnEncoder.getConfigurator().apply(config);
     turnMotor.burnFlash();
 
