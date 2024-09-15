@@ -81,6 +81,10 @@ public class CANSpark extends CANSparkFlex {
     pidController.setReference(positionSetpoint, ControlType.kPosition);
   }
 
+  public String GetDeviceName(){
+    return canDevice.getDeviceName();
+  }
+
   // #region CANSparkLowLevel overrides
 
   @Override

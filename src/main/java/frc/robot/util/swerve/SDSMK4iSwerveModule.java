@@ -39,7 +39,7 @@ public class SDSMK4iSwerveModule {
    * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
    * Encoder.
    */
-  public SDSMK4iSwerveModule(CANDevice driveCANDevice, Boolean driveInverted, CANDevice turnCANDevice, CANDevice encoderCANDevice, double chassisAngularOffset) {
+  public SDSMK4iSwerveModule(CANDevice driveCANDevice, CANDevice turnCANDevice, CANDevice encoderCANDevice, double chassisAngularOffset, boolean driveInverted, boolean turnInverted) {
     driveMotor = new CANSpark(driveCANDevice);
     drivePIDController = driveMotor.getPIDController();
     driveEncoder = driveMotor.getEncoder();
@@ -63,7 +63,7 @@ public class SDSMK4iSwerveModule {
 
     // Turning motor configuration
     turnMotor = new CANSpark(turnCANDevice);
-    turnMotor.setInverted(false);
+    turnMotor.setInverted(turnInverted);
     turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
     turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
 
@@ -82,7 +82,7 @@ public class SDSMK4iSwerveModule {
     turnMotor.burnFlash();
 
     this.chassisAngularOffset = chassisAngularOffset;
-    desiredState.angle = new Rotation2d(getAngle());
+    desiredState.angle = new Rotation2d(getAbsolutePosition());
     driveEncoder.setPosition(0);
   }
 
@@ -95,7 +95,7 @@ public class SDSMK4iSwerveModule {
         // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
     return new SwerveModuleState(driveEncoder.getVelocity(),
-        new Rotation2d(getAngle() - chassisAngularOffset));
+        new Rotation2d(getAbsolutePosition() - chassisAngularOffset));
   }
 
     /**
@@ -108,7 +108,7 @@ public class SDSMK4iSwerveModule {
     // relative to the chassis.
     return new SwerveModulePosition(
         driveEncoder.getPosition(),
-        new Rotation2d(getAngle() - chassisAngularOffset));
+        new Rotation2d(getAbsolutePosition() - chassisAngularOffset));
   }
 
   /**
@@ -124,11 +124,11 @@ public class SDSMK4iSwerveModule {
 
     // Optimize the reference state to avoid spinning further than 90 degrees.
     SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState,
-        new Rotation2d(getAngle()));
+        new Rotation2d(getAbsolutePosition()));
 
     // Command driving and turning SPARKS MAX towards their respective setpoints.
     drivePIDController.setReference(optimizedDesiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
-    turnMotor.set(turnPIDController.calculate(getAngle(), optimizedDesiredState.angle.getRadians()));
+    turnMotor.set(turnPIDController.calculate(getAbsolutePosition(), optimizedDesiredState.angle.getRadians()));
 
     this.desiredState = desiredState;
   }
@@ -138,7 +138,7 @@ public class SDSMK4iSwerveModule {
     driveEncoder.setPosition(0);
   }
 
-  public double getAngle() {
+  public double getAbsolutePosition() {
     // The encoder gives a value between 0 and 1, representing full rotation, so multiply by 2 * PI
     return turnEncoder.getAbsolutePosition().getValue() * 2 * Math.PI;
   }

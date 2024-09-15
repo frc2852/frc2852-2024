@@ -36,13 +36,13 @@ public final class Constants {
     public static final CANDevice FRONT_LEFT_TURN = new CANDevice("Drive", "FrontLeftTurn", 3, Device.NEO);
     public static final CANDevice FRONT_LEFT_ENCODER = new CANDevice("Drive", "FrontLeftEncoder", 4, Device.CAN_CODER);
 
-    public static final CANDevice REAR_LEFT_DRIVE = new CANDevice("Drive", "RearLeftDrive", 5, Device.VORTEX);
-    public static final CANDevice REAR_LEFT_TURN = new CANDevice("Drive", "RearLeftTurn", 6, Device.NEO);
-    public static final CANDevice REAR_LEFT_ENCODER = new CANDevice("Drive", "RearLeftEncoder", 7, Device.CAN_CODER);
+    public static final CANDevice FRONT_RIGHT_DRIVE = new CANDevice("Drive", "FrontRightDrive", 5, Device.VORTEX);
+    public static final CANDevice FRONT_RIGHT_TURN = new CANDevice("Drive", "FrontRightTurn", 6, Device.NEO);
+    public static final CANDevice FRONT_RIGHT_ENCODER = new CANDevice("Drive", "FrontRightEncoder", 7, Device.CAN_CODER);
 
-    public static final CANDevice FRONT_RIGHT_DRIVE = new CANDevice("Drive", "FrontRightDrive", 8, Device.VORTEX);
-    public static final CANDevice FRONT_RIGHT_TURN = new CANDevice("Drive", "FrontRightTurn", 9, Device.NEO);
-    public static final CANDevice FRONT_RIGHT_ENCODER = new CANDevice("Drive", "FrontRightEncoder", 10, Device.CAN_CODER);
+    public static final CANDevice REAR_LEFT_DRIVE = new CANDevice("Drive", "RearLeftDrive", 8, Device.VORTEX);
+    public static final CANDevice REAR_LEFT_TURN = new CANDevice("Drive", "RearLeftTurn", 9, Device.NEO);
+    public static final CANDevice REAR_LEFT_ENCODER = new CANDevice("Drive", "RearLeftEncoder", 10, Device.CAN_CODER);
 
     public static final CANDevice REAR_RIGHT_DRIVE = new CANDevice("Drive", "RearRightDrive", 11, Device.VORTEX);
     public static final CANDevice REAR_RIGHT_TURN = new CANDevice("Drive", "RearRightTurn", 12, Device.NEO);

@@ -18,7 +18,7 @@ public final class SwerveConstants {
     public static final double MAX_SPEED_METERS_PER_SECOND = 5.74;
 
     // Radians per second
-    public static final double MAX_ANGULAR_SPEED = Math.PI;
+    public static final double MAX_ANGULAR_SPEED = 2 * Math.PI;
 
     // Radians per second
     public static final double DIRECTION_SLEW_RATE = 1.2;

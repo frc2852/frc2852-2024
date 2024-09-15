@@ -9,6 +9,7 @@ import frc.robot.util.hardware.CANSpark;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class SDSMK4iTurn {
@@ -34,6 +35,7 @@ public class SDSMK4iTurn {
     canCoderConfigurator.refresh(oldConfig);
     config.MagnetSensor.MagnetOffset = oldConfig.MagnetSensor.MagnetOffset;
     config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1; 
     turnEncoder.getConfigurator().apply(config);
 
     // Set motor limits and modes
@@ -49,7 +51,7 @@ public class SDSMK4iTurn {
     // Get the current angle in radians
     double currentAngleRadians = getAngle();
 
-    SmartDashboard.putNumber("Current Angle", Math.toDegrees(currentAngleRadians));
+    SmartDashboard.putNumber(turnMotor.GetDeviceName() + "CurrentAngle", Math.toDegrees(currentAngleRadians));
 
     // Calculate PID output to reach the target angle
     double turnOutput = turnPIDController.calculate(currentAngleRadians, angleRadians);
