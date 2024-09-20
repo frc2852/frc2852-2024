@@ -3,86 +3,30 @@ package frc.robot.util.hardware;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.REVLibError;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.util.DataTracker;
-import frc.robot.util.PIDParameters;
-import frc.robot.util.constants.motor.Motor;
-import frc.robot.util.constants.motor.MotorFactory;
 
 import java.util.function.Supplier;
 
-public class CANSpark extends CANSparkFlex {
-
-  public SparkPIDController pidController;
-  public PIDParameters pidParameters;
-  public RelativeEncoder encoder;
-
-  private CANDevice canDevice;
-  public Motor motorSpecs;
-
-  private Double velocitySetpoint = null;
-  private Double positionSetpoint = null;
+public class SparkFlex extends CANSparkFlex {
 
   private static final int MAX_RETRIES = 5;
+
   private static final double INITIAL_RETRY_DELAY = 0.3; // Initial delay in seconds
   private static final double MAX_RETRY_DELAY = 2.0; // Maximum delay in seconds
   private static final double BACKOFF_MULTIPLIER = 2.0; // Multiplier for each retry
 
-  public CANSpark(CANDevice canDevice) {
-    super(canDevice.getCanId(), MotorType.kBrushless);
 
-    this.canDevice = canDevice;
-    motorSpecs = MotorFactory.getMotorSpecs(canDevice.getDevice());
+  public SparkFlex(int canBusId) {
+    super(canBusId, MotorType.kBrushless);
 
     // Restore factory defaults
     restoreFactoryDefaults();
 
     // Enable voltage compensation to 12V
     enableVoltageCompensation(12.0);
-    setSmartCurrentLimit(motorSpecs.getCurrentLimit());
 
-    pidController = getPIDController();
-    encoder = getEncoder();
-    pidParameters = new PIDParameters(canDevice.getSubsystem(), canDevice.getDeviceName(), pidController);
-  }
-
-  public void periodic() {
-    pidParameters.periodic();
-    if (velocitySetpoint != null) {
-      // Get current velocity and calculate errors
-      double velocity = encoder.getVelocity();
-      double velocityError = velocitySetpoint - velocity;
-
-      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "VelocitySetPoint", velocitySetpoint);
-      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "Velocity", velocity);
-      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "VelocityError", velocityError);
-    } else if (positionSetpoint != null) {
-      // Get current positions and calculate errors
-      double position = encoder.getPosition();
-      double positionError = positionSetpoint - position;
-
-      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "PositionSetPoint", positionSetpoint);
-      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "Position", position);
-      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "PositionError", positionError);
-    }
-  }
-
-  public void setVelocity(double velocity) {
-    velocitySetpoint = velocity;
-    pidController.setReference(velocitySetpoint, ControlType.kVelocity);
-  }
-
-  public void setPosition(double position) {
-    positionSetpoint = position;
-    pidController.setReference(positionSetpoint, ControlType.kPosition);
-  }
-
-  public String GetDeviceName(){
-    return canDevice.getDeviceName();
   }
 
   // #region CANSparkLowLevel overrides
@@ -224,11 +168,11 @@ public class CANSpark extends CANSparkFlex {
       currentDelay = Math.min(currentDelay * BACKOFF_MULTIPLIER, MAX_RETRY_DELAY);
 
       // Log retry attempt
-      String retryLog = String.format("CANSpark (%s): %s attempt %d failed, retrying in %.2f seconds", this.getDeviceId(), methodName, i + 1, currentDelay);
+      String retryLog = String.format("CANSparkMax (%s): %s attempt %d failed, retrying in %.2f seconds", this.getDeviceId(), methodName, i + 1, currentDelay);
       DriverStation.reportError(retryLog, false);
     }
 
-    String error = String.format("CANSpark (%s): %s failed after %s attempts", this.getDeviceId(), methodName, MAX_RETRIES);
+    String error = String.format("CANSparkMax (%s): %s failed after %s attempts", this.getDeviceId(), methodName, MAX_RETRIES);
     DriverStation.reportError(error, false);
     return status;
   }

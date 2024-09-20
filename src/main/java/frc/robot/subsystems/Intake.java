@@ -10,13 +10,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CANBus;
 import frc.robot.constants.Constants.DIOId;
 import frc.robot.constants.Constants.MotorSetPoint;
-import frc.robot.util.hardware.CANSpark;
+import frc.robot.util.hardware.SparkFlex;
+import frc.robot.util.hardware.SparkMax;
 
 public class Intake extends SubsystemBase {
 
   // Controllers
-  private final CANSpark topRollers = new CANSpark(CANBus.INTAKE_TOP);
-  private final CANSpark bottomRollers = new CANSpark(CANBus.INTAKE_LOWER);
+  private final SparkFlex topRollers = new SparkFlex(CANBus.INTAKE_TOP.getCanId());
+  private final SparkFlex bottomRollers = new SparkFlex(CANBus.INTAKE_LOWER.getCanId());
 
   // Sensors
   private final DigitalInput intakeBeamBreak;
@@ -30,14 +31,14 @@ public class Intake extends SubsystemBase {
     // Set motor controller configurations
     topRollers.setIdleMode(IdleMode.kBrake);
     topRollers.setInverted(false);
-    topRollers.encoder.setPosition(0); // I don't think this is needed since we are using velocity.
-    topRollers.pidParameters.SetPID(0.001, 0, 0);
+    // topRollers.encoder.setPosition(0); // I don't think this is needed since we are using velocity.
+    // topRollers.pidParameters.SetPID(0.001, 0, 0);
     topRollers.burnFlash();
 
     bottomRollers.setIdleMode(IdleMode.kBrake);
     bottomRollers.setInverted(true);
-    bottomRollers.encoder.setPosition(0); // Ditto
-    bottomRollers.pidParameters.SetPID(0.001, 0, 0);
+    // bottomRollers.encoder.setPosition(0); // Ditto
+    // bottomRollers.pidParameters.SetPID(0.001, 0, 0);
     bottomRollers.burnFlash();
 
     // Initialize sensors
@@ -57,26 +58,26 @@ public class Intake extends SubsystemBase {
       gamePieceLoading = false;
     }
 
-    topRollers.periodic();
-    bottomRollers.periodic();
+    // topRollers.periodic();
+    // bottomRollers.periodic();
   }
 
   private void runIntakeHalfSpeed() {
     velocitySetpoint = MotorSetPoint.INTAKE_HALF;
-    topRollers.setVelocity(velocitySetpoint);
-    bottomRollers.setVelocity(velocitySetpoint);
+    // topRollers.setVelocity(velocitySetpoint);
+    // bottomRollers.setVelocity(velocitySetpoint);
   }
 
   private void runIntakeFullSpeed() {
     velocitySetpoint = MotorSetPoint.INTAKE_FULL;
-    topRollers.setVelocity(velocitySetpoint);
-    bottomRollers.setVelocity(velocitySetpoint);
+    // topRollers.setVelocity(velocitySetpoint);
+    // bottomRollers.setVelocity(velocitySetpoint);
   }
 
   private void stopIntake() {
     velocitySetpoint = MotorSetPoint.STOP;
-    topRollers.setVelocity(velocitySetpoint);
-    bottomRollers.setVelocity(velocitySetpoint);
+    // topRollers.setVelocity(velocitySetpoint);
+    // bottomRollers.setVelocity(velocitySetpoint);
   }
 
   private boolean isGamePieceBeingLoaded() {

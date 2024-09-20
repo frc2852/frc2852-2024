@@ -38,9 +38,6 @@ public class RobotContainer {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
 
-    // Port forwarding
-    PortForwarder.add(5800, "photonvision.local", 5800);
-
     // Initialize controllers with distinct ports
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
 
