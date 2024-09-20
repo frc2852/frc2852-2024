@@ -11,13 +11,12 @@ import frc.robot.constants.Constants.CANBus;
 import frc.robot.constants.Constants.DIOId;
 import frc.robot.constants.Constants.MotorSetPoint;
 import frc.robot.util.hardware.SparkFlex;
-import frc.robot.util.hardware.SparkMax;
 
 public class Intake extends SubsystemBase {
 
   // Controllers
-  private final SparkFlex topRollers = new SparkFlex(CANBus.INTAKE_TOP.getCanId());
-  private final SparkFlex bottomRollers = new SparkFlex(CANBus.INTAKE_LOWER.getCanId());
+  private final SparkFlex topRollers = new SparkFlex(CANBus.INTAKE_TOP);
+  private final SparkFlex bottomRollers = new SparkFlex(CANBus.INTAKE_LOWER);
 
   // Sensors
   private final DigitalInput intakeBeamBreak;

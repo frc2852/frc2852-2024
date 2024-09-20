@@ -6,9 +6,13 @@ import com.revrobotics.REVLibError;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.util.constants.Device;
 
 import java.util.function.Supplier;
 
+/**
+ * A wrapper class for the CANSparkFlex that adds support for CANDevice and includes retry logic.
+ */
 public class SparkFlex extends CANSparkFlex {
 
   private static final int MAX_RETRIES = 5;
@@ -17,16 +21,60 @@ public class SparkFlex extends CANSparkFlex {
   private static final double MAX_RETRY_DELAY = 2.0; // Maximum delay in seconds
   private static final double BACKOFF_MULTIPLIER = 2.0; // Multiplier for each retry
 
+  private CANDevice canDevice;
 
-  public SparkFlex(int canBusId) {
-    super(canBusId, MotorType.kBrushless);
+  /**
+   * Constructs a new SparkFlex object with the specified CANDevice.
+   *
+   * @param canDevice CANDevice object containing device information.
+   */
+  public SparkFlex(CANDevice canDevice) {
+    super(canDevice.getCanId(), MotorType.kBrushless);
+    this.canDevice = canDevice;
 
     // Restore factory defaults
     restoreFactoryDefaults();
 
     // Enable voltage compensation to 12V
     enableVoltageCompensation(12.0);
+  }
 
+  // Accessor methods for CANDevice properties
+
+  /**
+   * Returns the subsystem of the CANDevice.
+   *
+   * @return Subsystem name.
+   */
+  public String getSubsystem() {
+    return canDevice.getSubsystem();
+  }
+
+  /**
+   * Returns the device name of the CANDevice.
+   *
+   * @return Device name.
+   */
+  public String getDeviceName() {
+    return canDevice.getDeviceName();
+  }
+
+  /**
+   * Returns the CAN ID of the CANDevice.
+   *
+   * @return CAN ID.
+   */
+  public int getCanId() {
+    return canDevice.getCanId();
+  }
+
+  /**
+   * Returns the Device enum of the CANDevice.
+   *
+   * @return Device enum.
+   */
+  public Device getDevice() {
+    return canDevice.getDevice();
   }
 
   // #region CANSparkLowLevel overrides
@@ -148,10 +196,10 @@ public class SparkFlex extends CANSparkFlex {
    * @param command    A {@link Supplier} of {@link REVLibError}, representing the command to execute.
    * @param methodName Name of the method for logging.
    * @return {@link REVLibError} status of the command. Returns success status on early success or the last error after max retries.
-   * 
-   *         The retry logic starts with an initial delay (INITIAL_RETRY_DELAY) and increases the delay after each failed attempt
-   *         by a factor of BACKOFF_MULTIPLIER, capped at MAX_RETRY_DELAY. A warning is logged on each failed attempt. If all attempts fail,
-   *         an error is logged.
+   *
+   * The retry logic starts with an initial delay (INITIAL_RETRY_DELAY) and increases the delay after each failed attempt
+   * by a factor of BACKOFF_MULTIPLIER, capped at MAX_RETRY_DELAY. A warning is logged on each failed attempt. If all attempts fail,
+   * an error is logged.
    */
   private REVLibError applyCommandWithRetry(Supplier<REVLibError> command, String methodName) {
     REVLibError status = REVLibError.kUnknown;
@@ -168,11 +216,13 @@ public class SparkFlex extends CANSparkFlex {
       currentDelay = Math.min(currentDelay * BACKOFF_MULTIPLIER, MAX_RETRY_DELAY);
 
       // Log retry attempt
-      String retryLog = String.format("CANSparkMax (%s): %s attempt %d failed, retrying in %.2f seconds", this.getDeviceId(), methodName, i + 1, currentDelay);
+      String retryLog = String.format("CANSparkFlex (%d): %s attempt %d failed, retrying in %.2f seconds",
+                                      this.getDeviceId(), methodName, i + 1, currentDelay);
       DriverStation.reportError(retryLog, false);
     }
 
-    String error = String.format("CANSparkMax (%s): %s failed after %s attempts", this.getDeviceId(), methodName, MAX_RETRIES);
+    String error = String.format("CANSparkFlex (%d): %s failed after %d attempts",
+                                 this.getDeviceId(), methodName, MAX_RETRIES);
     DriverStation.reportError(error, false);
     return status;
   }

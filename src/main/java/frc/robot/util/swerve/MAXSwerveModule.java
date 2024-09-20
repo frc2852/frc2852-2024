@@ -37,8 +37,8 @@ public class MAXSwerveModule {
    * Encoder.
    */
   public MAXSwerveModule(CANDevice driveCANDevice, CANDevice turnCANDevice, double chassisAngularOffset) {
-    driveSpark = new SparkMax(driveCANDevice.getCanId(), SparkMax.MotorModel.NEO);
-    turnSpark = new SparkMax(turnCANDevice.getCanId(), SparkMax.MotorModel.NEO);
+    driveSpark = new SparkMax(driveCANDevice, SparkMax.MotorModel.NEO);
+    turnSpark = new SparkMax(turnCANDevice, SparkMax.MotorModel.NEO);
 
     // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
     drivingEncoder = driveSpark.getEncoder();

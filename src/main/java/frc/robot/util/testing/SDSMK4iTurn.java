@@ -3,42 +3,31 @@ package frc.robot.util.testing;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.SwerveConstants.SwerveModule;
+import frc.robot.util.hardware.CANCoder;
 import frc.robot.util.hardware.CANDevice;
 import frc.robot.util.hardware.SparkMax;
 import frc.robot.util.hardware.SparkMax.MotorModel;
-import com.ctre.phoenix6.hardware.CANcoder;
 
 public class SDSMK4iTurn {
   private final CANDevice turnDevice;
   private final SparkMax turnMotor;
-  private final CANcoder turnEncoder;
+  private final CANCoder turnEncoder;
   private final PIDController turnPIDController;
 
   public SDSMK4iTurn(CANDevice turnDevice, CANDevice encoderDevice, boolean invert) {
     this.turnDevice = turnDevice;
 
     // Initialize turning motor and encoder
-    turnMotor = new SparkMax(turnDevice.getCanId(), MotorModel.NEO);
+    turnMotor = new SparkMax(turnDevice, MotorModel.NEO);
     turnMotor.setInverted(invert);
     turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
     turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
 
-    turnEncoder = new CANcoder(encoderDevice.getCanId());
+    turnEncoder = new CANCoder(encoderDevice, SwerveModule.TURNING_ENCODER_INVERTED);
+    turnPIDController = new PIDController(SwerveModule.TURNING_P, SwerveModule.TURNING_I, SwerveModule.TURNING_D);
 
-    // Set up the PID controller for radians (0 - 2 * PI)
-    turnPIDController = new PIDController(0.55, 0, 0.01);
-    // Continuous input for 0 to 2 * PI radians
-    turnPIDController.enableContinuousInput(0, 2 * Math.PI);
-
-    // CANCoder configuration
-    // CANcoderConfiguration config = new CANcoderConfiguration();
-    // CANcoderConfigurator canCoderConfigurator = turnEncoder.getConfigurator();
-    // CANcoderConfiguration oldConfig = new CANcoderConfiguration();
-    // canCoderConfigurator.refresh(oldConfig);
-    // config.MagnetSensor.MagnetOffset = oldConfig.MagnetSensor.MagnetOffset;
-    // config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-    // config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1; 
-    // turnEncoder.getConfigurator().apply(config);
+    // Set up the PID controller for continuous input for 0 to 2 * PI radians
+    turnPIDController.enableContinuousInput(0, SwerveModule.TURNING_ENCODER_POSITION_FACTOR);
 
     // Flash motor configurations to memory
     turnMotor.burnFlash();

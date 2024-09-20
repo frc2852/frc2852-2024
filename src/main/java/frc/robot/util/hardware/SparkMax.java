@@ -8,9 +8,13 @@ import com.revrobotics.SparkMaxAlternateEncoder;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.util.constants.Device;
 
 import java.util.function.Supplier;
 
+/**
+ * A wrapper class for the CANSparkMax that adds support for CANDevice and includes retry logic.
+ */
 public class SparkMax extends CANSparkMax {
 
   public enum MotorModel {
@@ -25,8 +29,28 @@ public class SparkMax extends CANSparkMax {
   private static final double MAX_RETRY_DELAY = 2.0; // Maximum delay in seconds
   private static final double BACKOFF_MULTIPLIER = 2.0; // Multiplier for each retry
 
-  public SparkMax(int canBusId, MotorModel motorType) {
-    super(canBusId, (motorType == MotorModel.NEO || motorType == MotorModel.NEO_550) ? MotorType.kBrushless : MotorType.kBrushed);
+  private CANDevice canDevice;
+
+  /**
+   * Constructs a new SparkMax object with the specified CANDevice and default motor model (NEO).
+   *
+   * @param canDevice CANDevice object containing device information.
+   */
+  public SparkMax(CANDevice canDevice) {
+    this(canDevice, MotorModel.NEO);
+  }
+
+  /**
+   * Constructs a new SparkMax object with the specified CANDevice and motor model.
+   *
+   * @param canDevice CANDevice object containing device information.
+   * @param motorType Motor model type.
+   */
+  public SparkMax(CANDevice canDevice, MotorModel motorType) {
+    super(canDevice.getCanId(),
+          (motorType == MotorModel.NEO || motorType == MotorModel.NEO_550) ? MotorType.kBrushless : MotorType.kBrushed);
+    this.canDevice = canDevice;
+
     // Restore factory defaults
     restoreFactoryDefaults();
 
@@ -38,7 +62,44 @@ public class SparkMax extends CANSparkMax {
     if (motorType == MotorModel.NEO_550) {
       setSmartCurrentLimit(20);
     }
+  }
 
+  // Accessor methods for CANDevice properties
+
+  /**
+   * Returns the subsystem of the CANDevice.
+   *
+   * @return Subsystem name.
+   */
+  public String getSubsystem() {
+    return canDevice.getSubsystem();
+  }
+
+  /**
+   * Returns the device name of the CANDevice.
+   *
+   * @return Device name.
+   */
+  public String getDeviceName() {
+    return canDevice.getDeviceName();
+  }
+
+  /**
+   * Returns the CAN ID of the CANDevice.
+   *
+   * @return CAN ID.
+   */
+  public int getCanId() {
+    return canDevice.getCanId();
+  }
+
+  /**
+   * Returns the Device enum of the CANDevice.
+   *
+   * @return Device enum.
+   */
+  public Device getDevice() {
+    return canDevice.getDevice();
   }
 
   // #region CANSparkLowLevel overrides
@@ -189,11 +250,13 @@ public class SparkMax extends CANSparkMax {
       currentDelay = Math.min(currentDelay * BACKOFF_MULTIPLIER, MAX_RETRY_DELAY);
 
       // Log retry attempt
-      String retryLog = String.format("CANSparkMax (%s): %s attempt %d failed, retrying in %.2f seconds", this.getDeviceId(), methodName, i + 1, currentDelay);
+      String retryLog = String.format("CANSparkMax (%d): %s attempt %d failed, retrying in %.2f seconds",
+                                      this.getDeviceId(), methodName, i + 1, currentDelay);
       DriverStation.reportError(retryLog, false);
     }
 
-    String error = String.format("CANSparkMax (%s): %s failed after %s attempts", this.getDeviceId(), methodName, MAX_RETRIES);
+    String error = String.format("CANSparkMax (%d): %s failed after %d attempts",
+                                 this.getDeviceId(), methodName, MAX_RETRIES);
     DriverStation.reportError(error, false);
     return status;
   }
@@ -206,7 +269,7 @@ public class SparkMax extends CANSparkMax {
    * @param methodName Name of the method for logging.
    * @param <T>        The type of the object returned by the command.
    * @return T The result of the command. Returns the object on early success or null after max retries.
-   * 
+   *
    *         The retry logic starts with an initial delay (INITIAL_RETRY_DELAY) and increases the delay after each failed (null) attempt
    *         by a factor of BACKOFF_MULTIPLIER, capped at MAX_RETRY_DELAY. A warning is logged on each failed attempt. If all attempts fail,
    *         an error is logged.
@@ -226,11 +289,13 @@ public class SparkMax extends CANSparkMax {
       currentDelay = Math.min(currentDelay * BACKOFF_MULTIPLIER, MAX_RETRY_DELAY);
 
       // Log retry attempt
-      String retryLog = String.format("CANSparkMax (%s): %s attempt %d returned null, retrying in %.2f seconds", this.getDeviceId(), methodName, i + 1, currentDelay);
+      String retryLog = String.format("CANSparkMax (%d): %s attempt %d returned null, retrying in %.2f seconds",
+                                      this.getDeviceId(), methodName, i + 1, currentDelay);
       DriverStation.reportError(retryLog, false);
     }
 
-    String error = String.format("CANSparkMax (%s): %s returned null after %d attempts", this.getDeviceId(), methodName, MAX_RETRIES);
+    String error = String.format("CANSparkMax (%d): %s returned null after %d attempts",
+                                 this.getDeviceId(), methodName, MAX_RETRIES);
     DriverStation.reportError(error, false);
     return result;
   }

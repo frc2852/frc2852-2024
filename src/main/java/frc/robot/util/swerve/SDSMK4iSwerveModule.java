@@ -40,7 +40,7 @@ public class SDSMK4iSwerveModule {
    * Encoder.
    */
   public SDSMK4iSwerveModule(CANDevice driveCANDevice, CANDevice turnCANDevice, CANDevice encoderCANDevice, double chassisAngularOffset) {
-    driveMotor = new SparkFlex(driveCANDevice.getCanId());
+    driveMotor = new SparkFlex(driveCANDevice);
     drivePIDController = driveMotor.getPIDController();
     driveEncoder = driveMotor.getEncoder();
     drivePIDController.setFeedbackDevice(driveEncoder);
@@ -62,12 +62,12 @@ public class SDSMK4iSwerveModule {
     driveMotor.burnFlash();
 
     // Turning motor configuration
-    turnMotor = new SparkMax(turnCANDevice.getCanId(), MotorModel.NEO);
+    turnMotor = new SparkMax(turnCANDevice, MotorModel.NEO);
     turnMotor.setInverted(SwerveModule.TURNING_MOTOR_INVERTED);
     turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
     turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
 
-    turnEncoder = new CANCoder(encoderCANDevice.getCanId(), SwerveModule.TURNING_ENCODER_INVERTED);
+    turnEncoder = new CANCoder(encoderCANDevice, SwerveModule.TURNING_ENCODER_INVERTED);
 
     turnPIDController = new PIDController(SwerveModule.TURNING_P, SwerveModule.TURNING_I, SwerveModule.TURNING_D);
 

@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.util.hardware;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -9,58 +5,34 @@ import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import frc.robot.util.constants.Device;
+
 /**
  * A wrapper class for the CANcoder that adds an inverted property and
- * a method to easily change the sensor direction.
+ * stores CANDevice properties for easy access.
  */
 public class CANCoder extends CANcoder {
     private boolean inverted;
+    private CANDevice canDevice;
 
     /**
-     * Constructs a new CANCoder object with default inversion (not inverted).
+     * Constructs a new CANCoder object with specified CANDevice and default inversion (not inverted).
      *
-     * @param deviceId ID of the device, as configured in Phoenix Tuner.
+     * @param canDevice CANDevice object containing device information.
      */
-    public CANCoder(int deviceId) {
-        super(deviceId);
-        this.inverted = false;
-        applyInversion();
+    public CANCoder(CANDevice canDevice) {
+        this(canDevice, false);
     }
 
     /**
-     * Constructs a new CANCoder object with specified inversion.
+     * Constructs a new CANCoder object with specified CANDevice and inversion state.
      *
-     * @param deviceId ID of the device, as configured in Phoenix Tuner.
-     * @param inverted Initial inversion state.
+     * @param canDevice CANDevice object containing device information.
+     * @param inverted  Initial inversion state.
      */
-    public CANCoder(int deviceId, boolean inverted) {
-        super(deviceId);
-        this.inverted = inverted;
-        applyInversion();
-    }
-
-    /**
-     * Constructs a new CANCoder object with default inversion (not inverted)
-     * and specified CAN bus.
-     *
-     * @param deviceId ID of the device, as configured in Phoenix Tuner.
-     * @param canbus   Name of the CAN bus this device is on.
-     */
-    public CANCoder(int deviceId, String canbus) {
-        super(deviceId, canbus);
-        this.inverted = false;
-        applyInversion();
-    }
-
-    /**
-     * Constructs a new CANCoder object with specified inversion and CAN bus.
-     *
-     * @param deviceId ID of the device, as configured in Phoenix Tuner.
-     * @param canbus   Name of the CAN bus this device is on.
-     * @param inverted Initial inversion state.
-     */
-    public CANCoder(int deviceId, String canbus, boolean inverted) {
-        super(deviceId, canbus);
+    public CANCoder(CANDevice canDevice, boolean inverted) {
+        super(canDevice.getCanId());
+        this.canDevice = canDevice;
         this.inverted = inverted;
         applyInversion();
     }
@@ -85,6 +57,15 @@ public class CANCoder extends CANcoder {
     }
 
     /**
+     * Returns the CANDevice associated with this CANCoder.
+     *
+     * @return the CANDevice object.
+     */
+    public CANDevice getCANDevice() {
+        return canDevice;
+    }
+
+    /**
      * Applies the inversion setting to the CANcoder configuration.
      */
     private void applyInversion() {
@@ -101,5 +82,43 @@ public class CANCoder extends CANcoder {
 
         // Apply the updated configuration
         canCoderConfigurator.apply(config);
+    }
+
+    // Accessor methods for CANDevice properties
+
+    /**
+     * Returns the subsystem of the CANDevice.
+     *
+     * @return Subsystem name.
+     */
+    public String getSubsystem() {
+        return canDevice.getSubsystem();
+    }
+
+    /**
+     * Returns the device name of the CANDevice.
+     *
+     * @return Device name.
+     */
+    public String getDeviceName() {
+        return canDevice.getDeviceName();
+    }
+
+    /**
+     * Returns the CAN ID of the CANDevice.
+     *
+     * @return CAN ID.
+     */
+    public int getCanId() {
+        return canDevice.getCanId();
+    }
+
+    /**
+     * Returns the Device enum of the CANDevice.
+     *
+     * @return Device enum.
+     */
+    public Device getDevice() {
+        return canDevice.getDevice();
     }
 }
