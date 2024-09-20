@@ -31,33 +31,25 @@ public class Drive extends SubsystemBase {
       CANBus.FRONT_LEFT_DRIVE,
       CANBus.FRONT_LEFT_TURN,
       CANBus.FRONT_LEFT_ENCODER,
-      SwerveDrive.FRONT_LEFT_CHASSSIS_ANGULAR_OFFSET,
-      false,
-      false);
+      SwerveDrive.FRONT_LEFT_CHASSSIS_ANGULAR_OFFSET);
 
   private final SDSMK4iSwerveModule frontRight = new SDSMK4iSwerveModule(
       CANBus.FRONT_RIGHT_DRIVE,
       CANBus.FRONT_RIGHT_TURN,
       CANBus.FRONT_RIGHT_ENCODER,
-      SwerveDrive.FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET,
-      false,
-      false);
+      SwerveDrive.FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET);
 
   private final SDSMK4iSwerveModule rearLeft = new SDSMK4iSwerveModule(
       CANBus.REAR_LEFT_DRIVE,
       CANBus.REAR_LEFT_TURN,
       CANBus.REAR_LEFT_ENCODER,
-      SwerveDrive.BACK_LEFT_CHASSIS_ANGULAR_OFFSET,
-      false,
-      false);
+      SwerveDrive.BACK_LEFT_CHASSIS_ANGULAR_OFFSET);
 
   private final SDSMK4iSwerveModule rearRight = new SDSMK4iSwerveModule(
       CANBus.REAR_RIGHT_DRIVE,
       CANBus.REAR_RIGHT_TURN,
       CANBus.REAR_RIGHT_ENCODER,
-      SwerveDrive.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET,
-      false,
-      false);
+      SwerveDrive.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET);
 
   // Sensors
   private final AHRS navX = new AHRS(SerialPort.Port.kMXP);
@@ -211,12 +203,6 @@ public class Drive extends SubsystemBase {
     frontRight.setDesiredState(swerveModuleStates[1]);
     rearLeft.setDesiredState(swerveModuleStates[2]);
     rearRight.setDesiredState(swerveModuleStates[3]);
-
-    //TODO: Swapping these is a terrible hack, need to narrow down the actual cause of this issue
-    // frontLeft.setDesiredState(swerveModuleStates[1]);  //0
-    // frontRight.setDesiredState(swerveModuleStates[0]); //1
-    // rearLeft.setDesiredState(swerveModuleStates[3]);   //2
-    // rearRight.setDesiredState(swerveModuleStates[2]);  //4
   }
 
   /**

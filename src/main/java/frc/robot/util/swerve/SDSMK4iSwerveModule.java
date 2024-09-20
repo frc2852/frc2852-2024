@@ -9,24 +9,24 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.constants.SwerveConstants.SwerveModule;
+import frc.robot.util.hardware.CANCoder;
 import frc.robot.util.hardware.CANDevice;
-import frc.robot.util.hardware.CANSpark;
+import frc.robot.util.hardware.SparkFlex;
+import frc.robot.util.hardware.SparkMax;
+import frc.robot.util.hardware.SparkMax.MotorModel;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.RelativeEncoder;
 
 public class SDSMK4iSwerveModule {
 
-  private final CANSpark driveMotor;
+  private final SparkFlex driveMotor;
   private final RelativeEncoder driveEncoder;
   private final SparkPIDController drivePIDController;
 
-  private final CANSpark turnMotor;
+  private final SparkMax turnMotor;
   private final CANcoder turnEncoder;
   private final PIDController turnPIDController;
 
@@ -34,17 +34,17 @@ public class SDSMK4iSwerveModule {
   private SwerveModuleState desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
   /**
-   * Constructs a MAXSwerveModule and configures the driving and turning motor,
+   * Constructs a SDSMK4iSwerveModule and configures the driving and turning motor,
    * encoder, and PID controller. This configuration is specific to the REV
    * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
    * Encoder.
    */
-  public SDSMK4iSwerveModule(CANDevice driveCANDevice, CANDevice turnCANDevice, CANDevice encoderCANDevice, double chassisAngularOffset, boolean driveInverted, boolean turnInverted) {
-    driveMotor = new CANSpark(driveCANDevice);
+  public SDSMK4iSwerveModule(CANDevice driveCANDevice, CANDevice turnCANDevice, CANDevice encoderCANDevice, double chassisAngularOffset) {
+    driveMotor = new SparkFlex(driveCANDevice.getCanId());
     drivePIDController = driveMotor.getPIDController();
     driveEncoder = driveMotor.getEncoder();
     drivePIDController.setFeedbackDevice(driveEncoder);
-    driveMotor.setInverted(driveInverted);
+    driveMotor.setInverted(SwerveModule.DRIVING_MOTOR_INVERTED);
     driveMotor.setIdleMode(SwerveModule.DRVING_MOTOR_IDLE_MODE);
     driveMotor.setSmartCurrentLimit(SwerveModule.DRIVING_MOTOR_CURRENT_LIMIT);
 
@@ -62,25 +62,21 @@ public class SDSMK4iSwerveModule {
     driveMotor.burnFlash();
 
     // Turning motor configuration
-    turnMotor = new CANSpark(turnCANDevice);
-    turnMotor.setInverted(turnInverted);
+    turnMotor = new SparkMax(turnCANDevice.getCanId(), MotorModel.NEO);
+    turnMotor.setInverted(SwerveModule.TURNING_MOTOR_INVERTED);
     turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
     turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
 
+    turnEncoder = new CANCoder(encoderCANDevice.getCanId(), SwerveModule.TURNING_ENCODER_INVERTED);
+
     turnPIDController = new PIDController(SwerveModule.TURNING_P, SwerveModule.TURNING_I, SwerveModule.TURNING_D);
-    turnPIDController.enableContinuousInput(0, 2 * Math.PI);
 
-    //TODO: This needs to be cleaned up, make a wrapper for CANCoder
-    turnEncoder = new CANcoder(encoderCANDevice.getCanId());
-    CANcoderConfiguration config = new CANcoderConfiguration();
-    CANcoderConfigurator canCoderConfigurator = turnEncoder.getConfigurator();
-    CANcoderConfiguration oldConfig = new CANcoderConfiguration();
-    canCoderConfigurator.refresh(oldConfig);
-    config.MagnetSensor.MagnetOffset = oldConfig.MagnetSensor.MagnetOffset;
-    config.MagnetSensor.SensorDirection = SwerveModule.TURNING_ENCODER_INVERTED ? SensorDirectionValue.CounterClockwise_Positive : SensorDirectionValue.Clockwise_Positive;
-    turnEncoder.getConfigurator().apply(config);
+    // Set up the PID controller for continuous input for 0 to 2 * PI radians
+    turnPIDController.enableContinuousInput(0, SwerveModule.TURNING_ENCODER_POSITION_FACTOR);
+
+    // Flash motor configurations to memory
     turnMotor.burnFlash();
-
+    
     this.chassisAngularOffset = chassisAngularOffset;
     desiredState.angle = new Rotation2d(getAbsolutePosition());
     driveEncoder.setPosition(0);

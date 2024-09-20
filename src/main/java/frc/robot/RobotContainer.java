@@ -6,7 +6,6 @@ import frc.robot.subsystems.TurnTest;
 import frc.robot.util.swerve.SwerveUtils;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -28,6 +27,7 @@ public class RobotContainer {
   private final Drive drive;
   private final TurnTest turnTest;
 
+  private boolean SWERVE_TUNE = false;
   /**
    * Constructs the container for the robot. Subsystems and command mappings are
    * initialized here.
@@ -42,9 +42,13 @@ public class RobotContainer {
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
 
     // Initialize subsystems
-    // drive = new Drive();
-    drive = null;
-    turnTest = new TurnTest();
+    if(SWERVE_TUNE) {
+      drive = null;
+      turnTest = new TurnTest();
+    } else {
+      drive = new Drive();
+      turnTest = null;
+    }
     
     // Configuration
     configureBindings();
@@ -71,8 +75,8 @@ public class RobotContainer {
         new RunCommand(
             () -> drive.drive(
                 SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstant.DEAD_BAND)),
-                -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND)),
-                -SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND)),
+                SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstant.DEAD_BAND)),
+                SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND)),
                 true, true),
             drive));
   }
