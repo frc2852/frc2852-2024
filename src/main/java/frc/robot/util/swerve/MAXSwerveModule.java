@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.constants.SwerveConstants.SwerveModule;
 import frc.robot.util.hardware.CANDevice;
-import frc.robot.util.hardware.CANSpark;
+import frc.robot.util.hardware.SparkMax;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
@@ -18,8 +18,8 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 
 public class MAXSwerveModule {
-  private final CANSpark driveSpark;
-  private final CANSpark turnSpark;
+  private final SparkMax driveSpark;
+  private final SparkMax turnSpark;
 
   private final RelativeEncoder drivingEncoder;
   private final AbsoluteEncoder turningEncoder;
@@ -37,8 +37,8 @@ public class MAXSwerveModule {
    * Encoder.
    */
   public MAXSwerveModule(CANDevice driveCANDevice, CANDevice turnCANDevice, double chassisAngularOffset) {
-    driveSpark = new CANSpark(driveCANDevice);
-    turnSpark = new CANSpark(turnCANDevice);
+    driveSpark = new SparkMax(driveCANDevice.getCanId(), SparkMax.MotorModel.NEO);
+    turnSpark = new SparkMax(turnCANDevice.getCanId(), SparkMax.MotorModel.NEO);
 
     // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
     drivingEncoder = driveSpark.getEncoder();
