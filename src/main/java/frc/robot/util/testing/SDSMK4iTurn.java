@@ -4,23 +4,25 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.SwerveConstants.SwerveModule;
 import frc.robot.util.hardware.CANDevice;
-import frc.robot.util.hardware.CANSpark;
-
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.CANcoderConfigurator;
+import frc.robot.util.hardware.SparkMax;
+import frc.robot.util.hardware.SparkMax.MotorModel;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class SDSMK4iTurn {
-
-  private final CANSpark turnMotor;
+  private final CANDevice turnDevice;
+  private final SparkMax turnMotor;
   private final CANcoder turnEncoder;
   private final PIDController turnPIDController;
 
-  public SDSMK4iTurn(CANDevice turnDevice, CANDevice encoderDevice) {
+  public SDSMK4iTurn(CANDevice turnDevice, CANDevice encoderDevice, boolean invert) {
+    this.turnDevice = turnDevice;
+
     // Initialize turning motor and encoder
-    turnMotor = new CANSpark(turnDevice);
+    turnMotor = new SparkMax(turnDevice.getCanId(), MotorModel.NEO);
+    turnMotor.setInverted(invert);
+    turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
+    turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
+
     turnEncoder = new CANcoder(encoderDevice.getCanId());
 
     // Set up the PID controller for radians (0 - 2 * PI)
@@ -29,18 +31,14 @@ public class SDSMK4iTurn {
     turnPIDController.enableContinuousInput(0, 2 * Math.PI);
 
     // CANCoder configuration
-    CANcoderConfiguration config = new CANcoderConfiguration();
-    CANcoderConfigurator canCoderConfigurator = turnEncoder.getConfigurator();
-    CANcoderConfiguration oldConfig = new CANcoderConfiguration();
-    canCoderConfigurator.refresh(oldConfig);
-    config.MagnetSensor.MagnetOffset = oldConfig.MagnetSensor.MagnetOffset;
-    config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1; 
-    turnEncoder.getConfigurator().apply(config);
-
-    // Set motor limits and modes
-    turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
-    turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
+    // CANcoderConfiguration config = new CANcoderConfiguration();
+    // CANcoderConfigurator canCoderConfigurator = turnEncoder.getConfigurator();
+    // CANcoderConfiguration oldConfig = new CANcoderConfiguration();
+    // canCoderConfigurator.refresh(oldConfig);
+    // config.MagnetSensor.MagnetOffset = oldConfig.MagnetSensor.MagnetOffset;
+    // config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    // config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1; 
+    // turnEncoder.getConfigurator().apply(config);
 
     // Flash motor configurations to memory
     turnMotor.burnFlash();
@@ -51,7 +49,7 @@ public class SDSMK4iTurn {
     // Get the current angle in radians
     double currentAngleRadians = getAngle();
 
-    SmartDashboard.putNumber(turnMotor.GetDeviceName() + "CurrentAngle", Math.toDegrees(currentAngleRadians));
+    SmartDashboard.putNumber(turnDevice.getDeviceName() + "CurrentAngle", Math.toDegrees(currentAngleRadians));
 
     // Calculate PID output to reach the target angle
     double turnOutput = turnPIDController.calculate(currentAngleRadians, angleRadians);

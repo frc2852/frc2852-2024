@@ -93,9 +93,9 @@ public final class SwerveConstants {
     public static final double DRIVING_D = 0;
     public static final double DRIVING_FF = 1 / DRIVE_WHEEL_FREEE_SPEED_RPS;
 
-    public static final double TURNING_P = 0.55;
-    public static final double TURNING_I = 0;
-    public static final double TURNING_D = 0.01;
+    public static final double TURNING_P = 0.550000;
+    public static final double TURNING_I = 0.000000;
+    public static final double TURNING_D = 0.010000;
     public static final double TURNING_FF = 0;
 
     public static final IdleMode DRVING_MOTOR_IDLE_MODE = IdleMode.kBrake;
