@@ -2,8 +2,8 @@ package frc.robot;
 
 import frc.robot.constants.Constants.OperatorConstant;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SDSMK4ITuner;
+import frc.robot.subsystems.ShooterPivot;
 import frc.robot.util.swerve.SwerveUtils;
 
 import edu.wpi.first.math.MathUtil;
@@ -26,7 +26,8 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser;
 
   private final Drive drive;
-  private final Intake intake;
+  private final ShooterPivot shooterPivot;
+  // private final Intake intake;
 
   @SuppressWarnings("unused")
   private final SDSMK4ITuner sdsMK4ITuner;
@@ -55,7 +56,8 @@ public class RobotContainer {
       sdsMK4ITuner = null;
     }
 
-    intake = new Intake();
+    shooterPivot = new ShooterPivot();
+    // intake = new Intake();
 
     // Configuration
     configureBindings();

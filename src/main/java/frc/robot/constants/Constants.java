@@ -64,11 +64,19 @@ public final class Constants {
     public static final int STOP = 0;
     public static final int INTAKE_HALF = 400;
     public static final int INTAKE_FULL = 2500;
+
+    public static final int PIVOT_LOAD = 0;
+    public static final int PIVOT_SHOOT = 5;
   }
 
   public enum MotorModel {
     NEO,
     NEO_550,
     BRUSHED
+  }
+
+  public static class MotorProperties {
+    public static final int NEO_MAX_RPM = 5;
+    public static final int VORTEX_MAX_RPM = 6784;
   }
 }
