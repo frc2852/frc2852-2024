@@ -34,6 +34,8 @@ public class SDSMK4iSwerveModule {
     private final PIDController turnPIDController;
 
     private final double chassisAngularOffset;
+    
+    @SuppressWarnings("unused")
     private SwerveModuleState desiredState;
 
     /**

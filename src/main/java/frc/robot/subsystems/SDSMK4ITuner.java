@@ -7,17 +7,17 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CANBus;
-import frc.robot.util.testing.SDSMK4iTurn;
+import frc.robot.util.swerve.SDSMK4iModuleTune;
 
-public class TurnTest extends SubsystemBase {
+public class SDSMK4ITuner extends SubsystemBase {
 
   // Create MAXSwerveModules
-  private final SDSMK4iTurn frontLeft = new SDSMK4iTurn(CANBus.FRONT_LEFT_TURN, CANBus.FRONT_LEFT_ENCODER, true);
-  private final SDSMK4iTurn frontRight = new SDSMK4iTurn(CANBus.FRONT_RIGHT_TURN, CANBus.FRONT_RIGHT_ENCODER, true);
-  private final SDSMK4iTurn rearLeft = new SDSMK4iTurn(CANBus.REAR_LEFT_TURN, CANBus.REAR_LEFT_ENCODER, true);
-  private final SDSMK4iTurn rearRight = new SDSMK4iTurn(CANBus.REAR_RIGHT_TURN, CANBus.REAR_RIGHT_ENCODER, true);
+  private final SDSMK4iModuleTune frontLeft = new SDSMK4iModuleTune(CANBus.FRONT_LEFT_TURN, CANBus.FRONT_LEFT_ENCODER, true);
+  private final SDSMK4iModuleTune frontRight = new SDSMK4iModuleTune(CANBus.FRONT_RIGHT_TURN, CANBus.FRONT_RIGHT_ENCODER, true);
+  private final SDSMK4iModuleTune rearLeft = new SDSMK4iModuleTune(CANBus.REAR_LEFT_TURN, CANBus.REAR_LEFT_ENCODER, true);
+  private final SDSMK4iModuleTune rearRight = new SDSMK4iModuleTune(CANBus.REAR_RIGHT_TURN, CANBus.REAR_RIGHT_ENCODER, true);
 
-  public TurnTest() {
+  public SDSMK4ITuner() {
     SmartDashboard.putNumber("SetPosition", 0);
 
     SmartDashboard.putNumber("P", 0.55 );

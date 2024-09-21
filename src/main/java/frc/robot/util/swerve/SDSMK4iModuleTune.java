@@ -1,4 +1,4 @@
-package frc.robot.util.testing;
+package frc.robot.util.swerve;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -8,13 +8,13 @@ import frc.robot.util.hardware.CANDevice;
 import frc.robot.util.hardware.SparkMax;
 import frc.robot.util.hardware.SparkMax.MotorModel;
 
-public class SDSMK4iTurn {
+public class SDSMK4iModuleTune {
   private final CANDevice turnDevice;
   private final SparkMax turnMotor;
   private final CANCoder turnEncoder;
   private final PIDController turnPIDController;
 
-  public SDSMK4iTurn(CANDevice turnDevice, CANDevice encoderDevice, boolean invert) {
+  public SDSMK4iModuleTune(CANDevice turnDevice, CANDevice encoderDevice, boolean invert) {
     this.turnDevice = turnDevice;
 
     // Initialize turning motor and encoder

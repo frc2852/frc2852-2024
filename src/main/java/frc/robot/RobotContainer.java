@@ -2,7 +2,7 @@ package frc.robot;
 
 import frc.robot.constants.Constants.OperatorConstant;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.TurnTest;
+import frc.robot.subsystems.SDSMK4ITuner;
 import frc.robot.util.swerve.SwerveUtils;
 
 import edu.wpi.first.math.MathUtil;
@@ -25,7 +25,9 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser;
 
   private final Drive drive;
-  private final TurnTest turnTest;
+  
+  @SuppressWarnings("unused")
+  private final SDSMK4ITuner sdsMK4ITuner;
 
   private boolean SWERVE_TUNE = false;
   /**
@@ -44,10 +46,10 @@ public class RobotContainer {
     // Initialize subsystems
     if(SWERVE_TUNE) {
       drive = null;
-      turnTest = new TurnTest();
+      sdsMK4ITuner = new SDSMK4ITuner();
     } else {
       drive = new Drive();
-      turnTest = null;
+      sdsMK4ITuner = null;
     }
     
     // Configuration
