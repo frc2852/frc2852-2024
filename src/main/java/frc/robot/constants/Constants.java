@@ -62,8 +62,8 @@ public final class Constants {
 
   public static class MotorSetPoint {
     public static final int STOP = 0;
-    public static final int INTAKE_HALF = 2000;
-    public static final int INTAKE_FULL = 5000;
+    public static final int INTAKE_HALF = 100;
+    public static final int INTAKE_FULL = 1000;
   }
 
   public enum MotorModel {

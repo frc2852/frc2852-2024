@@ -30,14 +30,12 @@ public class Intake extends SubsystemBase {
     // Set motor controller configurations
     topRollers.setIdleMode(IdleMode.kBrake);
     topRollers.setInverted(false);
-    // topRollers.encoder.setPosition(0); // I don't think this is needed since we are using velocity.
-    // topRollers.pidParameters.SetPID(0.001, 0, 0);
+    topRollers.pidParameters.SetPID(0.1, 0, 0);
     topRollers.burnFlash();
 
     bottomRollers.setIdleMode(IdleMode.kBrake);
     bottomRollers.setInverted(true);
-    // bottomRollers.encoder.setPosition(0); // Ditto
-    // bottomRollers.pidParameters.SetPID(0.001, 0, 0);
+    bottomRollers.pidParameters.SetPID(0.1, 0, 0);
     bottomRollers.burnFlash();
 
     // Initialize sensors
@@ -57,26 +55,26 @@ public class Intake extends SubsystemBase {
       gamePieceLoading = false;
     }
 
-    // topRollers.periodic();
-    // bottomRollers.periodic();
+    topRollers.periodic();
+    bottomRollers.periodic();
   }
 
   private void runIntakeHalfSpeed() {
     velocitySetpoint = MotorSetPoint.INTAKE_HALF;
-    // topRollers.setVelocity(velocitySetpoint);
-    // bottomRollers.setVelocity(velocitySetpoint);
+    topRollers.setVelocity(velocitySetpoint);
+    bottomRollers.setVelocity(velocitySetpoint);
   }
 
   private void runIntakeFullSpeed() {
     velocitySetpoint = MotorSetPoint.INTAKE_FULL;
-    // topRollers.setVelocity(velocitySetpoint);
-    // bottomRollers.setVelocity(velocitySetpoint);
+    topRollers.setVelocity(velocitySetpoint);
+    bottomRollers.setVelocity(velocitySetpoint);
   }
 
   private void stopIntake() {
     velocitySetpoint = MotorSetPoint.STOP;
-    // topRollers.setVelocity(velocitySetpoint);
-    // bottomRollers.setVelocity(velocitySetpoint);
+    topRollers.setVelocity(velocitySetpoint);
+    bottomRollers.setVelocity(velocitySetpoint);
   }
 
   private boolean isGamePieceBeingLoaded() {

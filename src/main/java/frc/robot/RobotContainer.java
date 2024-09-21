@@ -2,6 +2,7 @@ package frc.robot;
 
 import frc.robot.constants.Constants.OperatorConstant;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SDSMK4ITuner;
 import frc.robot.util.swerve.SwerveUtils;
 
@@ -25,11 +26,13 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser;
 
   private final Drive drive;
-  
+  private final Intake intake;
+
   @SuppressWarnings("unused")
   private final SDSMK4ITuner sdsMK4ITuner;
 
   private boolean SWERVE_TUNE = false;
+
   /**
    * Constructs the container for the robot. Subsystems and command mappings are
    * initialized here.
@@ -44,14 +47,16 @@ public class RobotContainer {
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
 
     // Initialize subsystems
-    if(SWERVE_TUNE) {
+    if (SWERVE_TUNE) {
       drive = null;
       sdsMK4ITuner = new SDSMK4ITuner();
     } else {
       drive = new Drive();
       sdsMK4ITuner = null;
     }
-    
+
+    intake = new Intake();
+
     // Configuration
     configureBindings();
   }
