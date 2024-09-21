@@ -31,7 +31,7 @@ public class Drive extends SubsystemBase {
       CANBus.FRONT_LEFT_DRIVE,
       CANBus.FRONT_LEFT_TURN,
       CANBus.FRONT_LEFT_ENCODER,
-      SwerveDrive.FRONT_LEFT_CHASSSIS_ANGULAR_OFFSET);
+      SwerveDrive.FRONT_LEFT_CHASSIS_ANGULAR_OFFSET);
 
   private final SDSMK4iSwerveModule frontRight = new SDSMK4iSwerveModule(
       CANBus.FRONT_RIGHT_DRIVE,
