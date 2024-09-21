@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CANBus;
 import frc.robot.constants.Constants.DIOId;
@@ -29,13 +30,13 @@ public class Intake extends SubsystemBase {
   public Intake() {
     // Set motor controller configurations
     topRollers.setIdleMode(IdleMode.kBrake);
-    topRollers.setInverted(false);
-    topRollers.pidParameters.SetPID(0.1, 0, 0);
+    topRollers.setInverted(true);
+    topRollers.pidParameters.SetPID(0.0001, 0.000001, 0);
     topRollers.burnFlash();
 
     bottomRollers.setIdleMode(IdleMode.kBrake);
     bottomRollers.setInverted(true);
-    bottomRollers.pidParameters.SetPID(0.1, 0, 0);
+    bottomRollers.pidParameters.SetPID(0.0001, 0.000001, 0);
     bottomRollers.burnFlash();
 
     // Initialize sensors
@@ -45,6 +46,9 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putBoolean("isGamePieceDeteted", isGamePieceDeteted());
+    SmartDashboard.putBoolean("isGamePieceLoaded", isGamePieceLoaded());
+    
     if (!isGamePieceDeteted() && !isGamePieceLoaded() && !isGamePieceBeingLoaded()) {
       runIntakeHalfSpeed();
     } else if (isGamePieceDeteted()) {
@@ -61,7 +65,7 @@ public class Intake extends SubsystemBase {
 
   private void runIntakeHalfSpeed() {
     velocitySetpoint = MotorSetPoint.INTAKE_HALF;
-    topRollers.setVelocity(velocitySetpoint);
+    topRollers.setVelocity(0);
     bottomRollers.setVelocity(velocitySetpoint);
   }
 
