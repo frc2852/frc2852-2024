@@ -20,14 +20,14 @@ public class SDSMK4iTurn {
     // Initialize turning motor and encoder
     turnMotor = new SparkMax(turnDevice, MotorModel.NEO);
     turnMotor.setInverted(invert);
-    turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
-    turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
+    turnMotor.setIdleMode(SwerveModule.TURN_MOTOR_IDLE_MODE);
+    turnMotor.setSmartCurrentLimit(SwerveModule.TURN_MOTOR_CURRENT_LIMIT);
 
-    turnEncoder = new CANCoder(encoderDevice, SwerveModule.TURNING_ENCODER_INVERTED);
-    turnPIDController = new PIDController(SwerveModule.TURNING_P, SwerveModule.TURNING_I, SwerveModule.TURNING_D);
+    turnEncoder = new CANCoder(encoderDevice, SwerveModule.TURN_ENCODER_INVERTED);
+    turnPIDController = new PIDController(SwerveModule.TURN_P, SwerveModule.TURN_I, SwerveModule.TURN_D);
 
     // Set up the PID controller for continuous input for 0 to 2 * PI radians
-    turnPIDController.enableContinuousInput(0, SwerveModule.TURNING_ENCODER_POSITION_FACTOR);
+    turnPIDController.enableContinuousInput(0, SwerveModule.TURN_ENCODER_POSITION_FACTOR);
 
     // Flash motor configurations to memory
     turnMotor.burnFlash();

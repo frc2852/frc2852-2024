@@ -66,12 +66,12 @@ public final class SwerveConstants {
 
     // This should be configured based on the Swerve module type.
     // Turning motor is alwasy inverted in the SDS MK4i Swerve Module
-    public static final boolean DRIVING_MOTOR_INVERTED = false;
-    public static final boolean TURNING_MOTOR_INVERTED = true;
+    public static final boolean DRIVE_MOTOR_INVERTED = false;
+    public static final boolean TURN_MOTOR_INVERTED = true;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
     // direction of the steering motor in the Swerve Module.
-    public static final boolean TURNING_ENCODER_INVERTED = true;
+    public static final boolean TURN_ENCODER_INVERTED = true;
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double WHEEL_DIAMETER_METERS = Units.inchesToMeters(4);
@@ -79,36 +79,36 @@ public final class SwerveConstants {
 
     // TODO: Make this dynamic based on L1,L2,L3
     // Gear reduction ratio for the L2 stage of the SDS MK4i swerve module
-    public static final double DRIVING_MOTOR_REDUCTION = 6.75;
+    public static final double DRIVE_MOTOR_REDUCTION = 6.75;
 
     // TODO: Make this dynamic based on Drive motor configuration
-    public static final double DRIVING_MOTOR_FREE_SPEED_RPS = VortexMotor.FREE_SPEED_RPM / 60;
-    public static final double DRIVE_WHEEL_FREEE_SPEED_RPS = (DRIVING_MOTOR_FREE_SPEED_RPS * WHEEL_CIRCUMFERENCE_METERS) / DRIVING_MOTOR_REDUCTION;
+    public static final double DRIVE_MOTOR_FREE_SPEED_RPS = VortexMotor.FREE_SPEED_RPM / 60;
+    public static final double DRIVE_WHEEL_FREEE_SPEED_RPS = (DRIVE_MOTOR_FREE_SPEED_RPS * WHEEL_CIRCUMFERENCE_METERS) / DRIVE_MOTOR_REDUCTION;
 
-    public static final double DRIVING_ENCODER_POSITION_FACTOR = (WHEEL_DIAMETER_METERS * Math.PI) / DRIVING_MOTOR_REDUCTION; // Meters
-    public static final double DRIVING_ENCODER_VELOCITY_FACTOR = ((WHEEL_DIAMETER_METERS * Math.PI) / DRIVING_MOTOR_REDUCTION) / 60.0; // Meters per second
+    public static final double DRIVE_ENCODER_POSITION_FACTOR = (WHEEL_DIAMETER_METERS * Math.PI) / DRIVE_MOTOR_REDUCTION; // Meters
+    public static final double DRIVE_ENCODER_VELOCITY_FACTOR = ((WHEEL_DIAMETER_METERS * Math.PI) / DRIVE_MOTOR_REDUCTION) / 60.0; // Meters per second
 
     // TODO: Reimplement this in SDSMK4i Swerve Module
-    public static final double TURNING_ENCODER_POSITION_FACTOR = (2 * Math.PI); // Radians
-    public static final double TURNING_ENCODER_VELOCITY_FACTOR = (2 * Math.PI) / 60.0; // Radians per second
-    public static final double TURNING_ENCODER_POSITION_PID_MIN_INPUT = 0; // Radians
-    public static final double TURNING_ENCODER_POSITION_PID_MAX_INPUT = TURNING_ENCODER_POSITION_FACTOR; // Radians
+    public static final double TURN_ENCODER_POSITION_FACTOR = (2 * Math.PI); // Radians
+    public static final double TURN_ENCODER_VELOCITY_FACTOR = (2 * Math.PI) / 60.0; // Radians per second
+    public static final double TURN_ENCODER_POSITION_PID_MIN_INPUT = 0; // Radians
+    public static final double TURN_ENCODER_POSITION_PID_MAX_INPUT = TURN_ENCODER_POSITION_FACTOR; // Radians
 
-    public static final double DRIVING_P = 0.04;
-    public static final double DRIVING_I = 0;
-    public static final double DRIVING_D = 0;
-    public static final double DRIVING_FF = 1 / DRIVE_WHEEL_FREEE_SPEED_RPS;
+    public static final double DRIVE_P = 0.04;
+    public static final double DRIVE_I = 0;
+    public static final double DRIVE_D = 0;
+    public static final double DRIVE_FF = 1 / DRIVE_WHEEL_FREEE_SPEED_RPS;
 
-    public static final double TURNING_P = 0.55;
-    public static final double TURNING_I = 0;
-    public static final double TURNING_D = 0.01;
-    public static final double TURNING_FF = 0;
+    public static final double TURN_P = 0.55;
+    public static final double TURN_I = 0;
+    public static final double TURN_D = 0.01;
+    public static final double TURN_FF = 0;
 
-    public static final IdleMode DRVING_MOTOR_IDLE_MODE = IdleMode.kBrake;
-    public static final IdleMode TURNING_MOTOR_IDLE_MODE = IdleMode.kBrake;
+    public static final IdleMode DRIVE_MOTOR_IDLE_MODE = IdleMode.kBrake;
+    public static final IdleMode TURN_MOTOR_IDLE_MODE = IdleMode.kBrake;
 
-    public static final int DRIVING_MOTOR_CURRENT_LIMIT = 50; // amps
-    public static final int TURNING_MOTOR_CURRENT_LIMIT = 30; // amps
+    public static final int DRIVE_MOTOR_CURRENT_LIMIT = 50; // amps
+    public static final int TURN_MOTOR_CURRENT_LIMIT = 30; // amps
   }
 
   public static final class VortexMotor {

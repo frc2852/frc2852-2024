@@ -51,46 +51,46 @@ public class MAXSwerveModule {
     // Apply position and velocity conversion factors for the driving encoder. The
     // native units for position and velocity are rotations and RPM, respectively,
     // but we want meters and meters per second to use with WPILib's swerve APIs.
-    drivingEncoder.setPositionConversionFactor(SwerveModule.DRIVING_ENCODER_POSITION_FACTOR);
-    drivingEncoder.setVelocityConversionFactor(SwerveModule.DRIVING_ENCODER_VELOCITY_FACTOR); 
+    drivingEncoder.setPositionConversionFactor(SwerveModule.DRIVE_ENCODER_POSITION_FACTOR);
+    drivingEncoder.setVelocityConversionFactor(SwerveModule.DRIVE_ENCODER_VELOCITY_FACTOR); 
 
     // Apply position and velocity conversion factors for the turning encoder. We
     // want these in radians and radians per second to use with WPILib's swerve
     // APIs.
-    turningEncoder.setPositionConversionFactor(SwerveModule.TURNING_ENCODER_POSITION_FACTOR);
-    turningEncoder.setVelocityConversionFactor(SwerveModule.TURNING_ENCODER_VELOCITY_FACTOR);
+    turningEncoder.setPositionConversionFactor(SwerveModule.TURN_ENCODER_POSITION_FACTOR);
+    turningEncoder.setVelocityConversionFactor(SwerveModule.TURN_ENCODER_VELOCITY_FACTOR);
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
     driveSpark.setInverted(false);
-    turningEncoder.setInverted(SwerveModule.TURNING_ENCODER_INVERTED);
+    turningEncoder.setInverted(SwerveModule.TURN_ENCODER_INVERTED);
 
     // Enable PID wrap around for the turning motor. This will allow the PID
     // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
     // to 10 degrees will go through 0 rather than the other direction which is a
     // longer route.
     turningPIDController.setPositionPIDWrappingEnabled(true);
-    turningPIDController.setPositionPIDWrappingMinInput(SwerveModule.TURNING_ENCODER_POSITION_PID_MIN_INPUT);
-    turningPIDController.setPositionPIDWrappingMaxInput(SwerveModule.TURNING_ENCODER_POSITION_PID_MAX_INPUT);
+    turningPIDController.setPositionPIDWrappingMinInput(SwerveModule.TURN_ENCODER_POSITION_PID_MIN_INPUT);
+    turningPIDController.setPositionPIDWrappingMaxInput(SwerveModule.TURN_ENCODER_POSITION_PID_MAX_INPUT);
 
     // Set the PID gains for the driving motor. Note these are example gains, and you
     // may need to tune them for your own robot!
-    drivingPIDController.setP(SwerveModule.DRIVING_P);
-    drivingPIDController.setI(SwerveModule.DRIVING_I);
-    drivingPIDController.setD(SwerveModule.DRIVING_D);
-    drivingPIDController.setFF(SwerveModule.DRIVING_FF);
+    drivingPIDController.setP(SwerveModule.DRIVE_P);
+    drivingPIDController.setI(SwerveModule.DRIVE_I);
+    drivingPIDController.setD(SwerveModule.DRIVE_D);
+    drivingPIDController.setFF(SwerveModule.DRIVE_FF);
 
     // Set the PID gains for the turning motor. Note these are example gains, and you
     // may need to tune them for your own robot!
-    turningPIDController.setP(SwerveModule.TURNING_P);
-    turningPIDController.setI(SwerveModule.TURNING_I);
-    turningPIDController.setD(SwerveModule.TURNING_D);
-    turningPIDController.setFF(SwerveModule.TURNING_FF);
+    turningPIDController.setP(SwerveModule.TURN_P);
+    turningPIDController.setI(SwerveModule.TURN_I);
+    turningPIDController.setD(SwerveModule.TURN_D);
+    turningPIDController.setFF(SwerveModule.TURN_FF);
 
-    driveSpark.setIdleMode(SwerveModule.DRVING_MOTOR_IDLE_MODE);
-    turnSpark.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
-    driveSpark.setSmartCurrentLimit(SwerveModule.DRIVING_MOTOR_CURRENT_LIMIT);
-    turnSpark.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
+    driveSpark.setIdleMode(SwerveModule.DRIVE_MOTOR_IDLE_MODE);
+    turnSpark.setIdleMode(SwerveModule.TURN_MOTOR_IDLE_MODE);
+    driveSpark.setSmartCurrentLimit(SwerveModule.DRIVE_MOTOR_CURRENT_LIMIT);
+    turnSpark.setSmartCurrentLimit(SwerveModule.TURN_MOTOR_CURRENT_LIMIT);
 
     // Save the SPARK MAX configurations. If a SPARK MAX browns out during
     // operation, it will maintain the above configurations.

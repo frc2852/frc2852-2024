@@ -44,35 +44,35 @@ public class SDSMK4iSwerveModule {
     drivePIDController = driveMotor.getPIDController();
     driveEncoder = driveMotor.getEncoder();
     drivePIDController.setFeedbackDevice(driveEncoder);
-    driveMotor.setInverted(SwerveModule.DRIVING_MOTOR_INVERTED);
-    driveMotor.setIdleMode(SwerveModule.DRVING_MOTOR_IDLE_MODE);
-    driveMotor.setSmartCurrentLimit(SwerveModule.DRIVING_MOTOR_CURRENT_LIMIT);
+    driveMotor.setInverted(SwerveModule.DRIVE_MOTOR_INVERTED);
+    driveMotor.setIdleMode(SwerveModule.DRIVE_MOTOR_IDLE_MODE);
+    driveMotor.setSmartCurrentLimit(SwerveModule.DRIVE_MOTOR_CURRENT_LIMIT);
 
     // Apply position and velocity conversion factors for the driving encoder. The
     // native units for position and velocity are rotations and RPM, respectively,
     // but we want meters and meters per second to use with WPILib's swerve APIs.
-    driveEncoder.setPositionConversionFactor(SwerveModule.DRIVING_ENCODER_POSITION_FACTOR);
-    driveEncoder.setVelocityConversionFactor(SwerveModule.DRIVING_ENCODER_VELOCITY_FACTOR);
+    driveEncoder.setPositionConversionFactor(SwerveModule.DRIVE_ENCODER_POSITION_FACTOR);
+    driveEncoder.setVelocityConversionFactor(SwerveModule.DRIVE_ENCODER_VELOCITY_FACTOR);
 
-    drivePIDController.setP(SwerveModule.DRIVING_P);
-    drivePIDController.setI(SwerveModule.DRIVING_I);
-    drivePIDController.setD(SwerveModule.DRIVING_D);
-    drivePIDController.setFF(SwerveModule.DRIVING_FF);
+    drivePIDController.setP(SwerveModule.DRIVE_P);
+    drivePIDController.setI(SwerveModule.DRIVE_I);
+    drivePIDController.setD(SwerveModule.DRIVE_D);
+    drivePIDController.setFF(SwerveModule.DRIVE_FF);
 
     driveMotor.burnFlash();
 
     // Turning motor configuration
     turnMotor = new SparkMax(turnCANDevice, MotorModel.NEO);
-    turnMotor.setInverted(SwerveModule.TURNING_MOTOR_INVERTED);
-    turnMotor.setIdleMode(SwerveModule.TURNING_MOTOR_IDLE_MODE);
-    turnMotor.setSmartCurrentLimit(SwerveModule.TURNING_MOTOR_CURRENT_LIMIT);
+    turnMotor.setInverted(SwerveModule.TURN_MOTOR_INVERTED);
+    turnMotor.setIdleMode(SwerveModule.TURN_MOTOR_IDLE_MODE);
+    turnMotor.setSmartCurrentLimit(SwerveModule.TURN_MOTOR_CURRENT_LIMIT);
 
-    turnEncoder = new CANCoder(encoderCANDevice, SwerveModule.TURNING_ENCODER_INVERTED);
+    turnEncoder = new CANCoder(encoderCANDevice, SwerveModule.TURN_ENCODER_INVERTED);
 
-    turnPIDController = new PIDController(SwerveModule.TURNING_P, SwerveModule.TURNING_I, SwerveModule.TURNING_D);
+    turnPIDController = new PIDController(SwerveModule.TURN_P, SwerveModule.TURN_I, SwerveModule.TURN_D);
 
     // Set up the PID controller for continuous input for 0 to 2 * PI radians
-    turnPIDController.enableContinuousInput(0, SwerveModule.TURNING_ENCODER_POSITION_FACTOR);
+    turnPIDController.enableContinuousInput(0, SwerveModule.TURN_ENCODER_POSITION_FACTOR);
 
     // Flash motor configurations to memory
     turnMotor.burnFlash();
