@@ -8,8 +8,6 @@ import com.revrobotics.SparkMaxAlternateEncoder;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.util.constants.Device;
-
 import java.util.function.Supplier;
 
 /**
@@ -91,15 +89,6 @@ public class SparkMax extends CANSparkMax {
    */
   public int getCanId() {
     return canDevice.getCanId();
-  }
-
-  /**
-   * Returns the Device enum of the CANDevice.
-   *
-   * @return Device enum.
-   */
-  public Device getDevice() {
-    return canDevice.getDevice();
   }
 
   // #region CANSparkLowLevel overrides

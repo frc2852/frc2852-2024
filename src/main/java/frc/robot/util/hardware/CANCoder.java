@@ -5,8 +5,6 @@ import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-import frc.robot.util.constants.Device;
-
 /**
  * A wrapper class for the CANcoder that adds an inverted property and
  * stores CANDevice properties for easy access.
@@ -111,14 +109,5 @@ public class CANCoder extends CANcoder {
      */
     public int getCanId() {
         return canDevice.getCanId();
-    }
-
-    /**
-     * Returns the Device enum of the CANDevice.
-     *
-     * @return Device enum.
-     */
-    public Device getDevice() {
-        return canDevice.getDevice();
     }
 }

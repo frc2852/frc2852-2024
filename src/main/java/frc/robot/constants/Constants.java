@@ -4,7 +4,6 @@
 
 package frc.robot.constants;
 
-import frc.robot.util.constants.Device;
 import frc.robot.util.hardware.CANDevice;
 
 /**
@@ -32,28 +31,28 @@ public final class Constants {
 
   public static class CANBus {
 
-    public static final CANDevice FRONT_LEFT_DRIVE = new CANDevice("Drive", "FrontLeftDrive", 2, Device.VORTEX);
-    public static final CANDevice FRONT_LEFT_TURN = new CANDevice("Drive", "FrontLeftTurn", 3, Device.NEO);
-    public static final CANDevice FRONT_LEFT_ENCODER = new CANDevice("Drive", "FrontLeftEncoder", 4, Device.CAN_CODER);
+    public static final CANDevice FRONT_LEFT_DRIVE = new CANDevice("Drive", "FrontLeftDrive", 2);
+    public static final CANDevice FRONT_LEFT_TURN = new CANDevice("Drive", "FrontLeftTurn", 3);
+    public static final CANDevice FRONT_LEFT_ENCODER = new CANDevice("Drive", "FrontLeftEncoder", 4);
 
-    public static final CANDevice FRONT_RIGHT_DRIVE = new CANDevice("Drive", "FrontRightDrive", 5, Device.VORTEX);
-    public static final CANDevice FRONT_RIGHT_TURN = new CANDevice("Drive", "FrontRightTurn", 6, Device.NEO);
-    public static final CANDevice FRONT_RIGHT_ENCODER = new CANDevice("Drive", "FrontRightEncoder", 7, Device.CAN_CODER);
+    public static final CANDevice FRONT_RIGHT_DRIVE = new CANDevice("Drive", "FrontRightDrive", 5);
+    public static final CANDevice FRONT_RIGHT_TURN = new CANDevice("Drive", "FrontRightTurn", 6);
+    public static final CANDevice FRONT_RIGHT_ENCODER = new CANDevice("Drive", "FrontRightEncoder", 7);
 
-    public static final CANDevice REAR_LEFT_DRIVE = new CANDevice("Drive", "RearLeftDrive", 8, Device.VORTEX);
-    public static final CANDevice REAR_LEFT_TURN = new CANDevice("Drive", "RearLeftTurn", 9, Device.NEO);
-    public static final CANDevice REAR_LEFT_ENCODER = new CANDevice("Drive", "RearLeftEncoder", 10, Device.CAN_CODER);
+    public static final CANDevice REAR_LEFT_DRIVE = new CANDevice("Drive", "RearLeftDrive", 8);
+    public static final CANDevice REAR_LEFT_TURN = new CANDevice("Drive", "RearLeftTurn", 9);
+    public static final CANDevice REAR_LEFT_ENCODER = new CANDevice("Drive", "RearLeftEncoder", 10);
 
-    public static final CANDevice REAR_RIGHT_DRIVE = new CANDevice("Drive", "RearRightDrive", 11, Device.VORTEX);
-    public static final CANDevice REAR_RIGHT_TURN = new CANDevice("Drive", "RearRightTurn", 12, Device.NEO);
-    public static final CANDevice REAR_RIGHT_ENCODER = new CANDevice("Drive", "RearRightEncoder", 13, Device.CAN_CODER);
+    public static final CANDevice REAR_RIGHT_DRIVE = new CANDevice("Drive", "RearRightDrive", 11);
+    public static final CANDevice REAR_RIGHT_TURN = new CANDevice("Drive", "RearRightTurn", 12);
+    public static final CANDevice REAR_RIGHT_ENCODER = new CANDevice("Drive", "RearRightEncoder", 13);
 
-    public static final CANDevice INTAKE_LOWER = new CANDevice("Intake", "LowerRoller", 14, Device.VORTEX);
-    public static final CANDevice INTAKE_TOP = new CANDevice("Intake", "TopRoller", 15, Device.VORTEX);
+    public static final CANDevice INTAKE_LOWER = new CANDevice("Intake", "LowerRoller", 14);
+    public static final CANDevice INTAKE_TOP = new CANDevice("Intake", "TopRoller", 15);
     
-    public static final CANDevice SHOOTER_PIVOT = new CANDevice("Shooter", "Pivot", 16, Device.VORTEX);
-    public static final CANDevice SHOOTER_LEFT = new CANDevice("Shooter", "Left", 17, Device.VORTEX);
-    public static final CANDevice SHOOTER_RIGHT = new CANDevice("Shooter", "Right", 18, Device.VORTEX);
+    public static final CANDevice SHOOTER_PIVOT = new CANDevice("Shooter", "Pivot", 16);
+    public static final CANDevice SHOOTER_LEFT = new CANDevice("Shooter", "Left", 17);
+    public static final CANDevice SHOOTER_RIGHT = new CANDevice("Shooter", "Right", 18);
   }
 
   public static class DIOId {
