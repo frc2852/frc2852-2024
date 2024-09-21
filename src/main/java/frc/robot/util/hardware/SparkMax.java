@@ -5,9 +5,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
+import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.constants.Constants.MotorModel;
+import frc.robot.util.DataTracker;
+import frc.robot.util.PIDParameters;
+
 import java.util.function.Supplier;
 
 /**
@@ -15,19 +20,18 @@ import java.util.function.Supplier;
  */
 public class SparkMax extends CANSparkMax {
 
-  public enum MotorModel {
-    NEO,
-    NEO_550,
-    BRUSHED
-  }
+  public SparkPIDController pidController;
+  public PIDParameters pidParameters;
+  public RelativeEncoder encoder;
+  private final CANDevice canDevice;
+
+  private Double velocitySetpoint = null;
+  private Double positionSetpoint = null;
 
   private static final int MAX_RETRIES = 5;
-
   private static final double INITIAL_RETRY_DELAY = 0.3; // Initial delay in seconds
   private static final double MAX_RETRY_DELAY = 2.0; // Maximum delay in seconds
   private static final double BACKOFF_MULTIPLIER = 2.0; // Multiplier for each retry
-
-  private CANDevice canDevice;
 
   /**
    * Constructs a new SparkMax object with the specified CANDevice and default motor model (NEO).
@@ -46,7 +50,7 @@ public class SparkMax extends CANSparkMax {
    */
   public SparkMax(CANDevice canDevice, MotorModel motorType) {
     super(canDevice.getCanId(),
-          (motorType == MotorModel.NEO || motorType == MotorModel.NEO_550) ? MotorType.kBrushless : MotorType.kBrushed);
+        (motorType == MotorModel.NEO || motorType == MotorModel.NEO_550) ? MotorType.kBrushless : MotorType.kBrushed);
     this.canDevice = canDevice;
 
     // Restore factory defaults
@@ -60,6 +64,41 @@ public class SparkMax extends CANSparkMax {
     if (motorType == MotorModel.NEO_550) {
       setSmartCurrentLimit(20);
     }
+
+    pidController = getPIDController();
+    encoder = getEncoder();
+    pidParameters = new PIDParameters(canDevice.getSubsystem(), canDevice.getDeviceName(), pidController);
+  }
+
+  public void periodic() {
+    pidParameters.periodic();
+    if (velocitySetpoint != null) {
+      // Get current velocity and calculate errors
+      double velocity = encoder.getVelocity();
+      double velocityError = velocitySetpoint - velocity;
+
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "VelocitySetPoint", velocitySetpoint);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "Velocity", velocity);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "VelocityError", velocityError);
+    } else if (positionSetpoint != null) {
+      // Get current positions and calculate errors
+      double position = encoder.getPosition();
+      double positionError = positionSetpoint - position;
+
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "PositionSetPoint", positionSetpoint);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "Position", position);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "PositionError", positionError);
+    }
+  }
+
+  public void setVelocity(double velocity) {
+    velocitySetpoint = velocity;
+    pidController.setReference(velocitySetpoint, ControlType.kVelocity);
+  }
+
+  public void setPosition(double position) {
+    positionSetpoint = position;
+    pidController.setReference(positionSetpoint, ControlType.kPosition);
   }
 
   // Accessor methods for CANDevice properties
@@ -240,12 +279,12 @@ public class SparkMax extends CANSparkMax {
 
       // Log retry attempt
       String retryLog = String.format("CANSparkMax (%d): %s attempt %d failed, retrying in %.2f seconds",
-                                      this.getDeviceId(), methodName, i + 1, currentDelay);
+          this.getDeviceId(), methodName, i + 1, currentDelay);
       DriverStation.reportError(retryLog, false);
     }
 
     String error = String.format("CANSparkMax (%d): %s failed after %d attempts",
-                                 this.getDeviceId(), methodName, MAX_RETRIES);
+        this.getDeviceId(), methodName, MAX_RETRIES);
     DriverStation.reportError(error, false);
     return status;
   }
@@ -279,12 +318,12 @@ public class SparkMax extends CANSparkMax {
 
       // Log retry attempt
       String retryLog = String.format("CANSparkMax (%d): %s attempt %d returned null, retrying in %.2f seconds",
-                                      this.getDeviceId(), methodName, i + 1, currentDelay);
+          this.getDeviceId(), methodName, i + 1, currentDelay);
       DriverStation.reportError(retryLog, false);
     }
 
     String error = String.format("CANSparkMax (%d): %s returned null after %d attempts",
-                                 this.getDeviceId(), methodName, MAX_RETRIES);
+        this.getDeviceId(), methodName, MAX_RETRIES);
     DriverStation.reportError(error, false);
     return result;
   }

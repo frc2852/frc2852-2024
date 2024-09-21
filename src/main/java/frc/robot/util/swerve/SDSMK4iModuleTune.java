@@ -2,11 +2,11 @@ package frc.robot.util.swerve;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.Constants.MotorModel;
 import frc.robot.constants.SwerveConstants.SwerveModule;
 import frc.robot.util.hardware.CANCoder;
 import frc.robot.util.hardware.CANDevice;
 import frc.robot.util.hardware.SparkMax;
-import frc.robot.util.hardware.SparkMax.MotorModel;
 
 public class SDSMK4iModuleTune {
   private final CANDevice turnDevice;

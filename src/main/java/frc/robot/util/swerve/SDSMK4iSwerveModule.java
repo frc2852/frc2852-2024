@@ -7,15 +7,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 
+import frc.robot.constants.Constants.MotorModel;
 import frc.robot.constants.SwerveConstants.SwerveModule;
 import frc.robot.util.hardware.CANCoder;
 import frc.robot.util.hardware.CANDevice;
 import frc.robot.util.hardware.SparkFlex;
 import frc.robot.util.hardware.SparkMax;
-import frc.robot.util.hardware.SparkMax.MotorModel;
 
 /**
  * Represents a single swerve module using the SDS MK4i configuration.
@@ -26,15 +24,13 @@ import frc.robot.util.hardware.SparkMax.MotorModel;
 public class SDSMK4iSwerveModule {
 
     private final SparkFlex driveMotor;
-    private final RelativeEncoder driveEncoder;
-    private final SparkPIDController drivePIDController;
 
     private final SparkMax turnMotor;
     private final CANcoder turnEncoder;
     private final PIDController turnPIDController;
 
     private final double chassisAngularOffset;
-    
+
     @SuppressWarnings("unused")
     private SwerveModuleState desiredState;
 
@@ -56,8 +52,6 @@ public class SDSMK4iSwerveModule {
 
         // Initialize drive motor, encoder, and PID controller
         driveMotor = new SparkFlex(driveCANDevice);
-        drivePIDController = driveMotor.getPIDController();
-        driveEncoder = driveMotor.getEncoder();
 
         configureDriveMotor();
 
@@ -67,8 +61,7 @@ public class SDSMK4iSwerveModule {
         turnPIDController = new PIDController(
                 SwerveModule.TURN_P,
                 SwerveModule.TURN_I,
-                SwerveModule.TURN_D
-        );
+                SwerveModule.TURN_D);
 
         configureTurnMotor();
 
@@ -76,27 +69,27 @@ public class SDSMK4iSwerveModule {
         desiredState = new SwerveModuleState(0.0, new Rotation2d(getAbsolutePosition()));
 
         // Reset drive encoder position
-        driveEncoder.setPosition(0);
+        driveMotor.encoder.setPosition(0);
     }
 
     /**
      * Configures the drive motor settings.
      */
     private void configureDriveMotor() {
-        drivePIDController.setFeedbackDevice(driveEncoder);
+        driveMotor.pidController.setFeedbackDevice(driveMotor.encoder);
         driveMotor.setInverted(SwerveModule.DRIVE_MOTOR_INVERTED);
         driveMotor.setIdleMode(SwerveModule.DRIVE_MOTOR_IDLE_MODE);
         driveMotor.setSmartCurrentLimit(SwerveModule.DRIVE_MOTOR_CURRENT_LIMIT);
 
         // Apply position and velocity conversion factors for the driving encoder
-        driveEncoder.setPositionConversionFactor(SwerveModule.DRIVE_ENCODER_POSITION_FACTOR);
-        driveEncoder.setVelocityConversionFactor(SwerveModule.DRIVE_ENCODER_VELOCITY_FACTOR);
+        driveMotor.encoder.setPositionConversionFactor(SwerveModule.DRIVE_ENCODER_POSITION_FACTOR);
+        driveMotor.encoder.setVelocityConversionFactor(SwerveModule.DRIVE_ENCODER_VELOCITY_FACTOR);
 
         // Set PID coefficients for the driving motor
-        drivePIDController.setP(SwerveModule.DRIVE_P);
-        drivePIDController.setI(SwerveModule.DRIVE_I);
-        drivePIDController.setD(SwerveModule.DRIVE_D);
-        drivePIDController.setFF(SwerveModule.DRIVE_FF);
+        driveMotor.pidController.setP(SwerveModule.DRIVE_P);
+        driveMotor.pidController.setI(SwerveModule.DRIVE_I);
+        driveMotor.pidController.setD(SwerveModule.DRIVE_D);
+        driveMotor.pidController.setFF(SwerveModule.DRIVE_FF);
 
         driveMotor.burnFlash();
     }
@@ -121,7 +114,7 @@ public class SDSMK4iSwerveModule {
      * @return The current state of the module.
      */
     public SwerveModuleState getState() {
-        return new SwerveModuleState(driveEncoder.getVelocity(), getWheelAngle());
+        return new SwerveModuleState(driveMotor.encoder.getVelocity(), getWheelAngle());
     }
 
     /**
@@ -130,7 +123,7 @@ public class SDSMK4iSwerveModule {
      * @return The current position of the module.
      */
     public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(driveEncoder.getPosition(), getWheelAngle());
+        return new SwerveModulePosition(driveMotor.encoder.getPosition(), getWheelAngle());
     }
 
     /**
@@ -143,24 +136,20 @@ public class SDSMK4iSwerveModule {
         Rotation2d correctedAngle = desiredState.angle.plus(Rotation2d.fromRadians(chassisAngularOffset));
         SwerveModuleState correctedDesiredState = new SwerveModuleState(
                 desiredState.speedMetersPerSecond,
-                correctedAngle
-        );
+                correctedAngle);
 
         // Optimize the reference state to avoid unnecessary rotation
         SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(
                 correctedDesiredState,
-                new Rotation2d(getAbsolutePosition())
-        );
+                new Rotation2d(getAbsolutePosition()));
 
         // Command the driving and turning motors to their respective setpoints
-        drivePIDController.setReference(
+        driveMotor.pidController.setReference(
                 optimizedDesiredState.speedMetersPerSecond,
-                CANSparkMax.ControlType.kVelocity
-        );
+                CANSparkMax.ControlType.kVelocity);
         double turnOutput = turnPIDController.calculate(
                 getAbsolutePosition(),
-                optimizedDesiredState.angle.getRadians()
-        );
+                optimizedDesiredState.angle.getRadians());
         turnMotor.set(turnOutput);
 
         this.desiredState = desiredState;
@@ -170,7 +159,7 @@ public class SDSMK4iSwerveModule {
      * Resets the drive encoder to zero.
      */
     public void resetEncoders() {
-        driveEncoder.setPosition(0);
+        driveMotor.encoder.setPosition(0);
     }
 
     /**

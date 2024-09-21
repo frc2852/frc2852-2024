@@ -3,9 +3,14 @@ package frc.robot.util.hardware;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.REVLibError;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.util.DataTracker;
+import frc.robot.util.PIDParameters;
+
 import java.util.function.Supplier;
 
 /**
@@ -13,13 +18,18 @@ import java.util.function.Supplier;
  */
 public class SparkFlex extends CANSparkFlex {
 
-  private static final int MAX_RETRIES = 5;
+  public SparkPIDController pidController;
+  public PIDParameters pidParameters;
+  public RelativeEncoder encoder;
+  private final CANDevice canDevice;
 
+  private Double velocitySetpoint = null;
+  private Double positionSetpoint = null;
+
+  private static final int MAX_RETRIES = 5;
   private static final double INITIAL_RETRY_DELAY = 0.3; // Initial delay in seconds
   private static final double MAX_RETRY_DELAY = 2.0; // Maximum delay in seconds
   private static final double BACKOFF_MULTIPLIER = 2.0; // Multiplier for each retry
-
-  private CANDevice canDevice;
 
   /**
    * Constructs a new SparkFlex object with the specified CANDevice.
@@ -35,6 +45,41 @@ public class SparkFlex extends CANSparkFlex {
 
     // Enable voltage compensation to 12V
     enableVoltageCompensation(12.0);
+
+    pidController = getPIDController();
+    encoder = getEncoder();
+    pidParameters = new PIDParameters(canDevice.getSubsystem(), canDevice.getDeviceName(), pidController);
+  }
+
+  public void periodic() {
+    pidParameters.periodic();
+    if (velocitySetpoint != null) {
+      // Get current velocity and calculate errors
+      double velocity = encoder.getVelocity();
+      double velocityError = velocitySetpoint - velocity;
+
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "VelocitySetPoint", velocitySetpoint);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "Velocity", velocity);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "VelocityError", velocityError);
+    } else if (positionSetpoint != null) {
+      // Get current positions and calculate errors
+      double position = encoder.getPosition();
+      double positionError = positionSetpoint - position;
+
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "PositionSetPoint", positionSetpoint);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "Position", position);
+      DataTracker.putNumber(canDevice.getSubsystem(), canDevice.getDeviceName(), "PositionError", positionError);
+    }
+  }
+
+  public void setVelocity(double velocity) {
+    velocitySetpoint = velocity;
+    pidController.setReference(velocitySetpoint, ControlType.kVelocity);
+  }
+
+  public void setPosition(double position) {
+    positionSetpoint = position;
+    pidController.setReference(positionSetpoint, ControlType.kPosition);
   }
 
   // Accessor methods for CANDevice properties
@@ -186,9 +231,9 @@ public class SparkFlex extends CANSparkFlex {
    * @param methodName Name of the method for logging.
    * @return {@link REVLibError} status of the command. Returns success status on early success or the last error after max retries.
    *
-   * The retry logic starts with an initial delay (INITIAL_RETRY_DELAY) and increases the delay after each failed attempt
-   * by a factor of BACKOFF_MULTIPLIER, capped at MAX_RETRY_DELAY. A warning is logged on each failed attempt. If all attempts fail,
-   * an error is logged.
+   *         The retry logic starts with an initial delay (INITIAL_RETRY_DELAY) and increases the delay after each failed attempt
+   *         by a factor of BACKOFF_MULTIPLIER, capped at MAX_RETRY_DELAY. A warning is logged on each failed attempt. If all attempts fail,
+   *         an error is logged.
    */
   private REVLibError applyCommandWithRetry(Supplier<REVLibError> command, String methodName) {
     REVLibError status = REVLibError.kUnknown;
@@ -206,12 +251,12 @@ public class SparkFlex extends CANSparkFlex {
 
       // Log retry attempt
       String retryLog = String.format("CANSparkFlex (%d): %s attempt %d failed, retrying in %.2f seconds",
-                                      this.getDeviceId(), methodName, i + 1, currentDelay);
+          this.getDeviceId(), methodName, i + 1, currentDelay);
       DriverStation.reportError(retryLog, false);
     }
 
     String error = String.format("CANSparkFlex (%d): %s failed after %d attempts",
-                                 this.getDeviceId(), methodName, MAX_RETRIES);
+        this.getDeviceId(), methodName, MAX_RETRIES);
     DriverStation.reportError(error, false);
     return status;
   }

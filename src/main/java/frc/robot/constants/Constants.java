@@ -65,4 +65,10 @@ public final class Constants {
     public static final int INTAKE_HALF = 2000;
     public static final int INTAKE_FULL = 5000;
   }
+
+  public enum MotorModel {
+    NEO,
+    NEO_550,
+    BRUSHED
+  }
 }

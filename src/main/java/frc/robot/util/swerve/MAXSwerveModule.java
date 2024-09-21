@@ -7,6 +7,7 @@ package frc.robot.util.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.constants.Constants.MotorModel;
 import frc.robot.constants.SwerveConstants.SwerveModule;
 import frc.robot.util.hardware.CANDevice;
 import frc.robot.util.hardware.SparkMax;
@@ -37,8 +38,8 @@ public class MAXSwerveModule {
    * Encoder.
    */
   public MAXSwerveModule(CANDevice driveCANDevice, CANDevice turnCANDevice, double chassisAngularOffset) {
-    driveSpark = new SparkMax(driveCANDevice, SparkMax.MotorModel.NEO);
-    turnSpark = new SparkMax(turnCANDevice, SparkMax.MotorModel.NEO);
+    driveSpark = new SparkMax(driveCANDevice, MotorModel.NEO);
+    turnSpark = new SparkMax(turnCANDevice, MotorModel.NEO);
 
     // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
     drivingEncoder = driveSpark.getEncoder();
@@ -52,7 +53,7 @@ public class MAXSwerveModule {
     // native units for position and velocity are rotations and RPM, respectively,
     // but we want meters and meters per second to use with WPILib's swerve APIs.
     drivingEncoder.setPositionConversionFactor(SwerveModule.DRIVE_ENCODER_POSITION_FACTOR);
-    drivingEncoder.setVelocityConversionFactor(SwerveModule.DRIVE_ENCODER_VELOCITY_FACTOR); 
+    drivingEncoder.setVelocityConversionFactor(SwerveModule.DRIVE_ENCODER_VELOCITY_FACTOR);
 
     // Apply position and velocity conversion factors for the turning encoder. We
     // want these in radians and radians per second to use with WPILib's swerve
