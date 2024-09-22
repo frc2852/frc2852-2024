@@ -29,6 +29,11 @@ public final class Constants {
     public static final double EXPONENTIAL_RESPONSE = 3;
   }
 
+  public static class ConfigurationProperties {
+    public static final boolean SWERVE_TUNE = false;
+    public static final boolean SYS_ID = false;
+  }
+
   public static class CANBus {
 
     public static final CANDevice FRONT_LEFT_DRIVE = new CANDevice("Drive", "FrontLeftDrive", 2);
