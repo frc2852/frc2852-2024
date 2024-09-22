@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.util;
 
 import com.revrobotics.SparkPIDController;
@@ -14,20 +10,25 @@ public class PIDParameters {
   private String deviceName;
   private SparkPIDController pidController;
 
-  private double P;
-  private double I;
-  private double D;
+  private Double P;
+  private Double I;
+  private Double D;
+  private Double FF;
 
-  public double getP() {
+  public Double getP() {
     return P;
   }
 
-  public double getI() {
+  public Double getI() {
     return I;
   }
 
-  public double getD() {
+  public Double getD() {
     return D;
+  }
+
+  public Double getFF() {
+    return FF;
   }
 
   public PIDParameters(String groupId, String deviceName, SparkPIDController pidController) {
@@ -40,6 +41,17 @@ public class PIDParameters {
     this.P = P;
     this.I = I;
     this.D = D;
+    this.FF = null;
+
+    applyParameters();
+    displayParameters();
+  }
+
+  public void SetPID(double P, double I, double D, double FF) {
+    this.P = P;
+    this.I = I;
+    this.D = D;
+    this.FF = FF;
 
     applyParameters();
     displayParameters();
@@ -50,22 +62,30 @@ public class PIDParameters {
       return;
 
     boolean pendingPIDUpdate = false;
-    double newP = DataTracker.getNumber(groupId, deviceName, "P", P);
+    Double newP = DataTracker.getNumber(groupId, deviceName, "P", P);
     if (newP != P) {
       P = newP;
       pendingPIDUpdate = true;
     }
 
-    double newI = DataTracker.getNumber(groupId, deviceName, "I", I);
+    Double newI = DataTracker.getNumber(groupId, deviceName, "I", I);
     if (newI != I) {
       I = newI;
       pendingPIDUpdate = true;
     }
 
-    double newD = DataTracker.getNumber(groupId, deviceName, "D", D);
+    Double newD = DataTracker.getNumber(groupId, deviceName, "D", D);
     if (newD != D) {
       D = newD;
       pendingPIDUpdate = true;
+    }
+
+    if (FF != null) {
+      Double newFF = DataTracker.getNumber(groupId, deviceName, "FF", FF);
+      if (newFF != FF) {
+        FF = newFF;
+        pendingPIDUpdate = true;
+      }
     }
 
     if (pendingPIDUpdate) {
@@ -74,17 +94,22 @@ public class PIDParameters {
   }
 
   private void applyParameters() {
-    if (validatePIDValues(P, I, D)) {
+    if (validatePIDValues(P, I, D, FF)) {
       this.pidController.setP(P);
       this.pidController.setI(I);
       this.pidController.setD(D);
+
+      if (this.FF != null) {
+        this.pidController.setFF(FF);
+      }
+
     } else {
       DriverStation.reportError("Invalid PID values: P, I, and D must be non-negative.", false);
     }
   }
 
-  private boolean validatePIDValues(double P, double I, double D) {
-    return (P >= 0 && I >= 0 && D >= 0);
+  private boolean validatePIDValues(Double P, Double I, Double D, Double FF) {
+    return (P >= 0 && I >= 0 && D >= 0 && (FF == null || FF >= 0));
   }
 
   private void displayParameters() {
@@ -94,5 +119,6 @@ public class PIDParameters {
     DataTracker.putNumber(groupId, deviceName, "P", P);
     DataTracker.putNumber(groupId, deviceName, "I", I);
     DataTracker.putNumber(groupId, deviceName, "D", D);
+    DataTracker.putNumber(groupId, deviceName, "FF", FF);
   }
 }

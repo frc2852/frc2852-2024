@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -11,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CANBus;
 import frc.robot.constants.Constants.DIOId;
 import frc.robot.constants.Constants.MotorSetPoint;
+import frc.robot.util.NoteTracker;
 import frc.robot.util.hardware.SparkFlex;
 
 public class Intake extends SubsystemBase {
@@ -24,10 +21,12 @@ public class Intake extends SubsystemBase {
   private final DigitalInput shooterBeamBreak;
 
   // State
+  private final NoteTracker noteTracker;
   private double velocitySetpoint;
-  private boolean gamePieceLoading;
 
-  public Intake() {
+  public Intake(NoteTracker noteTracker) {
+    this.noteTracker = noteTracker;
+
     // Set motor controller configurations
     topRollers.setIdleMode(IdleMode.kBrake);
     topRollers.setInverted(true);
@@ -46,18 +45,19 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("isGamePieceDeteted", isGamePieceDeteted());
-    SmartDashboard.putBoolean("isGamePieceLoaded", isGamePieceLoaded());
-    
-    if (!isGamePieceDeteted() && !isGamePieceLoaded() && !isGamePieceBeingLoaded()) {
+    if (!isGamePieceDeteted() && !isGamePieceLoaded()) {
       runIntakeHalfSpeed();
     } else if (isGamePieceDeteted()) {
+      noteTracker.setNoteAcquired();
       runIntakeFullSpeed();
-      gamePieceLoading = true;
     } else if (isGamePieceLoaded()) {
       stopIntake();
-      gamePieceLoading = false;
+      moveNoteAwayFromShooter();
     }
+
+    SmartDashboard.putBoolean("isGamePieceDeteted", isGamePieceDeteted());
+    SmartDashboard.putBoolean("isGamePieceLoaded", isGamePieceLoaded());
+    SmartDashboard.putBoolean("isNoteAtShooter", isNoteAtShooter());
 
     topRollers.periodic();
     bottomRollers.periodic();
@@ -65,7 +65,7 @@ public class Intake extends SubsystemBase {
 
   private void runIntakeHalfSpeed() {
     velocitySetpoint = MotorSetPoint.INTAKE_HALF;
-    topRollers.setVelocity(0);
+    topRollers.stopMotor();
     bottomRollers.setVelocity(velocitySetpoint);
   }
 
@@ -77,12 +77,14 @@ public class Intake extends SubsystemBase {
 
   private void stopIntake() {
     velocitySetpoint = MotorSetPoint.STOP;
-    topRollers.set(0);
-    bottomRollers.set(0);
+    topRollers.stopMotor();
+    bottomRollers.stopMotor();
   }
 
-  private boolean isGamePieceBeingLoaded() {
-    return gamePieceLoading;
+  private void moveNoteAwayFromShooter() {
+    var currentPosition = topRollers.encoder.getPosition();
+    var targetPosition = currentPosition - MotorSetPoint.INTAKE_REVERSE_POSITION;
+    topRollers.setPosition(targetPosition);
   }
 
   private boolean isGamePieceDeteted() {
@@ -90,6 +92,10 @@ public class Intake extends SubsystemBase {
   }
 
   private boolean isGamePieceLoaded() {
+    return isNoteAtShooter() || noteTracker.hasNote();
+  }
+
+  private boolean isNoteAtShooter() {
     return !shooterBeamBreak.get();
   }
 }

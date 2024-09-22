@@ -5,6 +5,7 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SDSMK4ITuner;
 import frc.robot.subsystems.ShooterPivot;
+import frc.robot.util.NoteTracker;
 import frc.robot.util.swerve.SwerveUtils;
 
 import edu.wpi.first.math.MathUtil;
@@ -26,18 +27,15 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
 
-  private final Drive drive;
-
-  @SuppressWarnings("unused")
-  private final ShooterPivot shooterPivot;
-
-  @SuppressWarnings("unused")
-  private final Intake intake;
 
   @SuppressWarnings("unused")
   private final SDSMK4ITuner sdsMK4ITuner;
-
+  private final Drive drive;
   private boolean SWERVE_TUNE = false;
+
+  private final NoteTracker noteTracker = new NoteTracker();
+  private final ShooterPivot shooterPivot = new ShooterPivot();
+  private final Intake intake = new Intake(noteTracker);
 
   /**
    * Constructs the container for the robot. Subsystems and command mappings are
@@ -60,9 +58,6 @@ public class RobotContainer {
       drive = new Drive();
       sdsMK4ITuner = null;
     }
-
-    shooterPivot = new ShooterPivot();
-    intake = new Intake();
 
     // Configuration
     configureBindings();

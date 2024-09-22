@@ -51,6 +51,7 @@ public final class Constants {
     public static final CANDevice INTAKE_TOP = new CANDevice("Intake", "TopRoller", 15);
     
     public static final CANDevice SHOOTER_PIVOT = new CANDevice("Shooter", "Pivot", 16);
+
     public static final CANDevice SHOOTER_LEFT = new CANDevice("Shooter", "Left", 17);
     public static final CANDevice SHOOTER_RIGHT = new CANDevice("Shooter", "Right", 18);
   }
@@ -64,9 +65,13 @@ public final class Constants {
     public static final int STOP = 0;
     public static final int INTAKE_HALF = 400;
     public static final int INTAKE_FULL = 2500;
+    public static final int INTAKE_REVERSE_POSITION = 5;
 
     public static final int PIVOT_LOAD = 0;
     public static final int PIVOT_SHOOT = 5;
+
+    public static final int SHOOTER_VELOCITY = 1000;
+    public static final int SHOOTER_VELOCITY_TOLERANCE = 100;
   }
 
   public enum MotorModel {
