@@ -77,8 +77,8 @@ public class Intake extends SubsystemBase {
 
   private void stopIntake() {
     velocitySetpoint = MotorSetPoint.STOP;
-    topRollers.setVelocity(velocitySetpoint);
-    bottomRollers.setVelocity(velocitySetpoint);
+    topRollers.set(0);
+    bottomRollers.set(0);
   }
 
   private boolean isGamePieceBeingLoaded() {
