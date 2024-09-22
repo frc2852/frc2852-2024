@@ -119,6 +119,9 @@ public class PIDParameters {
     DataTracker.putNumber(groupId, deviceName, "P", P);
     DataTracker.putNumber(groupId, deviceName, "I", I);
     DataTracker.putNumber(groupId, deviceName, "D", D);
-    DataTracker.putNumber(groupId, deviceName, "FF", FF);
+
+    if (FF != null) {
+      DataTracker.putNumber(groupId, deviceName, "FF", FF);
+    }
   }
 }
