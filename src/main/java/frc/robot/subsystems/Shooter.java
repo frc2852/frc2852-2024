@@ -34,34 +34,19 @@ public class Shooter extends SubsystemBase {
     // Set motor controller configurations
     leftWheels.setIdleMode(IdleMode.kCoast);
     leftWheels.setInverted(true);
+    leftWheels.pidParameters.SetPID(0.0001, 0.000001, 0);
+    leftWheels.burnFlash();
 
     rightWheels.setIdleMode(IdleMode.kCoast);
     rightWheels.setInverted(false);
-
-    if (ConfigurationProperties.SYS_ID) {
-      // Disable PID during SysId
-      leftWheels.pidParameters.SetPID(0.0, 0.0, 0.0);
-      rightWheels.pidParameters.SetPID(0.0, 0.0, 0.0);
-    } else {
-      leftWheels.pidParameters.SetPID(0.0001, 0.000001, 0);
-      rightWheels.pidParameters.SetPID(0.0001, 0.000001, 0);
-    }
-
-    leftWheels.burnFlash();
+    rightWheels.pidParameters.SetPID(0.0001, 0.000001, 0);
     rightWheels.burnFlash();
   }
 
   @Override
   public void periodic() {
-    if (ConfigurationProperties.SYS_ID) {
-      // Apply the voltage command directly to the motors
-      leftWheels.setVoltage(sysIdVoltageCommand);
-      rightWheels.setVoltage(sysIdVoltageCommand);
-    } else {
-      // Internal logging and tuning
-      leftWheels.periodic();
-      rightWheels.periodic();
-    }
+    leftWheels.periodic();
+    rightWheels.periodic();
   }
 
   public void primeShooter() {
@@ -94,20 +79,4 @@ public class Shooter extends SubsystemBase {
     // The shooter is ready if the velocity is on target and there's a note ready
     return isVelocityOnTarget && noteTracker.hasNote();
   }
-
-  // #region SysId
-
-  // Method called by SysId to set the motor voltage
-  public void setSysIdVoltageCommand(double voltage) {
-    sysIdVoltageCommand = voltage;
-  }
-
-  // Method to get the current shooter velocity (in radians per second)
-  public double getShooterVelocity() {
-    // Assuming the encoder returns velocity in RPM
-    double rpm = (leftWheels.encoder.getVelocity() + rightWheels.encoder.getVelocity()) / 2.0;
-    return rpm * (2 * Math.PI) / 60.0; // Convert RPM to radians per second
-  }
-
-  // #endregion
 }
