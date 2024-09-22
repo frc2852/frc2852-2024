@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CANBus;
 import frc.robot.constants.Constants.DIOId;
@@ -23,6 +22,16 @@ public class Intake extends SubsystemBase {
   // State
   private final NoteTracker noteTracker;
   private double velocitySetpoint;
+
+  // State Machine
+  private enum IntakeState {
+    SEEKING,       // No note, running intake at half speed
+    ACQUIRING,     // Note detected, running intake at full speed
+    POSITIONING,   // Note at shooter, moving it away from shooter
+    HOLDING        // Note held in intake, waiting to be shot
+  }
+
+  private IntakeState currentState = IntakeState.SEEKING;
 
   public Intake(NoteTracker noteTracker) {
     this.noteTracker = noteTracker;
@@ -45,22 +54,49 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (!isGamePieceDeteted() && !isGamePieceLoaded()) {
-      runIntakeHalfSpeed();
-    } else if (isGamePieceDeteted()) {
-      noteTracker.setNoteAcquired();
-      runIntakeFullSpeed();
-    } else if (isGamePieceLoaded()) {
-      stopIntake();
-      moveNoteAwayFromShooter();
+    // Reset to SEEKING if note has been shot
+    if (!noteTracker.hasNote() && currentState != IntakeState.SEEKING) {
+      currentState = IntakeState.SEEKING;
     }
 
-    SmartDashboard.putBoolean("isGamePieceDeteted", isGamePieceDeteted());
-    SmartDashboard.putBoolean("isGamePieceLoaded", isGamePieceLoaded());
-    SmartDashboard.putBoolean("isNoteAtShooter", isNoteAtShooter());
+    switch (currentState) {
+      case SEEKING:
+        if (!noteTracker.hasNote() && !isGamePieceDetected()) {
+          // No note, no detection
+          runIntakeHalfSpeed();
+        } else if (isGamePieceDetected()) {
+          // Detected a game piece
+          noteTracker.setNoteAcquired();
+          currentState = IntakeState.ACQUIRING;
+          runIntakeFullSpeed();
+        }
+        break;
 
-    topRollers.periodic();
-    bottomRollers.periodic();
+      case ACQUIRING:
+        if (isNoteAtShooter()) {
+          currentState = IntakeState.POSITIONING;
+          reverseIntake();
+        } else {
+          // Keep running intake at full speed
+          runIntakeFullSpeed();
+        }
+        break;
+
+      case POSITIONING:
+        if (!isNoteAtShooter()) {
+          currentState = IntakeState.HOLDING;
+          stopIntake();
+        } else {
+          // Continue reversing intake
+          reverseIntake();
+        }
+        break;
+
+      case HOLDING:
+        // Note is held; intake is stopped
+        stopIntake();
+        break;
+    }
   }
 
   private void runIntakeHalfSpeed() {
@@ -81,18 +117,14 @@ public class Intake extends SubsystemBase {
     bottomRollers.stopMotor();
   }
 
-  private void moveNoteAwayFromShooter() {
-    var currentPosition = topRollers.encoder.getPosition();
-    var targetPosition = currentPosition - MotorSetPoint.INTAKE_REVERSE_POSITION;
-    topRollers.setPosition(targetPosition);
+  private void reverseIntake() {
+    velocitySetpoint = MotorSetPoint.INTAKE_HALF;
+    topRollers.setVelocity(-velocitySetpoint);
+    bottomRollers.setVelocity(-velocitySetpoint);
   }
 
-  private boolean isGamePieceDeteted() {
+  private boolean isGamePieceDetected() {
     return !intakeBeamBreak.get();
-  }
-
-  private boolean isGamePieceLoaded() {
-    return isNoteAtShooter() || noteTracker.hasNote();
   }
 
   private boolean isNoteAtShooter() {
