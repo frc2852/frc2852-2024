@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /**
  * RobotContainer is the class where the bulk of the robot's systems are
@@ -98,6 +100,9 @@ public class RobotContainer {
    * Configures the operator bindings for normal operation.
    */
   private void configureOperatorBindings() {
+    // Bind SysId commands to operator controller buttons
+    operatorController.a().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    operatorController.b().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
   }
 
   /**
