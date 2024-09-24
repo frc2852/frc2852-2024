@@ -74,8 +74,8 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        leftWheels.periodic();
-        rightWheels.periodic();
+        // leftWheels.periodic();
+        // rightWheels.periodic();
     }
 
     public void primeShooter() {
