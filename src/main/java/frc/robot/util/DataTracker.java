@@ -18,7 +18,8 @@ public class DataTracker {
    * @return True if the value was successfully sent to SmartDashboard, otherwise false.
    */
   public static boolean putBoolean(String groupId, String key, boolean value) {
-    return SmartDashboard.putBoolean(groupId + key, value);
+    return true;
+    // return SmartDashboard.putBoolean(groupId + key, value);
   }
 
   /**
@@ -30,7 +31,8 @@ public class DataTracker {
    * @return The boolean value from SmartDashboard, or the default value if not found.
    */
   public static boolean getBoolean(String groupId, String key, boolean defaultValue) {
-    return SmartDashboard.getBoolean(groupId + key, defaultValue);
+    return true;
+    // return SmartDashboard.getBoolean(groupId + key, defaultValue);
   }
 
   /**
@@ -41,7 +43,7 @@ public class DataTracker {
    * @param value   The numeric value to log.
    */
   public static void putNumber(String groupId, String key, double value) {
-    SmartDashboard.putNumber(groupId + key, value);
+    // SmartDashboard.putNumber(groupId + key, value);
   }
 
   /**
@@ -52,7 +54,7 @@ public class DataTracker {
    * @param value   The numeric value to log.
    */
   public static void putNumber(String groupId, String deviceName, String key, double value) {
-    SmartDashboard.putNumber(groupId + deviceName + key, value);
+    // SmartDashboard.putNumber(groupId + deviceName + key, value);
   }
 
   /**
@@ -64,7 +66,8 @@ public class DataTracker {
    * @return The numeric value from SmartDashboard, or the default value if not found.
    */
   public static double getNumber(String groupId, String key, double defaultValue) {
-    return SmartDashboard.getNumber(groupId + key, defaultValue);
+    return 0;
+    // return SmartDashboard.getNumber(groupId + key, defaultValue);
   }
 
   /**
@@ -76,7 +79,8 @@ public class DataTracker {
    * @return The numeric value from SmartDashboard, or the default value if not found.
    */
   public static double getNumber(String groupId, String deviceName, String key, double defaultValue) {
-    return SmartDashboard.getNumber(groupId + deviceName + key, defaultValue);
+    return 0;
+    // return SmartDashboard.getNumber(groupId + deviceName + key, defaultValue);
   }
 
   /**
@@ -87,7 +91,7 @@ public class DataTracker {
    * @param value   The string value to log.
    */
   public static void putString(String groupId, String key, String value) {
-    SmartDashboard.putString(groupId + key, value);
+    // SmartDashboard.putString(groupId + key, value);
   }
 
   /**
@@ -99,6 +103,7 @@ public class DataTracker {
    * @return The string value from SmartDashboard, or the default value if not found.
    */
   public static String getString(String groupId, String key, String defaultValue) {
-    return SmartDashboard.getString(groupId + key, defaultValue);
+    return null;
+    // return SmartDashboard.getString(groupId + key, defaultValue);
   }
 }
