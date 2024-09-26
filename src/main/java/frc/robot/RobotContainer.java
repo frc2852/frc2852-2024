@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 public class RobotContainer {
   private final CommandXboxController driverController;
   private final CommandXboxController operatorController;
+  private final CommandXboxController sysIdController;
 
   private SendableChooser<Command> autoChooser;
 
@@ -53,6 +54,7 @@ public class RobotContainer {
     // Initialize controllers with distinct ports
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OperatorConstant.OPERATOR_CONTROLLER_PORT);
+    sysIdController = new CommandXboxController(OperatorConstant.SYSID_CONTROLLER_PORT);
 
     // Initialize subsystems
     if (ConfigurationProperties.SWERVE_TUNE) {
@@ -76,7 +78,7 @@ public class RobotContainer {
       configureDriverBindings();
     }
 
-    configureOperatorBindings();
+    configureSysIdBindings();
   }
 
   /**
@@ -96,14 +98,13 @@ public class RobotContainer {
   }
 
   /**
-   * Configures the operator bindings for normal operation.
+   * Configures the SysId bindings for normal operation.
    */
-  private void configureOperatorBindings() {
-    // Bind SysId commands to operator controller buttons
-    operatorController.a().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    operatorController.b().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    operatorController.x().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    operatorController.y().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+  private void configureSysIdBindings() {
+    sysIdController.a().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    sysIdController.b().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    sysIdController.x().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    sysIdController.y().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   /**
