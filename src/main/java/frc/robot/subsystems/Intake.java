@@ -25,10 +25,10 @@ public class Intake extends SubsystemBase {
 
   // State Machine
   private enum IntakeState {
-    SEEKING,       // No note, running intake at half speed
-    ACQUIRING,     // Note detected, running intake at full speed
-    POSITIONING,   // Note at shooter, moving it away from shooter
-    HOLDING        // Note held in intake, waiting to be shot
+    SEEKING, // No note, running intake at half speed
+    ACQUIRING, // Note detected, running intake at full speed
+    POSITIONING, // Note at shooter, moving it away from shooter
+    HOLDING, // Note held in intake, waiting to be shot
   }
 
   private IntakeState currentState = IntakeState.SEEKING;
@@ -99,6 +99,14 @@ public class Intake extends SubsystemBase {
     }
   }
 
+  public void deliverNoteToShooter() {
+    runIntakeFullSpeed();
+  }
+
+  public boolean isNoteAtShooter() {
+    return !shooterBeamBreak.get();
+  }
+
   private void runIntakeHalfSpeed() {
     velocitySetpoint = MotorSetPoint.INTAKE_HALF;
     topRollers.stopMotor();
@@ -125,9 +133,5 @@ public class Intake extends SubsystemBase {
 
   private boolean isGamePieceDetected() {
     return !intakeBeamBreak.get();
-  }
-
-  private boolean isNoteAtShooter() {
-    return !shooterBeamBreak.get();
   }
 }

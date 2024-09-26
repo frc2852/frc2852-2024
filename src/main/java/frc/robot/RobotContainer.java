@@ -15,7 +15,10 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -78,7 +81,13 @@ public class RobotContainer {
       configureDriverBindings();
     }
 
+    configureOperatorBindings();
     configureSysIdBindings();
+  }
+
+  private void configureOperatorBindings() {
+    operatorController.a().onTrue(new InstantCommand(() -> shooterPivot.pivotLoadPosition()));
+    operatorController.b().onTrue(new InstantCommand(() -> shooterPivot.pivotShootPosition()));
   }
 
   /**
@@ -95,6 +104,15 @@ public class RobotContainer {
                 SwerveUtils.applyExponentialResponse(MathUtil.applyDeadband(driverController.getRightX(), OperatorConstant.DEAD_BAND)),
                 true, true),
             drive));
+
+    driverController.a().onTrue(
+        new SequentialCommandGroup(
+            new InstantCommand(() -> shooter.primeShooter(), shooter),
+            new WaitUntilCommand(() -> shooter.isShooterReady()),
+            new InstantCommand(() -> intake.deliverNoteToShooter(), intake),
+            new WaitUntilCommand(() -> shooter.hasShotNote()),
+            new InstantCommand(() -> noteTracker.setNoteShot()),
+            new InstantCommand(() -> shooter.stopShooter(), shooter)));
   }
 
   /**

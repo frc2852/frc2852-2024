@@ -47,30 +47,21 @@ public class ShooterPivot extends SubsystemBase {
   @Override
   public void periodic() {
 
-    // Testing code
-    SmartDashboard.putNumber("PivotPosition", encoder.getPosition());
-    var setpoint = SmartDashboard.getNumber("PivotSetPoint", 0);
-
-    if(setpoint == 0){
-      pid.setSmartMotionMaxVelocity(MotorProperties.VORTEX_MAX_RPM, 0);
-      pid.setSmartMotionMaxAccel(800, 0);
-    } else {
-      pid.setSmartMotionMaxVelocity(MotorProperties.VORTEX_MAX_RPM, 0);
-      pid.setSmartMotionMaxAccel(3000, 0);
-    }
-
-    pid.setReference(setpoint, ControlType.kSmartMotion);
   }
 
   // Pivot laying on robot
   public void pivotLoadPosition() {
-    positionSetpoint = MotorSetPoint.PIVOT_LOAD; // Position 0
+    positionSetpoint = MotorSetPoint.PIVOT_LOAD;
+    pid.setSmartMotionMaxVelocity(MotorProperties.VORTEX_MAX_RPM, 0);
+    pid.setSmartMotionMaxAccel(800, 0);
     pid.setReference(positionSetpoint, ControlType.kSmartMotion);
   }
 
   // Pivot raised into the air
   public void pivotShootPosition() {
     positionSetpoint = MotorSetPoint.PIVOT_SHOOT;
+    pid.setSmartMotionMaxVelocity(MotorProperties.VORTEX_MAX_RPM, 0);
+    pid.setSmartMotionMaxAccel(3000, 0);
     pid.setReference(positionSetpoint, ControlType.kSmartMotion);
   }
 }

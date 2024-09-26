@@ -32,6 +32,12 @@ public class Shooter extends SubsystemBase {
     private int velocityLeftSetpoint = MotorSetPoint.STOP;
     private int velocityRightSetpoint = MotorSetPoint.STOP;
 
+    private double baselineCurrentLeft;
+    private double baselineCurrentRight;
+
+    private boolean currentSpikeDetected = false;
+    private boolean noteShot = false;
+
     // Mutable holders for SysId routine
     private final MutableMeasure<Voltage> appliedVoltage = MutableMeasure.mutable(Units.Volts.of(0));
     private final MutableMeasure<Angle> positionMeasure = MutableMeasure.mutable(Units.Rotations.of(0));
@@ -70,6 +76,16 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (velocityLeftSetpoint > 0 || velocityRightSetpoint > 0) {
+            // Calculate feedforward output in volts
+            double ffVoltsLeft = feedforward.calculate(velocityLeftSetpoint / 60.0); // Convert RPM to RPS
+            double ffVoltsRight = feedforward.calculate(velocityRightSetpoint / 60.0); // Convert RPM to RPS
+
+            leftWheels.pidController.setReference(velocityLeftSetpoint, ControlType.kVelocity, 0, ffVoltsLeft, ArbFFUnits.kVoltage);
+            rightWheels.pidController.setReference(velocityRightSetpoint, ControlType.kVelocity, 0, ffVoltsRight, ArbFFUnits.kVoltage);
+        }
+
+        trackNoteShot();
     }
 
     public void primeShooter() {
@@ -77,15 +93,40 @@ public class Shooter extends SubsystemBase {
         velocityLeftSetpoint = MotorSetPoint.SHOOTER_LEFT_VELOCITY;
         velocityRightSetpoint = MotorSetPoint.SHOOTER_RIGHT_VELOCITY;
 
-        // Calculate feedforward output in volts
-        double ffVoltsLeft = feedforward.calculate(velocityLeftSetpoint / 60.0); // Convert RPM to RPS
-        double ffVoltsRight = feedforward.calculate(velocityRightSetpoint / 60.0); // Convert RPM to RPS
+        // Capture baseline current draw after shooter is primed
+        baselineCurrentLeft = leftWheels.getOutputCurrent();
+        baselineCurrentRight = rightWheels.getOutputCurrent();
+    }
 
-        leftWheels.pidController.setReference(velocityLeftSetpoint, ControlType.kVelocity, 0, ffVoltsLeft, ArbFFUnits.kVoltage);
-        rightWheels.pidController.setReference(velocityRightSetpoint, ControlType.kVelocity, 0, ffVoltsRight, ArbFFUnits.kVoltage);
+    public void trackNoteShot() {
+        double currentLeft = leftWheels.getOutputCurrent();
+        double currentRight = rightWheels.getOutputCurrent();
+
+        // Check for a current spike
+        if (!currentSpikeDetected && (currentLeft > baselineCurrentLeft + MotorSetPoint.CURRENT_SPIKE_THRESHOLD ||
+                currentRight > baselineCurrentRight + MotorSetPoint.CURRENT_SPIKE_THRESHOLD)) {
+            currentSpikeDetected = true;
+        }
+
+        // Check if the current has returned to baseline after the spike
+        if (currentSpikeDetected && (currentLeft <= baselineCurrentLeft + MotorSetPoint.CURRENT_RETURN_THRESHOLD &&
+                currentRight <= baselineCurrentRight + MotorSetPoint.CURRENT_RETURN_THRESHOLD)) {
+            noteShot = true;
+        }
+    }
+
+    public boolean hasShotNote() {
+        if (noteShot) {
+            // Reset tracking state for next shot
+            noteShot = false;
+            currentSpikeDetected = false;
+            return true;
+        }
+        return false;
     }
 
     public void stopShooter() {
+        currentSpikeDetected = false;
         velocityLeftSetpoint = MotorSetPoint.STOP;
         velocityRightSetpoint = MotorSetPoint.STOP;
 
