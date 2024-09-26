@@ -75,7 +75,9 @@ public final class Constants {
     public static final int PIVOT_LOAD = 0;
     public static final int PIVOT_SHOOT = 5;
 
-    public static final int SHOOTER_VELOCITY = 1000;
+    public static final int SHOOTER_LEFT_VELOCITY = 3000;
+    public static final int SHOOTER_RIGHT_VELOCITY = 3000;
+
     public static final int SHOOTER_VELOCITY_TOLERANCE = 100;
   }
 

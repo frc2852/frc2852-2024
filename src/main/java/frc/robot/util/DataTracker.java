@@ -1,7 +1,5 @@
 package frc.robot.util;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 /**
  * This class provides logging functionalities for the FRC robot. It allows
  * logging of various types of data and manages file writing and smart dashboard

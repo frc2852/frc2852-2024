@@ -102,6 +102,8 @@ public class RobotContainer {
     // Bind SysId commands to operator controller buttons
     operatorController.a().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     operatorController.b().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    operatorController.x().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    operatorController.y().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   /**
