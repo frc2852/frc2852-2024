@@ -142,7 +142,7 @@ public class Drive extends SubsystemBase {
     if (rateLimit) {
       // Convert XY to polar for rate limiting
       double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
-      double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
+      double inputTranslationMag = Math.hypot(xSpeed, ySpeed);
 
       // Calculate the direction slew rate based on an estimate of the lateral
       // acceleration
@@ -156,11 +156,12 @@ public class Drive extends SubsystemBase {
       double currentTime = WPIUtilJNI.now() * 1e-6;
       double elapsedTime = currentTime - prevTime;
       double angleDif = SwerveUtils.AngleDifference(inputTranslationDir, currentTranslationDir);
-      if (angleDif < 0.45 * Math.PI) {
+      if (angleDif < SwerveDrive.SMALL_ANGLE_THRESHOLD) {
+        
         currentTranslationDir = SwerveUtils.StepTowardsCircular(currentTranslationDir, inputTranslationDir,
             directionSlewRate * elapsedTime);
         currentTranslationMag = magLimiter.calculate(inputTranslationMag);
-      } else if (angleDif > 0.85 * Math.PI) {
+      } else if (angleDif > SwerveDrive.LARGE_ANGLE_THRESHOLD) {
         if (currentTranslationMag > 1e-4) { // some small number to avoid floating-point errors with equality checking
           // keep currentTranslationDir unchanged
           currentTranslationMag = magLimiter.calculate(0.0);
@@ -242,12 +243,14 @@ public class Drive extends SubsystemBase {
   }
 
   public double getHeadingDegrees() {
-    try {
-      return Math.IEEEremainder(navX.getAngle() * (SwerveDrive.GYRO_REVERSED ? -1.0 : 1.0), 360);
-    } catch (Exception e) {
-      DriverStation.reportError("Cannot Get NavX Heading", false);
-      return 0;
+    double angle = navX.getAngle() * (SwerveDrive.GYRO_REVERSED ? -1.0 : 1.0);
+    angle = angle % 360.0;
+    if (angle > 180.0) {
+      angle -= 360.0;
+    } else if (angle < -180.0) {
+      angle += 360.0;
     }
+    return angle;
   }
 
   /**
