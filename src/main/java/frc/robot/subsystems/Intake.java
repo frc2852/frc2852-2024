@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CANBus;
 import frc.robot.constants.Constants.DIOId;
+import frc.robot.constants.Constants.MotorProperties;
 import frc.robot.constants.Constants.MotorSetPoint;
 import frc.robot.util.NoteTracker;
 import frc.robot.util.hardware.SparkFlex;
@@ -27,8 +28,8 @@ public class Intake extends SubsystemBase {
   private enum IntakeState {
     SEEKING, // No note, running intake at half speed
     ACQUIRING, // Note detected, running intake at full speed
-    POSITIONING, // Note at shooter, moving it away from shooter
     HOLDING, // Note held in intake, waiting to be shot
+    DELIVER
   }
 
   private IntakeState currentState = IntakeState.SEEKING;
@@ -74,33 +75,25 @@ public class Intake extends SubsystemBase {
 
       case ACQUIRING:
         if (isNoteAtShooter()) {
-          currentState = IntakeState.POSITIONING;
-          reverseIntake();
+          currentState = IntakeState.HOLDING;
         } else {
           // Keep running intake at full speed
           runIntakeFullSpeed();
         }
         break;
-
-      case POSITIONING:
-        if (!isNoteAtShooter()) {
-          currentState = IntakeState.HOLDING;
-          stopIntake();
-        } else {
-          // Continue reversing intake
-          reverseIntake();
-        }
-        break;
-
       case HOLDING:
         // Note is held; intake is stopped
         stopIntake();
+        break;
+      case DELIVER:
+        // Note is held; move note to shooter
+        runIntakeFullSpeedForReal();
         break;
     }
   }
 
   public void deliverNoteToShooter() {
-    runIntakeFullSpeed();
+    currentState = IntakeState.DELIVER;
   }
 
   public boolean isNoteAtShooter() {
@@ -119,16 +112,16 @@ public class Intake extends SubsystemBase {
     bottomRollers.setVelocity(velocitySetpoint);
   }
 
+  private void runIntakeFullSpeedForReal() {
+    velocitySetpoint = MotorProperties.VORTEX_MAX_RPM;
+    topRollers.setVelocity(velocitySetpoint);
+    bottomRollers.setVelocity(velocitySetpoint);
+  }
+
   private void stopIntake() {
     velocitySetpoint = MotorSetPoint.STOP;
     topRollers.stopMotor();
     bottomRollers.stopMotor();
-  }
-
-  private void reverseIntake() {
-    velocitySetpoint = MotorSetPoint.INTAKE_HALF;
-    topRollers.setVelocity(-velocitySetpoint);
-    bottomRollers.setVelocity(-velocitySetpoint);
   }
 
   private boolean isGamePieceDetected() {

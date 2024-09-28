@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -110,9 +111,11 @@ public class RobotContainer {
             new InstantCommand(() -> shooter.primeShooter(), shooter),
             new WaitUntilCommand(() -> shooter.isShooterReady()),
             new InstantCommand(() -> intake.deliverNoteToShooter(), intake),
-            new WaitUntilCommand(() -> shooter.hasShotNote()),
+            // new WaitUntilCommand(() -> shooter.hasShotNote()),
+            new WaitCommand(3),
             new InstantCommand(() -> noteTracker.setNoteShot()),
-            new InstantCommand(() -> shooter.stopShooter(), shooter)));
+            new InstantCommand(() -> shooter.stopShooter(), shooter),
+            new InstantCommand(() -> shooterPivot.pivotLoadPosition(), shooterPivot)));
   }
 
   /**

@@ -69,7 +69,7 @@ public final class Constants {
   public static class MotorSetPoint {
     public static final int STOP = 0;
     public static final int INTAKE_HALF = 800;
-    public static final int INTAKE_FULL = 2500;
+    public static final int INTAKE_FULL = 3000;
     public static final int INTAKE_REVERSE_POSITION = 5;
 
     public static final int PIVOT_LOAD = 0;
