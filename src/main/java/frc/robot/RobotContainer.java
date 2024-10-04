@@ -31,8 +31,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
  */
 public class RobotContainer {
   private final CommandXboxController driverController;
-  private final CommandXboxController operatorController;
-  private final CommandXboxController sysIdController;
 
   private SendableChooser<Command> autoChooser;
 
@@ -57,8 +55,6 @@ public class RobotContainer {
 
     // Initialize controllers with distinct ports
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
-    operatorController = new CommandXboxController(OperatorConstant.OPERATOR_CONTROLLER_PORT);
-    sysIdController = new CommandXboxController(OperatorConstant.SYSID_CONTROLLER_PORT);
 
     // Initialize subsystems
     if (ConfigurationProperties.SWERVE_TUNE) {
@@ -87,8 +83,7 @@ public class RobotContainer {
   }
 
   private void configureOperatorBindings() {
-    operatorController.a().onTrue(new InstantCommand(() -> shooterPivot.pivotLoadPosition()));
-    operatorController.b().onTrue(new InstantCommand(() -> shooterPivot.pivotShootPosition()));
+
   }
 
   /**
@@ -116,16 +111,19 @@ public class RobotContainer {
             new InstantCommand(() -> noteTracker.setNoteShot()),
             new InstantCommand(() -> shooter.stopShooter(), shooter),
             new InstantCommand(() -> shooterPivot.pivotLoadPosition(), shooterPivot)));
+
+    driverController.y().onTrue(new InstantCommand(() -> shooterPivot.pivotLoadPosition()));
+    driverController.b().onTrue(new InstantCommand(() -> shooterPivot.pivotShootPosition()));
   }
 
   /**
    * Configures the SysId bindings for normal operation.
    */
   private void configureSysIdBindings() {
-    sysIdController.a().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    sysIdController.b().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    sysIdController.x().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    sysIdController.y().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // sysIdController.a().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // sysIdController.b().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // sysIdController.x().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // sysIdController.y().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   /**
