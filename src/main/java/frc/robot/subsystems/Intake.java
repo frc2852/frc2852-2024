@@ -29,7 +29,8 @@ public class Intake extends SubsystemBase {
     SEEKING, // No note, running intake at half speed
     ACQUIRING, // Note detected, running intake at full speed
     HOLDING, // Note held in intake, waiting to be shot
-    DELIVER
+    DELIVER,
+    REVERSE
   }
 
   private IntakeState currentState = IntakeState.SEEKING;
@@ -89,15 +90,33 @@ public class Intake extends SubsystemBase {
         // Note is held; move note to shooter
         runIntakeFullSpeedForReal();
         break;
+      case REVERSE:
+        reverseIntake();
+        break;
     }
+  }
+
+  public void reset() {
+    noteTracker.setNoteShot();
+    currentState = IntakeState.SEEKING;
   }
 
   public void deliverNoteToShooter() {
     currentState = IntakeState.DELIVER;
   }
 
+  public void setReverse() {
+    currentState = IntakeState.REVERSE;
+  }
+
   public boolean isNoteAtShooter() {
     return !shooterBeamBreak.get();
+  }
+
+  private void reverseIntake() {
+    velocitySetpoint = MotorSetPoint.INTAKE_FULL_REVERSE;
+    topRollers.setVelocity(velocitySetpoint);
+    bottomRollers.setVelocity(velocitySetpoint);
   }
 
   private void runIntakeHalfSpeed() {

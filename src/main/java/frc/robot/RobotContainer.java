@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /**
  * RobotContainer is the class where the bulk of the robot's systems are
@@ -31,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
  */
 public class RobotContainer {
   private final CommandXboxController driverController;
+  private final CommandXboxController operatorController;
 
   private SendableChooser<Command> autoChooser;
 
@@ -39,7 +39,7 @@ public class RobotContainer {
   private final Drive drive;
 
   private final NoteTracker noteTracker = new NoteTracker();
-  private final ShooterPivot shooterPivot = new ShooterPivot();
+  private final ShooterPivot shooterPivot = new ShooterPivot(noteTracker);
   private final Intake intake = new Intake(noteTracker);
   private final Shooter shooter = new Shooter(noteTracker);
 
@@ -55,6 +55,7 @@ public class RobotContainer {
 
     // Initialize controllers with distinct ports
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
+    operatorController = new CommandXboxController(OperatorConstant.OPERATOR_CONTROLLER_PORT);
 
     // Initialize subsystems
     if (ConfigurationProperties.SWERVE_TUNE) {
@@ -105,15 +106,22 @@ public class RobotContainer {
         new SequentialCommandGroup(
             new InstantCommand(() -> shooter.primeShooter(), shooter),
             new WaitUntilCommand(() -> shooter.isShooterReady()),
-            new InstantCommand(() -> intake.deliverNoteToShooter(), intake),
-            // new WaitUntilCommand(() -> shooter.hasShotNote()),
-            new WaitCommand(3),
-            new InstantCommand(() -> noteTracker.setNoteShot()),
-            new InstantCommand(() -> shooter.stopShooter(), shooter),
-            new InstantCommand(() -> shooterPivot.pivotLoadPosition(), shooterPivot)));
+            new InstantCommand(() -> intake.deliverNoteToShooter(), intake)));
 
-    driverController.y().onTrue(new InstantCommand(() -> shooterPivot.pivotLoadPosition()));
-    driverController.b().onTrue(new InstantCommand(() -> shooterPivot.pivotShootPosition()));
+    driverController.x().onTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> shooter.stopShooter(), shooter),
+      new InstantCommand(() -> shooterPivot.pivotLoadPosition(), shooterPivot),
+      new InstantCommand(() -> intake.reset(), intake)
+    ));
+
+    operatorController.a().onTrue(new InstantCommand(() -> shooterPivot.pivotLoadPosition()));
+    operatorController.b().onTrue(new InstantCommand(() -> shooterPivot.pivotShootPosition()));
+
+    operatorController.x().onTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> intake.setReverse(), intake),
+      new WaitCommand(0.5),
+      new InstantCommand(() -> intake.reset(), intake)
+    ));
   }
 
   /**

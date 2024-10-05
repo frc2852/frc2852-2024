@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CANBus;
 import frc.robot.constants.Constants.MotorProperties;
 import frc.robot.constants.Constants.MotorSetPoint;
+import frc.robot.util.NoteTracker;
 
 public class ShooterPivot extends SubsystemBase {
 
@@ -19,10 +20,14 @@ public class ShooterPivot extends SubsystemBase {
   private final CANSparkFlex pivot = new CANSparkFlex(CANBus.SHOOTER_PIVOT.getCanId(), MotorType.kBrushless);
   private final SparkPIDController pid;
   private final RelativeEncoder encoder;
+  private final NoteTracker noteTracker;
   // State
   private double positionSetpoint;
 
-  public ShooterPivot() {
+  public ShooterPivot(NoteTracker notetTracker) {
+
+    this.noteTracker = notetTracker;
+
     // Set motor controller configurations
     pivot.setIdleMode(IdleMode.kBrake);
     pivot.setInverted(true);
@@ -39,6 +44,7 @@ public class ShooterPivot extends SubsystemBase {
     encoder.setPosition(0);
     pid.setFeedbackDevice(encoder);
 
+    pivot.setSmartCurrentLimit(30);
     pivot.burnFlash();
 
     SmartDashboard.putNumber("PivotSetPoint", 0);
@@ -59,9 +65,12 @@ public class ShooterPivot extends SubsystemBase {
 
   // Pivot raised into the air
   public void pivotShootPosition() {
-    positionSetpoint = MotorSetPoint.PIVOT_SHOOT;
-    pid.setSmartMotionMaxVelocity(MotorProperties.VORTEX_MAX_RPM, 0);
-    pid.setSmartMotionMaxAccel(3000, 0);
-    pid.setReference(positionSetpoint, ControlType.kSmartMotion);
+    if(noteTracker.hasNote())
+    {
+      positionSetpoint = MotorSetPoint.PIVOT_SHOOT;
+      pid.setSmartMotionMaxVelocity(MotorProperties.VORTEX_MAX_RPM, 0);
+      pid.setSmartMotionMaxAccel(3000, 0);
+      pid.setReference(positionSetpoint, ControlType.kSmartMotion);
+    }
   }
 }

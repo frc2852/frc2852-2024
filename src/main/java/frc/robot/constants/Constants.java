@@ -64,19 +64,20 @@ public final class Constants {
   public static class DIOId {
     public static final int SHOOTER_BEAM_BREAK = 0;
     public static final int INTAKE_BEAM_BREAK = 1;
+    public static final int NOTE_SHOT_BEAM_BREAK = 9;
   }
 
   public static class MotorSetPoint {
     public static final int STOP = 0;
     public static final int INTAKE_HALF = 800;
     public static final int INTAKE_FULL = 3000;
-    public static final int INTAKE_REVERSE_POSITION = 5;
+    public static final int INTAKE_FULL_REVERSE = -5000;
 
-    public static final int PIVOT_LOAD = 0;
-    public static final int PIVOT_SHOOT = 10;
+    public static final int PIVOT_LOAD = 1;
+    public static final double PIVOT_SHOOT = 13.5;
 
-    public static final int SHOOTER_LEFT_VELOCITY = 3000;
-    public static final int SHOOTER_RIGHT_VELOCITY = 3000;
+    public static final int SHOOTER_LEFT_VELOCITY = 4000;
+    public static final int SHOOTER_RIGHT_VELOCITY = 4000;
     public static final int SHOOTER_VELOCITY_TOLERANCE = 100;
 
     public static final int CURRENT_SPIKE_THRESHOLD = 5;
