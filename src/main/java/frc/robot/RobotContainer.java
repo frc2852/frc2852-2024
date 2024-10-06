@@ -1,12 +1,9 @@
 package frc.robot;
 
-import frc.robot.commands.MoveNoteToShooter;
 import frc.robot.commands.PivotLoadPosition;
 import frc.robot.commands.PivotShootPosition;
-import frc.robot.commands.PrimeShooter;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ShootSequence;
-import frc.robot.commands.StopShooter;
 import frc.robot.commands.StopShooterSequence;
 import frc.robot.constants.Constants.ConfigurationProperties;
 import frc.robot.constants.Constants.OperatorConstant;
