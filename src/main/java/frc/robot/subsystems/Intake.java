@@ -12,138 +12,149 @@ import frc.robot.util.hardware.SparkFlex;
 
 public class Intake extends SubsystemBase {
 
-  // Controllers
-  private final SparkFlex topRollers = new SparkFlex(CANBus.INTAKE_TOP);
-  private final SparkFlex bottomRollers = new SparkFlex(CANBus.INTAKE_LOWER);
+    // Controllers
+    private final SparkFlex topRollers;
+    private final SparkFlex bottomRollers;
 
-  // Sensors
-  private final DigitalInput intakeBeamBreak;
-  private final DigitalInput shooterBeamBreak;
+    // Sensors
+    private final DigitalInput intakeBeamBreak;
+    private final DigitalInput shooterBeamBreak;
 
-  // State
-  private final NoteTracker noteTracker;
-  private double velocitySetpoint;
+    // State
+    private final NoteTracker noteTracker;
 
-  // State Machine
-  private enum IntakeState {
-    SEEKING, // No note, running intake at half speed
-    ACQUIRING, // Note detected, running intake at full speed
-    HOLDING, // Note held in intake, waiting to be shot
-    DELIVER,
-    REVERSE
-  }
+    // State Machine
+    private enum IntakeState {
+        SEEKING,    // No note, running intake at half speed
+        ACQUIRING,  // Note detected, running intake at full speed
+        HOLDING,    // Note held in intake, waiting to be shot
+        DELIVER,    // Delivering note to shooter
+        REVERSE     // Reversing intake to eject note
+    }
 
-  private IntakeState currentState = IntakeState.SEEKING;
+    private IntakeState currentState = IntakeState.SEEKING;
 
-  public Intake(NoteTracker noteTracker) {
-    this.noteTracker = noteTracker;
+    public Intake(NoteTracker noteTracker) {
+        this.noteTracker = noteTracker;
 
-    // Set motor controller configurations
-    topRollers.setIdleMode(IdleMode.kBrake);
-    topRollers.setInverted(true);
-    topRollers.pidParameters.SetPID(0.0001, 0.000001, 0);
-    topRollers.burnFlash();
+        // Initialize motor controllers
+        topRollers = new SparkFlex(CANBus.INTAKE_TOP);
+        bottomRollers = new SparkFlex(CANBus.INTAKE_LOWER);
 
-    bottomRollers.setIdleMode(IdleMode.kBrake);
-    bottomRollers.setInverted(true);
-    bottomRollers.pidParameters.SetPID(0.0001, 0.000001, 0);
-    bottomRollers.burnFlash();
+        // Configure top rollers
+        topRollers.setIdleMode(IdleMode.kBrake);
+        topRollers.setInverted(true);
+        topRollers.pidParameters.SetPID(0.0001, 0.000001, 0);
+        topRollers.burnFlash();
 
-    // Initialize sensors
-    intakeBeamBreak = new DigitalInput(DIOId.INTAKE_BEAM_BREAK);
-    shooterBeamBreak = new DigitalInput(DIOId.SHOOTER_BEAM_BREAK);
-  }
+        // Configure bottom rollers
+        bottomRollers.setIdleMode(IdleMode.kBrake);
+        bottomRollers.setInverted(true);
+        bottomRollers.pidParameters.SetPID(0.0001, 0.000001, 0);
+        bottomRollers.burnFlash();
 
-  @Override
-  public void periodic() {
-    // Reset to SEEKING if note has been shot
-    if (!noteTracker.hasNote() && currentState != IntakeState.SEEKING) {
+        // Initialize sensors
+        intakeBeamBreak = new DigitalInput(DIOId.INTAKE_BEAM_BREAK);
+        shooterBeamBreak = new DigitalInput(DIOId.SHOOTER_BEAM_BREAK);
+    }
+
+    @Override
+    public void periodic() {
+        // Reset to SEEKING if note has been shot
+        if (!noteTracker.hasNote() && currentState != IntakeState.SEEKING) {
+            currentState = IntakeState.SEEKING;
+        }
+
+        switch (currentState) {
+            case SEEKING:
+                if (!noteTracker.hasNote() && !isGamePieceDetected()) {
+                    // No note, no detection
+                    runIntakeHalfSpeed();
+                } else if (isGamePieceDetected()) {
+                    // Detected a game piece
+                    noteTracker.setNoteAcquired();
+                    currentState = IntakeState.ACQUIRING;
+                    runIntakeFullSpeed();
+                }
+                break;
+
+            case ACQUIRING:
+                if (isNoteAtShooter()) {
+                    currentState = IntakeState.HOLDING;
+                } else {
+                    // Keep running intake at full speed
+                    runIntakeFullSpeed();
+                }
+                break;
+
+            case HOLDING:
+                // Note is held; intake is stopped
+                stopIntake();
+                break;
+
+            case DELIVER:
+                // Move note to shooter
+                runIntakeAtMaxRPM();
+                break;
+
+            case REVERSE:
+                reverseIntake();
+                break;
+        }
+    }
+
+    public void startWithNoteState(){
+        noteTracker.setNoteAcquired();
+        currentState = IntakeState.HOLDING;
+    }
+
+    public void resetState() {
+      noteTracker.setNoteShot();
       currentState = IntakeState.SEEKING;
     }
 
-    switch (currentState) {
-      case SEEKING:
-        if (!noteTracker.hasNote() && !isGamePieceDetected()) {
-          // No note, no detection
-          runIntakeHalfSpeed();
-        } else if (isGamePieceDetected()) {
-          // Detected a game piece
-          noteTracker.setNoteAcquired();
-          currentState = IntakeState.ACQUIRING;
-          runIntakeFullSpeed();
-        }
-        break;
-
-      case ACQUIRING:
-        if (isNoteAtShooter()) {
-          currentState = IntakeState.HOLDING;
-        } else {
-          // Keep running intake at full speed
-          runIntakeFullSpeed();
-        }
-        break;
-      case HOLDING:
-        // Note is held; intake is stopped
-        stopIntake();
-        break;
-      case DELIVER:
-        // Note is held; move note to shooter
-        runIntakeFullSpeedForReal();
-        break;
-      case REVERSE:
-        reverseIntake();
-        break;
+    public void moveNoteToShooter() {
+        currentState = IntakeState.DELIVER;
     }
-  }
 
-  public void reset() {
-    noteTracker.setNoteShot();
-    currentState = IntakeState.SEEKING;
-  }
+    public void reverse() {
+        currentState = IntakeState.REVERSE;
+    }
 
-  public void deliverNoteToShooter() {
-    currentState = IntakeState.DELIVER;
-  }
+    private boolean isNoteAtShooter() {
+        return !shooterBeamBreak.get();
+    }
 
-  public void setReverse() {
-    currentState = IntakeState.REVERSE;
-  }
+    private void reverseIntake() {
+        double velocitySetpoint = MotorSetPoint.INTAKE_FULL_REVERSE;
+        topRollers.setVelocity(velocitySetpoint);
+        bottomRollers.setVelocity(velocitySetpoint);
+    }
 
-  public boolean isNoteAtShooter() {
-    return !shooterBeamBreak.get();
-  }
+    private void runIntakeHalfSpeed() {
+        double velocitySetpoint = MotorSetPoint.INTAKE_HALF;
+        topRollers.stopMotor();
+        bottomRollers.setVelocity(velocitySetpoint);
+    }
 
-  private void reverseIntake() {
-    velocitySetpoint = MotorSetPoint.INTAKE_FULL_REVERSE;
-    topRollers.setVelocity(velocitySetpoint);
-    bottomRollers.setVelocity(velocitySetpoint);
-  }
+    private void runIntakeFullSpeed() {
+        double velocitySetpoint = MotorSetPoint.INTAKE_FULL;
+        topRollers.setVelocity(velocitySetpoint);
+        bottomRollers.setVelocity(velocitySetpoint);
+    }
 
-  private void runIntakeHalfSpeed() {
-    velocitySetpoint = MotorSetPoint.INTAKE_HALF;
-    topRollers.stopMotor();
-    bottomRollers.setVelocity(velocitySetpoint);
-  }
+    private void runIntakeAtMaxRPM() {
+        double velocitySetpoint = MotorProperties.VORTEX_MAX_RPM;
+        topRollers.setVelocity(velocitySetpoint);
+        bottomRollers.setVelocity(velocitySetpoint);
+    }
 
-  private void runIntakeFullSpeed() {
-    velocitySetpoint = MotorSetPoint.INTAKE_FULL;
-    topRollers.setVelocity(velocitySetpoint);
-    bottomRollers.setVelocity(velocitySetpoint);
-  }
+    private void stopIntake() {
+        topRollers.stopMotor();
+        bottomRollers.stopMotor();
+    }
 
-  private void runIntakeFullSpeedForReal() {
-    velocitySetpoint = MotorProperties.VORTEX_MAX_RPM;
-    topRollers.setVelocity(velocitySetpoint);
-    bottomRollers.setVelocity(velocitySetpoint);
-  }
-
-  private void stopIntake() {
-    velocitySetpoint = MotorSetPoint.STOP;
-    topRollers.stopMotor();
-    bottomRollers.stopMotor();
-  }
-
-  private boolean isGamePieceDetected() {
-    return !intakeBeamBreak.get();
-  }
+    private boolean isGamePieceDetected() {
+        return !intakeBeamBreak.get();
+    }
 }

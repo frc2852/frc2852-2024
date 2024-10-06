@@ -1,5 +1,13 @@
 package frc.robot;
 
+import frc.robot.commands.MoveNoteToShooter;
+import frc.robot.commands.PivotLoadPosition;
+import frc.robot.commands.PivotShootPosition;
+import frc.robot.commands.PrimeShooter;
+import frc.robot.commands.ReverseIntake;
+import frc.robot.commands.ShootSequence;
+import frc.robot.commands.StopShooter;
+import frc.robot.commands.StopShooterSequence;
 import frc.robot.constants.Constants.ConfigurationProperties;
 import frc.robot.constants.Constants.OperatorConstant;
 import frc.robot.subsystems.Drive;
@@ -17,9 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 /**
@@ -42,6 +47,11 @@ public class RobotContainer {
   private final ShooterPivot shooterPivot = new ShooterPivot(noteTracker);
   private final Intake intake = new Intake(noteTracker);
   private final Shooter shooter = new Shooter(noteTracker);
+
+  private final ShootSequence shootSequence = new ShootSequence(shooter, intake);
+  private final StopShooterSequence stopShooterSequence = new StopShooterSequence(shooter, shooterPivot);
+  private final Command pivotLoadPosition = new PivotLoadPosition(shooterPivot);
+  private final Command pivotShootPosition = new PivotShootPosition(shooterPivot);
 
   /**
    * Constructs the container for the robot. Subsystems and command mappings are
@@ -80,7 +90,6 @@ public class RobotContainer {
     }
 
     configureOperatorBindings();
-    configureSysIdBindings();
   }
 
   private void configureOperatorBindings() {
@@ -102,36 +111,40 @@ public class RobotContainer {
                 true, true),
             drive));
 
+    // driverController A button
     driverController.a().onTrue(
-        new SequentialCommandGroup(
-            new InstantCommand(() -> shooter.primeShooter(), shooter),
-            new WaitUntilCommand(() -> shooter.isShooterReady()),
-            new InstantCommand(() -> intake.deliverNoteToShooter(), intake)));
+        new InstantCommand(() -> {
+          if (!shootSequence.isScheduled()) {
+            shootSequence.schedule();
+          }
+        }));
 
-    driverController.x().onTrue(new SequentialCommandGroup(
-      new InstantCommand(() -> shooter.stopShooter(), shooter),
-      new InstantCommand(() -> shooterPivot.pivotLoadPosition(), shooterPivot),
-      new InstantCommand(() -> intake.reset(), intake)
-    ));
+    // driverController X button
+    driverController.x().onTrue(
+        new InstantCommand(() -> {
+          if (!stopShooterSequence.isScheduled()) {
+            stopShooterSequence.schedule();
+          }
+        }));
 
-    operatorController.a().onTrue(new InstantCommand(() -> shooterPivot.pivotLoadPosition()));
-    operatorController.b().onTrue(new InstantCommand(() -> shooterPivot.pivotShootPosition()));
+    // OperatorController A button for pivoting to load position
+    operatorController.a().onTrue(
+        new InstantCommand(() -> {
+          if (!pivotLoadPosition.isScheduled()) {
+            pivotLoadPosition.schedule();
+          }
+        }));
 
-    operatorController.x().onTrue(new SequentialCommandGroup(
-      new InstantCommand(() -> intake.setReverse(), intake),
-      new WaitCommand(0.5),
-      new InstantCommand(() -> intake.reset(), intake)
-    ));
-  }
+    // OperatorController B button for pivoting to shoot position
+    operatorController.b().onTrue(
+        new InstantCommand(() -> {
+          if (!pivotShootPosition.isScheduled()) {
+            pivotShootPosition.schedule();
+          }
+        }));
 
-  /**
-   * Configures the SysId bindings for normal operation.
-   */
-  private void configureSysIdBindings() {
-    // sysIdController.a().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    // sysIdController.b().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    // sysIdController.x().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    // sysIdController.y().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // operatorController X button
+    operatorController.x().whileTrue(new ReverseIntake(intake));
   }
 
   /**
