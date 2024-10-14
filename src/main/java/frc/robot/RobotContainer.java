@@ -48,7 +48,7 @@ public class RobotContainer {
   private final LED led = new LED(noteTracker);
 
   private final ShootSequence shootSequence = new ShootSequence(shooter, intake);
-  private final StopShooterSequence stopShooterSequence = new StopShooterSequence(shooter, shooterPivot);
+  private final StopShooterSequence stopShooterSequence = new StopShooterSequence(intake, shooter, shooterPivot);
   private final Command pivotLoadPosition = new PivotLoadPosition(shooterPivot);
   private final Command pivotShootPosition = new PivotShootPosition(shooterPivot);
 
