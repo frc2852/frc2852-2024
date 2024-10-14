@@ -9,6 +9,7 @@ import frc.robot.constants.Constants.ConfigurationProperties;
 import frc.robot.constants.Constants.OperatorConstant;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LED;
 import frc.robot.subsystems.SDSMK4ITuner;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterPivot;
@@ -44,6 +45,7 @@ public class RobotContainer {
   private final ShooterPivot shooterPivot = new ShooterPivot(noteTracker);
   private final Intake intake = new Intake(noteTracker);
   private final Shooter shooter = new Shooter(noteTracker);
+  private final LED led = new LED(noteTracker);
 
   private final ShootSequence shootSequence = new ShootSequence(shooter, intake);
   private final StopShooterSequence stopShooterSequence = new StopShooterSequence(shooter, shooterPivot);

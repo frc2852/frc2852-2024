@@ -65,6 +65,11 @@ public final class Constants {
     public static final int SHOOTER_BEAM_BREAK = 0;
     public static final int INTAKE_BEAM_BREAK = 1;
     public static final int NOTE_SHOT_BEAM_BREAK = 9;
+
+  }
+
+  public static class PWM {
+    public static final int BLINKIN = 9;
   }
 
   public static class MotorSetPoint {
