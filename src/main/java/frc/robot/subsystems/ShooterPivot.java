@@ -39,7 +39,7 @@ public class ShooterPivot extends SubsystemBase {
 
     pid = pivot.getPIDController();
     pid.setP(0.0001);
-    pid.setI(0.000001); //Eliminate
+    pid.setI(0); //Eliminate
     pid.setD(0);
 
     pid.setSmartMotionAllowedClosedLoopError(POSITION_TOLERANCE, 0); // Set allowable error
