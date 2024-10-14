@@ -35,7 +35,7 @@ public class ShooterPivot extends SubsystemBase {
 
     // Set motor controller configurations
     pivot.setIdleMode(IdleMode.kBrake);
-    pivot.setInverted(true);
+    pivot.setInverted(false);
 
     pid = pivot.getPIDController();
     pid.setP(0.0001);

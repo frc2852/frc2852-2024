@@ -79,7 +79,7 @@ public final class Constants {
     public static final int INTAKE_FULL_REVERSE = -5000;
 
     public static final int PIVOT_LOAD = 1;
-    public static final double PIVOT_SHOOT = 13.5;
+    public static final double PIVOT_SHOOT = 28;
 
     public static final int SHOOTER_LEFT_VELOCITY = 4000;
     public static final int SHOOTER_RIGHT_VELOCITY = 4000;
