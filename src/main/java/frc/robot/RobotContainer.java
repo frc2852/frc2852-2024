@@ -45,6 +45,8 @@ public class RobotContainer {
   private final ShooterPivot shooterPivot = new ShooterPivot(noteTracker);
   private final Intake intake = new Intake(noteTracker);
   private final Shooter shooter = new Shooter(noteTracker);
+
+  @SuppressWarnings("unused")
   private final LED led = new LED(noteTracker);
 
   private final ShootSequence shootSequence = new ShootSequence(shooter, intake);
