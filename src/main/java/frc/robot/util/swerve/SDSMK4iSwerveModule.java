@@ -1,6 +1,5 @@
 package frc.robot.util.swerve;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -10,6 +9,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 
 import frc.robot.constants.Constants.MotorModel;
+import frc.robot.constants.SwerveConstants.SwerveDrive;
 import frc.robot.constants.SwerveConstants.SwerveModule;
 import frc.robot.util.hardware.CANCoder;
 import frc.robot.util.hardware.CANDevice;
@@ -31,9 +31,15 @@ public class SDSMK4iSwerveModule {
     private final PIDController turnPIDController;
 
     private final double chassisAngularOffset;
+    private final Rotation2d chassisAngularOffsetRotation2d;
 
     @SuppressWarnings("unused")
     private SwerveModuleState desiredState;
+
+    // Reusable objects to avoid repeated allocations
+    private final SwerveModuleState correctedDesiredState = new SwerveModuleState(0.0, new Rotation2d());
+    private final SwerveModuleState optimizedDesiredState = new SwerveModuleState(0.0, new Rotation2d());
+    private Rotation2d currentRotation = new Rotation2d();
 
     /**
      * Constructs an SDSMK4iSwerveModule and configures the driving and turning motors,
@@ -50,6 +56,7 @@ public class SDSMK4iSwerveModule {
             CANDevice encoderCANDevice,
             double chassisAngularOffset) {
         this.chassisAngularOffset = chassisAngularOffset;
+        this.chassisAngularOffsetRotation2d = Rotation2d.fromRadians(chassisAngularOffset);
 
         // Initialize drive motor, encoder, and PID controller
         driveMotor = new SparkFlex(driveCANDevice);
@@ -104,7 +111,7 @@ public class SDSMK4iSwerveModule {
         turnMotor.setSmartCurrentLimit(SwerveModule.TURN_MOTOR_CURRENT_LIMIT);
 
         // Set up the PID controller for continuous input between 0 and 2 * PI radians
-        turnPIDController.enableContinuousInput(0, SwerveModule.TURN_ENCODER_POSITION_FACTOR);
+        turnPIDController.enableContinuousInput(0, SwerveDrive.TWO_PI);
 
         turnMotor.burnFlash();
     }
@@ -115,7 +122,10 @@ public class SDSMK4iSwerveModule {
      * @return The current state of the module.
      */
     public SwerveModuleState getState() {
-        return new SwerveModuleState(driveMotor.encoder.getVelocity(), getWheelAngle());
+        double absolutePosition = getAbsolutePosition();
+        return new SwerveModuleState(
+                driveMotor.encoder.getVelocity(),
+                getWheelAngle(absolutePosition));
     }
 
     /**
@@ -124,7 +134,10 @@ public class SDSMK4iSwerveModule {
      * @return The current position of the module.
      */
     public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(driveMotor.encoder.getPosition(), getWheelAngle());
+        double absolutePosition = getAbsolutePosition();
+        return new SwerveModulePosition(
+                driveMotor.encoder.getPosition(),
+                getWheelAngle(absolutePosition));
     }
 
     /**
@@ -134,25 +147,30 @@ public class SDSMK4iSwerveModule {
      */
     public void setDesiredState(SwerveModuleState desiredState) {
         // Apply chassis angular offset to the desired angle
-        Rotation2d correctedAngle = desiredState.angle.plus(Rotation2d.fromRadians(chassisAngularOffset));
-        SwerveModuleState correctedDesiredState = new SwerveModuleState(
-                desiredState.speedMetersPerSecond,
-                correctedAngle);
+        Rotation2d correctedAngle = desiredState.angle.plus(chassisAngularOffsetRotation2d);
+
+        // Update the corrected desired state
+        correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
+        correctedDesiredState.angle = correctedAngle;
+
+        // Get current position once
+        double absolutePosition = getAbsolutePosition();
+        currentRotation = new Rotation2d(absolutePosition);
 
         // Optimize the reference state to avoid unnecessary rotation
-        SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(
+        SwerveModuleState optimizedState = SwerveModuleState.optimize(
                 correctedDesiredState,
-                new Rotation2d(getAbsolutePosition()));
+                currentRotation);
 
         // Command the driving and turning motors to their respective setpoints
         driveMotor.pidController.setReference(
-                optimizedDesiredState.speedMetersPerSecond,
+                optimizedState.speedMetersPerSecond,
                 CANSparkMax.ControlType.kVelocity);
-        double turnOutput = turnPIDController.calculate(
-                getAbsolutePosition(),
-                optimizedDesiredState.angle.getRadians());
 
-        turnOutput = MathUtil.clamp(turnOutput, -1, 1);
+        double desiredAngleRadians = optimizedState.angle.getRadians();
+        double turnOutput = turnPIDController.calculate(
+                absolutePosition,
+                desiredAngleRadians);
         turnMotor.set(turnOutput);
 
         this.desiredState = desiredState;
@@ -172,7 +190,7 @@ public class SDSMK4iSwerveModule {
      */
     private double getAbsolutePosition() {
         // The encoder provides a value between 0 and 1, representing a full rotation
-        return turnEncoder.getAbsolutePosition().getValue() * 2 * Math.PI;
+        return turnEncoder.getAbsolutePosition().getValue() * SwerveDrive.TWO_PI;
     }
 
     /**
@@ -180,8 +198,8 @@ public class SDSMK4iSwerveModule {
      *
      * @return The wheel angle as a Rotation2d object.
      */
-    private Rotation2d getWheelAngle() {
-        double angle = getAbsolutePosition() - chassisAngularOffset;
+    private Rotation2d getWheelAngle(double absolutePosition) {
+        double angle = absolutePosition - chassisAngularOffset;
         return new Rotation2d(angle);
     }
 }
