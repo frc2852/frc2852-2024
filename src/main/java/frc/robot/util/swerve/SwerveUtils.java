@@ -1,13 +1,12 @@
 package frc.robot.util.swerve;
 
 import frc.robot.constants.Constants.OperatorConstant;
-import frc.robot.constants.SwerveConstants.SwerveDrive;
 
 public class SwerveUtils {
 
   /**
    * Steps a value towards a target with a specified step size.
-   *
+   * 
    * @param _current  The current or starting value. Can be positive or negative.
    * @param _target   The target value the algorithm will step towards. Can be
    *                  positive or negative.
@@ -16,20 +15,19 @@ public class SwerveUtils {
    *         step towards the specified target.
    */
   public static double StepTowards(double _current, double _target, double _stepsize) {
-      double delta = _target - _current;
-      if (delta > _stepsize) {
-          return _current + _stepsize;
-      } else if (delta < -_stepsize) {
-          return _current - _stepsize;
-      } else {
-          return _target;
-      }
+    if (Math.abs(_current - _target) <= _stepsize) {
+      return _target;
+    } else if (_target < _current) {
+      return _current - _stepsize;
+    } else {
+      return _current + _stepsize;
+    }
   }
 
   /**
    * Steps a value (angle) towards a target (angle) taking the shortest path with
    * a specified step size.
-   *
+   * 
    * @param _current  The current or starting angle (in radians). Can lie outside
    *                  the 0 to 2*PI range.
    * @param _target   The target angle (in radians) the algorithm will step
@@ -40,56 +38,67 @@ public class SwerveUtils {
    *         This value will always lie in the range 0 to 2*PI (exclusive).
    */
   public static double StepTowardsCircular(double _current, double _target, double _stepsize) {
-      _current = WrapAngle(_current);
-      _target = WrapAngle(_target);
+    _current = WrapAngle(_current);
+    _target = WrapAngle(_target);
 
-      double stepDirection = Math.signum(AngleWrappedDifference(_target, _current));
-      double difference = AngleDifference(_current, _target);
+    double stepDirection = Math.signum(_target - _current);
+    double difference = Math.abs(_current - _target);
 
-      if (difference <= _stepsize) {
-          return _target;
+    if (difference <= _stepsize) {
+      return _target;
+    } else if (difference > Math.PI) { // does the system need to wrap over eventually?
+      // handle the special case where you can reach the target in one step while also
+      // wrapping
+      if (_current + 2 * Math.PI - _target < _stepsize || _target + 2 * Math.PI - _current < _stepsize) {
+        return _target;
       } else {
-          return WrapAngle(_current + stepDirection * _stepsize);
+        return WrapAngle(_current - stepDirection * _stepsize); // this will handle wrapping gracefully
       }
+
+    } else {
+      return _current + stepDirection * _stepsize;
+    }
   }
 
   /**
-   * Finds the minimum difference between two angles
-   *
+   * Finds the (unsigned) minimum difference between two angles including
+   * calculating across 0.
+   * 
    * @param _angleA An angle (in radians).
    * @param _angleB An angle (in radians).
    * @return The (unsigned) minimum difference between the two angles (in
    *         radians).
    */
-  public static double AngleDifference(double angle1, double angle2) {
-      return Math.abs(AngleWrappedDifference(angle1, angle2));
-  }
-
-  // Helper function to compute the signed minimal angular difference
-  public static double AngleWrappedDifference(double angle1, double angle2) {
-      double diff = angle1 - angle2;
-      diff = (diff + Math.PI) % (2 * Math.PI) - Math.PI;
-      return diff;
+  public static double AngleDifference(double _angleA, double _angleB) {
+    double difference = Math.abs(_angleA - _angleB);
+    return difference > Math.PI ? (2 * Math.PI) - difference : difference;
   }
 
   /**
    * Wraps an angle until it lies within the range from 0 to 2*PI (exclusive).
-   *
+   * 
    * @param _angle The angle (in radians) to wrap. Can be positive or negative and
    *               can lie multiple wraps outside the output range.
    * @return An angle (in radians) from 0 and 2*PI (exclusive).
    */
   public static double WrapAngle(double _angle) {
-      double wrapped = _angle % SwerveDrive.TWO_PI;
-      if (wrapped < 0.0) {
-          wrapped += SwerveDrive.TWO_PI;
-      }
-      return wrapped;
-  }
+    double twoPi = 2 * Math.PI;
 
-  /**
+    if (_angle == twoPi) { // Handle this case separately to avoid floating point errors with the floor
+                           // after the division in the case below
+      return 0.0;
+    } else if (_angle > twoPi) {
+      return _angle - twoPi * Math.floor(_angle / twoPi);
+    } else if (_angle < 0.0) {
+      return _angle + twoPi * (Math.floor((-_angle) / twoPi) + 1);
+    } else {
+      return _angle;
+    }
+  }
+  
+    /**
    * Applies an exponential response curve to a joystick input value.
-   *
+   * 
    * This method modifies the input value according to an exponential curve,
    * making the response more sensitive at the extremes and less sensitive
    * around the center. The shape of the curve is controlled by the
@@ -99,6 +108,6 @@ public class SwerveUtils {
    * @return The modified input value after applying the exponential response curve.
    */
   public static double applyExponentialResponse(double input) {
-      return Math.signum(input) * Math.pow(Math.abs(input), OperatorConstant.EXPONENTIAL_RESPONSE);
+    return Math.signum(input) * Math.pow(Math.abs(input), OperatorConstant.EXPONENTIAL_RESPONSE);
   }
 }

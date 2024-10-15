@@ -17,12 +17,6 @@ import edu.wpi.first.math.util.Units;
 public final class SwerveConstants {
 
     public static final class SwerveDrive {
-        // Radians
-        public static final double TWO_PI = 2 * Math.PI;
-        public static final double HALF_PI = 0.5 * Math.PI;
-        public static final double SMALL_ANGLE_THRESHOLD = 0.45 * Math.PI;
-        public static final double LARGE_ANGLE_THRESHOLD = 0.85 * Math.PI;
-
         // Maximum speed in meters per second
         public static final double MAX_SPEED_METERS_PER_SECOND = 5.74;
 
@@ -44,10 +38,10 @@ public final class SwerveConstants {
 
         // Kinematics for the swerve drive
         public static final SwerveDriveKinematics DRIVE_KINEMATICS = new SwerveDriveKinematics(
-                new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2), // Front left
-                new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2), // Front right
-                new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2), // Back left
-                new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2) // Back right
+            new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2),    // Front left
+            new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2),   // Front right
+            new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2),   // Back left
+            new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2)   // Back right
         );
 
         // Angular offsets of the modules relative to the chassis in radians
@@ -66,9 +60,11 @@ public final class SwerveConstants {
         public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED = Math.PI;
 
         // Constraint for the motion profiled robot angle controller
-        public static final TrapezoidProfile.Constraints THETA_CONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
-                MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,
-                MAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED);
+        public static final TrapezoidProfile.Constraints THETA_CONTROLLER_CONSTRAINTS =
+            new TrapezoidProfile.Constraints(
+                MAX_ANGULAR_SPEED_RADIANS_PER_SECOND, 
+                MAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED
+            );
     }
 
     public static final class SwerveModule {
@@ -92,11 +88,14 @@ public final class SwerveConstants {
         public static final double DRIVE_MOTOR_FREE_SPEED_RPS = VortexMotor.FREE_SPEED_RPM / 60.0;
 
         // Free speed of the wheel in meters per second
-        public static final double DRIVE_WHEEL_FREE_SPEED_RPS = (DRIVE_MOTOR_FREE_SPEED_RPS * WHEEL_CIRCUMFERENCE_METERS) / DRIVE_MOTOR_REDUCTION;
+        public static final double DRIVE_WHEEL_FREE_SPEED_RPS = 
+            (DRIVE_MOTOR_FREE_SPEED_RPS * WHEEL_CIRCUMFERENCE_METERS) / DRIVE_MOTOR_REDUCTION;
 
         // Encoder conversion factors
-        public static final double DRIVE_ENCODER_POSITION_FACTOR = WHEEL_CIRCUMFERENCE_METERS / DRIVE_MOTOR_REDUCTION; // Meters per rotation
-        public static final double DRIVE_ENCODER_VELOCITY_FACTOR = DRIVE_ENCODER_POSITION_FACTOR / 60.0; // Meters per second
+        public static final double DRIVE_ENCODER_POSITION_FACTOR = 
+            WHEEL_CIRCUMFERENCE_METERS / DRIVE_MOTOR_REDUCTION; // Meters per rotation
+        public static final double DRIVE_ENCODER_VELOCITY_FACTOR = 
+            DRIVE_ENCODER_POSITION_FACTOR / 60.0; // Meters per second
 
         // TODO: Reimplement this in SDS MK4i Swerve Module
         public static final double TURN_ENCODER_POSITION_FACTOR = 2 * Math.PI; // Radians per rotation
