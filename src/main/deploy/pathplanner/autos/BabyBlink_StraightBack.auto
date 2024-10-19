@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.53,
-      "y": 2.1
+      "x": 0.54,
+      "y": 2.12
     },
     "rotation": 180.0
   },
@@ -12,21 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "SpeakerSourceSideHack"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "SpeakerShot"
+            "name": "StartWithNote"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerSourceSide_CentreNote5"
+            "pathName": "StraightBack"
           }
         }
       ]

@@ -26,6 +26,10 @@ public class ShooterPivot extends SubsystemBase {
   private ControlType currentControlType = ControlType.kSmartMotion;
   private static final double POSITION_TOLERANCE = 0.5;
 
+  private double p = 0.000170;
+  private double i = 0.000001;
+  private double d = 0.000010;
+
   public ShooterPivot(NoteTracker noteTracker) {
 
     this.noteTracker = noteTracker;
@@ -35,28 +39,40 @@ public class ShooterPivot extends SubsystemBase {
 
     // Set motor controller configurations
     pivot.setIdleMode(IdleMode.kBrake);
-    pivot.setInverted(false);
+    pivot.setInverted(true);
 
     pid = pivot.getPIDController();
-    pid.setP(0.0001);
-    pid.setI(0); //Eliminate
-    pid.setD(0);
-
+    pid.setP(p);
+    pid.setI(i);
+    pid.setD(d);
+    
     pid.setSmartMotionAllowedClosedLoopError(POSITION_TOLERANCE, 0); // Set allowable error
-
-    pid.setSmartMotionMaxVelocity(5000, 0);
-    pid.setSmartMotionMaxAccel(800, 0);
 
     encoder = pivot.getEncoder();
     encoder.setPosition(0);
     pid.setFeedbackDevice(encoder);
 
-    pivot.setSmartCurrentLimit(20);
+    pivot.setSmartCurrentLimit(40);
     pivot.burnFlash();
+
+    // Add default values for PID to the SmartDashboard
+    // SmartDashboard.putNumber("ShooterPivot P", p);
+    // SmartDashboard.putNumber("ShooterPivot I", i);
+    // SmartDashboard.putNumber("ShooterPivot D", d);
   }
 
   @Override
   public void periodic() {
+    // // Update PID values from SmartDashboard
+    // double _p = SmartDashboard.getNumber("ShooterPivot P", p);
+    // double _i = SmartDashboard.getNumber("ShooterPivot I", i);
+    // double _d = SmartDashboard.getNumber("ShooterPivot D", d);
+
+    // // Set the updated PID values
+    // pid.setP(_p);
+    // pid.setI(_i);
+    // pid.setD(_d);
+
     // Check if we are at the setpoint
     if (isAtSetpoint()) {
       if (positionSetpoint == MotorSetPoint.PIVOT_LOAD) {
@@ -65,24 +81,6 @@ public class ShooterPivot extends SubsystemBase {
           pid.setReference(0, ControlType.kDutyCycle);
           currentControlType = ControlType.kDutyCycle;
         }
-      } else if (positionSetpoint == MotorSetPoint.PIVOT_SHOOT) {
-        // At shoot position, continue holding position using position control
-        if (currentControlType != ControlType.kPosition) {
-          pid.setReference(positionSetpoint, ControlType.kPosition);
-          currentControlType = ControlType.kPosition;
-        }
-      }
-    } else {
-      // Not at setpoint, ensure we are using the correct control type
-      if (positionSetpoint == MotorSetPoint.PIVOT_LOAD || positionSetpoint == MotorSetPoint.PIVOT_SHOOT) {
-        if (currentControlType != ControlType.kSmartMotion) {
-          pid.setReference(positionSetpoint, ControlType.kSmartMotion);
-          currentControlType = ControlType.kSmartMotion;
-        }
-      } else {
-        // No setpoint specified
-        pid.setReference(0, ControlType.kDutyCycle);
-        currentControlType = ControlType.kDutyCycle;
       }
     }
   }
@@ -90,8 +88,8 @@ public class ShooterPivot extends SubsystemBase {
   // Pivot to loading position
   public void pivotLoadPosition() {
     positionSetpoint = MotorSetPoint.PIVOT_LOAD;
-    pid.setSmartMotionMaxVelocity(MotorProperties.VORTEX_MAX_RPM, 0);
-    pid.setSmartMotionMaxAccel(800, 0);
+    pid.setSmartMotionMaxVelocity(3000, 0);
+    pid.setSmartMotionMaxAccel(1500, 0);
     pid.setReference(positionSetpoint, ControlType.kSmartMotion);
     currentControlType = ControlType.kSmartMotion;
   }
@@ -101,7 +99,17 @@ public class ShooterPivot extends SubsystemBase {
     if (noteTracker.hasNote()) {
       positionSetpoint = MotorSetPoint.PIVOT_SHOOT;
       pid.setSmartMotionMaxVelocity(MotorProperties.VORTEX_MAX_RPM, 0);
-      pid.setSmartMotionMaxAccel(3000, 0);
+      pid.setSmartMotionMaxAccel(MotorProperties.VORTEX_MAX_RPM, 0);
+      pid.setReference(positionSetpoint, ControlType.kSmartMotion);
+      currentControlType = ControlType.kSmartMotion;
+    }
+  }
+
+  public void pivotShootLongPosition() {
+    if (noteTracker.hasNote()) {
+      positionSetpoint = MotorSetPoint.PIVOT__LONG_SHOOT;
+      pid.setSmartMotionMaxVelocity(MotorProperties.VORTEX_MAX_RPM, 0);
+      pid.setSmartMotionMaxAccel(MotorProperties.VORTEX_MAX_RPM, 0);
       pid.setReference(positionSetpoint, ControlType.kSmartMotion);
       currentControlType = ControlType.kSmartMotion;
     }

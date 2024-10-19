@@ -1,0 +1,103 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.36,
+      "y": 5.528332498106438
+    },
+    "rotation": 180.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "StartWithNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PivotShootPosition"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootSequence"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShooterSequence"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SpeakerCentre_Note2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PivotShootLongPosition"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootSequence"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShooterSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PivotShootLongPosition"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootSequence"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShooterSequence"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

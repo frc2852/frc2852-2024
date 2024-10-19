@@ -1,24 +1,29 @@
 package frc.robot;
 
 import frc.robot.commands.PivotLoadPosition;
+import frc.robot.commands.PivotShootLongPosition;
 import frc.robot.commands.PivotShootPosition;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ShootSequence;
+import frc.robot.commands.StartWithNote;
 import frc.robot.commands.StopShooterSequence;
 import frc.robot.constants.Constants.ConfigurationProperties;
 import frc.robot.constants.Constants.OperatorConstant;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LED;
+import frc.robot.subsystems.SDSMK4ITuner;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterPivot;
 import frc.robot.util.NoteTracker;
 import frc.robot.util.swerve.SwerveUtils;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -37,6 +42,7 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser;
 
   @SuppressWarnings("unused")
+  private final SDSMK4ITuner sdsMK4ITuner;
   private final Drive drive;
 
   private final NoteTracker noteTracker = new NoteTracker();
@@ -58,19 +64,23 @@ public class RobotContainer {
    */
   public RobotContainer() {
 
-    // Start data logger
-    DataLogManager.start();
-    DriverStation.startDataLog(DataLogManager.getLog());
 
     // Initialize controllers with distinct ports
     driverController = new CommandXboxController(OperatorConstant.DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OperatorConstant.OPERATOR_CONTROLLER_PORT);
 
     // Initialize subsystems
-    drive = new Drive();
+    if (ConfigurationProperties.SWERVE_TUNE) {
+      drive = null;
+      sdsMK4ITuner = new SDSMK4ITuner();
+    } else {
+      drive = new Drive();
+      sdsMK4ITuner = null;
+    }
 
     // Configuration
     configureBindings();
+    configurePathPlanner();
   }
 
   /**
@@ -78,10 +88,7 @@ public class RobotContainer {
    * devices to commands.
    */
   private void configureBindings() {
-    if (drive != null) {
-      configureDriverBindings();
-    }
-
+    configureDriverBindings();
     configureOperatorBindings();
   }
 
@@ -138,6 +145,19 @@ public class RobotContainer {
 
     // operatorController X button
     operatorController.x().whileTrue(new ReverseIntake(intake));
+  }
+
+  private void configurePathPlanner() {
+    // Register commands
+    NamedCommands.registerCommand("ShootSequence", new ShootSequence(shooter, intake));
+    NamedCommands.registerCommand("StopShooterSequence", new StopShooterSequence(intake, shooter, shooterPivot));
+    NamedCommands.registerCommand("PivotShootPosition", new PivotShootPosition(shooterPivot));
+    NamedCommands.registerCommand("PivotShootLongPosition", new PivotShootLongPosition(shooterPivot));
+    NamedCommands.registerCommand("StartWithNote", new StartWithNote(intake));
+
+    // Build an auto chooser
+    autoChooser = AutoBuilder.buildAutoChooser("BabyBlinky_CentreAuto2");
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**

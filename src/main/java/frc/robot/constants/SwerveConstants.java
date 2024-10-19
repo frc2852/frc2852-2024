@@ -112,9 +112,9 @@ public final class SwerveConstants {
         public static final double DRIVE_FF = 1 / DRIVE_WHEEL_FREE_SPEED_RPS;
 
         // Turn motor PID constants
-        public static final double TURN_P = 0.55;
+        public static final double TURN_P = 0.620000;
         public static final double TURN_I = 0;
-        public static final double TURN_D = 0.01;
+        public static final double TURN_D = 0.000001;
         public static final double TURN_FF = 0;
 
         // Motor idle modes
@@ -123,7 +123,7 @@ public final class SwerveConstants {
 
         // Motor current limits
         public static final int DRIVE_MOTOR_CURRENT_LIMIT = 50; // Amps
-        public static final int TURN_MOTOR_CURRENT_LIMIT = 30; // Amps
+        public static final int TURN_MOTOR_CURRENT_LIMIT = 40; // Amps
     }
 
     public static final class VortexMotor {
