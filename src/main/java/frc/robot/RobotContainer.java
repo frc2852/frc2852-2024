@@ -10,7 +10,6 @@ import frc.robot.constants.Constants.OperatorConstant;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LED;
-import frc.robot.subsystems.SDSMK4ITuner;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterPivot;
 import frc.robot.util.NoteTracker;
@@ -38,7 +37,6 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser;
 
   @SuppressWarnings("unused")
-  private final SDSMK4ITuner sdsMK4ITuner;
   private final Drive drive;
 
   private final NoteTracker noteTracker = new NoteTracker();
@@ -69,13 +67,7 @@ public class RobotContainer {
     operatorController = new CommandXboxController(OperatorConstant.OPERATOR_CONTROLLER_PORT);
 
     // Initialize subsystems
-    if (ConfigurationProperties.SWERVE_TUNE) {
-      drive = null;
-      sdsMK4ITuner = new SDSMK4ITuner();
-    } else {
-      drive = new Drive();
-      sdsMK4ITuner = null;
-    }
+    drive = new Drive();
 
     // Configuration
     configureBindings();
